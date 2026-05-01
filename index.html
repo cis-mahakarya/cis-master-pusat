@@ -9,15 +9,23 @@
   
   <meta content='yes' name='mobile-web-app-capable'>
   <meta content='yes' name='apple-mobile-web-app-capable'>
+  
+  <!-- ==========================================
+       [1] FONT & ICON RESOURCES
+       ========================================== -->
   <link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=Orbitron:wght@700;900&display=swap' rel='stylesheet'>
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'>
   
+  <!-- ==========================================
+       [2] GAYA DESAIN (CSS RESPONSIVE)
+       ========================================== -->
   <style>
+    /* GLOBAL & DASAR */
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f2f5; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
     * { box-sizing: border-box; outline: none; }
     .container { width: 100%; max-width: 1000px; padding: 20px;}
     
-    /* LOGIN SCREEN */
+    /* LAYAR LOGIN ADMIN */
     #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at top, #2c3e50, #0b0f19); display: flex; align-items: center; justify-content: center; z-index: 99999; }
     .login-card { background: rgba(255,255,255,0.05); padding: 40px 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
     .login-card h2 { color: #f1c40f; font-family: 'Orbitron'; margin-top: 0; letter-spacing: 2px; }
@@ -26,6 +34,7 @@
     .login-btn { background: #3498db; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
     .login-btn:active { transform: scale(0.95); }
 
+    /* HEADER & TOMBOL MENU UTAMA */
     .main-header { text-align: center; margin-bottom: 30px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; }
     .main-header h1 { color: #2c3e50; margin: 0; font-family: Orbitron, sans-serif; font-size: 1.5rem;}
     .main-header p { color: #7f8c8d; margin: 5px 0 0 0; font-weight: bold; font-size: 0.8rem;}
@@ -40,6 +49,7 @@
     .menu-box i { font-size: 2rem; margin-bottom: 10px; }
     .menu-box span { font-size: 0.7rem; font-weight: 800; color: #2c3e50; text-transform: uppercase; letter-spacing: 0.5px;}
 
+    /* LAYAR ADMIN (SCREEN) */
     .admin-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 1000; display: none; flex-direction: column; overflow-x: hidden; animation: slideIn 0.3s forwards; }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     
@@ -47,8 +57,9 @@
     .btn-back { font-size: 1.2rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); transition: 0.2s; }
     .btn-back:active { background: rgba(255,255,255,0.3); }
     .screen-content { padding: 20px; overflow-y: auto; flex: 1; max-width: 1000px; margin: 0 auto; width: 100%;}
-    .card-panel { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;}
     
+    /* ELEMEN FORM & TOMBOL DALAM PANEL */
+    .card-panel { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;}
     .form-group { margin-bottom: 15px; width: 100%; }
     label { font-size: 0.75rem; color: #7f8c8d; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 5px;}
     input, select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; font-size: 0.9rem;}
@@ -58,11 +69,14 @@
     .btn-main:active { transform: scale(0.98); }
     .btn-main:disabled { background: #bdc3c7; cursor: not-allowed;}
     
+    /* TABEL DATA */
     .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0;}
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px;}
     th { background: #2c3e50; color: white; padding: 12px 10px; text-align: left; }
     td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #2c3e50; vertical-align: middle;}
+    .col-no { width: 40px; text-align: center; }
     
+    /* BADGE & TOMBOL AKSI KECIL */
     .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 2px;}
     .bg-green { background: #d5f5e3; color: #27ae60; } 
     .bg-red { background: #fadbd8; color: #c0392b; }
@@ -73,6 +87,7 @@
     .action-btn:active { transform: scale(0.9); }
     .btn-block { background: #f39c12; } .btn-del { background: #e74c3c; } .btn-edit { background: #3498db; } .btn-reset { background: #9b59b6; }
 
+    /* SWITCH TOGGLE */
     .switch-wrap { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;}
     .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
     .switch input { opacity: 0; width: 0; height: 0; }
@@ -81,7 +96,7 @@
     input:checked + .slider-tg { background-color: #27ae60; }
     input:checked + .slider-tg:before { transform: translateX(22px); }
 
-    /* KALKULATOR LIVE OMSET */
+    /* KALKULATOR LIVE OMSET & ANIMASI ONLINE */
     .live-dashboard { background: radial-gradient(circle at top right, #1a2536, #0b0f19); border-radius: 15px; padding: 20px; color: white; border: 2px solid #2ecc71; box-shadow: 0 10px 30px rgba(46, 204, 113, 0.2); margin-bottom: 20px;}
     .omset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
     @media (min-width: 768px) { .omset-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -90,12 +105,12 @@
     .omset-vrsc { font-family: 'Orbitron'; font-size: 1.1rem; color: #00f2fe; font-weight: 900; margin-bottom: 3px; }
     .omset-idr { font-size: 0.9rem; color: #2ecc71; font-weight: bold; }
     
-    /* ANIMASI ONLINE DOT */
     .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
     .dot-online { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; animation: blinker 1.5s linear infinite; }
     .dot-offline { background-color: #7f8c8d; box-shadow: none; }
     @keyframes blinker { 50% { opacity: 0; } }
 
+    /* KALKULATOR PAKET MINING & SLIDER */
     .calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;}
     .calc-item { background: #f8f9fa; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;}
     .calc-title { font-size: 0.65rem; color: #7f8c8d; font-weight: 900; letter-spacing: 1px;}
@@ -107,6 +122,7 @@
     .slider-custom::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; border-radius: 50%; background: #3498db; cursor: pointer; border: 3px solid #fff;}
     .s-res-val { color: #f1c40f; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: bold; margin-top: 5px;}
 
+    /* INBOX BANTUAN & CHAT WINDOW */
     .inbox-list { max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;}
     .inbox-item { padding: 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center;}
     .inbox-item:hover { background: #f8f9fa; }
@@ -116,13 +132,11 @@
     .chat-admin { background: #d5f5e3; align-self: flex-end; border-bottom-right-radius: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #1e8449;}
     .chat-footer { display: flex; gap: 10px; align-items: flex-end;}
     
+    /* MODAL POPUP & KOMPONEN TAMBAHAN */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
     .modal-card { background: #fff; border-radius: 15px; width: 90%; max-width: 500px; padding: 25px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;}
     
     .chk-wd { width: 20px; height: 20px; cursor: pointer; }
-    .col-no { width: 40px; text-align: center; }
-
-    /* CHECKBOX UNTUK AKSES C-PANEL */
     .akses-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #bdc3c7; }
     .akses-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: bold; color: #2c3e50; }
 
@@ -135,28 +149,32 @@
 </head>
 <body>
 
+  <!-- ==========================================
+       [3] ELEMEN HTML (TAMPILAN UTAMA / UI)
+       ========================================== -->
+
+  <!-- TOAST NOTIFICATION -->
   <div id='toastBox' style='position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#2ecc71; color:white; padding:12px 25px; border-radius:30px; font-size:0.85rem; font-weight:bold; z-index:999999; opacity:0; visibility:hidden; transition:0.4s; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.2);'>
       <span id='toastMsg'>Pesan</span>
   </div>
 
-  <!-- FASE 1: LAYAR LOGIN ADMIN -->
+  <!-- FASE 1: LAYAR LOGIN ADMIN (DILENGKAPI MATA PASSWORD) -->
   <div id='login-screen'>
       <div class='login-card'>
           <h2><i class='fa-solid fa-server'></i> CIS COMMAND</h2>
           <p style='color:#bdc3c7; font-size:0.8rem; margin-bottom:20px;'>Master &amp; C-Panel Authentication</p>
           <input class='login-input' id='logUser' placeholder='Admin Username' type='text'>
           
-          <!-- TOMBOL MATA PASSWORD & LUPA PASSWORD DITAMBAHKAN DI SINI -->
           <div style='position: relative; width: 100%;'>
               <input class='login-input' id='logPass' placeholder='Encryption Key' type='password' style='padding-right: 40px;'>
               <i class='fa-solid fa-eye' onclick='togglePassMaster("logPass", this)' style='position: absolute; right: 15px; top: 16px; color: #bdc3c7; cursor: pointer; font-size: 1.2rem;'></i>
           </div>
           <button class='login-btn' id='btnLogin' onclick='eksekusiLoginAdmin()'>SECURE LOGIN</button>
           <div style='margin-top: 20px; font-size: 0.8rem; color: #bdc3c7;'>Lupa Password? <a href='#' onclick='lupaPasswordMaster()' style='color: #f1c40f; text-decoration: none; font-weight: bold;'>Reset via Email</a></div>
-      
       </div>
   </div>
 
+  <!-- FASE 2: DASHBOARD UTAMA MENU-MENU -->
   <div class='container' id='mainDashboard' style='display:none;'>
     <div class='main-header'>
       <h1><i class='fa-solid fa-server'></i> PORTAL ADMIN</h1>
@@ -207,6 +225,11 @@
     </div>
   </div>
 
+  <!-- ==========================================
+       SUB-LAYAR (SCREENS) DARI MENU UTAMA
+       ========================================== -->
+
+  <!-- SCREEN: LIVE MONITOR -->
   <div class='admin-screen' id='scr-live'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Live Monitor &amp; Omset</div>
     <div class='screen-content'>
@@ -267,12 +290,7 @@
         <div class='table-wrap'>
           <table>
             <thead>
-              <tr>
-                <th class='col-no'>No</th>
-                <th>Miner ID</th>
-                <th>Speed &amp; Estimasi Harian</th>
-                <th style='text-align:center;'>Status Node</th>
-              </tr>
+              <tr><th class='col-no'>No</th><th>Miner ID</th><th>Speed &amp; Estimasi Harian</th><th style='text-align:center;'>Status Node</th></tr>
             </thead>
             <tbody id='tblLiveUser'><tr><td colspan='4' style='text-align:center;'>Menginisiasi sambungan Radar...</td></tr></tbody>
           </table>
@@ -281,6 +299,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: MANAJEMEN C-PANEL -->
   <div class='admin-screen' id='scr-cpanel'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Akses C-Panel</div>
     <div class='screen-content'>
@@ -297,7 +316,6 @@
                 </select>
             </div>
         </div>
-        
         <div id='wrapAksesCpanel'>
             <label>Berikan Izin Akses Menu (Hanya untuk C-Panel):</label>
             <div class='akses-grid'>
@@ -315,7 +333,6 @@
                 <label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-notif'> Pengumuman</label>
             </div>
         </div>
-        
         <button class='btn-main' id='btnBuatAdmin' onclick='eksekusiBuatAdmin()' style='margin-top:15px; background:#2c3e50;'><i class='fa-solid fa-save'></i> Simpan Akun Asisten</button>
       </div>
       <div class='card-panel'>
@@ -330,6 +347,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: PAKET & HASHRATE -->
   <div class='admin-screen' id='scr-paket'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Paket &amp; Hashrate</div>
     <div class='screen-content'>
@@ -386,6 +404,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: SISTEM DAFTAR & GAME -->
   <div class='admin-screen' id='scr-sistem'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
@@ -442,6 +461,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: STATISTIK -->
   <div class='admin-screen' id='scr-stats'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
     <div class='screen-content'>
@@ -455,6 +475,7 @@
     </div>
   </div>
   
+  <!-- SCREEN: PABRIK TOKEN (DENGAN SCAN HURUF KECIL/BESAR) -->
   <div class='admin-screen' id='scr-pabrik'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pabrik Token</div>
     <div class='screen-content'>
@@ -483,6 +504,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: DATA TIM -->
   <div class='admin-screen' id='scr-team'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
     <div class='screen-content'>
@@ -509,6 +531,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: DATA MINER -->
   <div class='admin-screen' id='scr-miner'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Data Miner &amp; Kendali Akun</div>
     <div class='screen-content'>
@@ -544,6 +567,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: ANTREAN WD -->
   <div class='admin-screen' id='scr-approval'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Antrean Persetujuan WD</div>
     <div class='screen-content'>
@@ -574,6 +598,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: AUDIT KEAMANAN -->
   <div class='admin-screen' id='scr-audit'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Keamanan &amp; Audit (Anti-Curang)</div>
     <div class='screen-content'>
@@ -597,6 +622,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: INBOX BANTUAN -->
   <div class='admin-screen' id='scr-chat'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Inbox Bantuan</div>
     <div class='screen-content'>
@@ -617,6 +643,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: INJEKSI REWARD -->
   <div class='admin-screen' id='scr-reward'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
     <div class='screen-content'>
@@ -631,6 +658,7 @@
     </div>
   </div>
 
+  <!-- SCREEN: PENGUMUMAN -->
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
@@ -642,7 +670,7 @@
     </div>
   </div>
 
-  <!-- MODALS LAINNYA -->
+  <!-- MODALS LAINNYA (JARINGAN, EDIT DATA, MUTASI, LACAK) -->
   <div class='modal-overlay' id='modalJaringan' style='z-index:9999;'>
     <div class='modal-card' style='max-width: 500px; max-height: 80vh; display: flex; flex-direction: column; background:#fff;'>
       <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#3498db; font-family:Orbitron; margin:0;'><i class='fa-solid fa-network-wired'></i> POHON JARINGAN</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalJaringan").style.display="none"' style='cursor:pointer; color:#e74c3c; font-size:1.2rem;'></i></div>
@@ -682,7 +710,10 @@
     </div>
   </div>
   
-<script type='module'>
+  <!-- ==========================================
+       [4] JAVASCRIPT LOGIC (MESIN MASTER PUSAT)
+       ========================================== -->
+  <script type='module'>
 
     if (window.top !== window.self) window.top.location = window.self.location;
     window.isSecurityActive = true; 
@@ -736,26 +767,14 @@
     const app = initializeApp({ apiKey: "AIzaSyAbCd6ybj0jG5pykMyjQo5wetNhLRTDAbA", authDomain: "cis-server-utama.firebaseapp.com", projectId: "cis-server-utama", storageBucket: "cis-server-utama.firebasestorage.app", messagingSenderId: "70183885296", appId: "1:70183885296:web:01ff52b10937fe0684a535" });
     const db = getFirestore(app); const storage = getStorage(app);
 
-    // ==========================================
-    // FASE 1: LOGIKA LOGIN & MANAJEMEN C-PANEL
-    // ==========================================
     let currentAdminRole = ""; let currentAdminAkses = [];
 
-    // FUNGSI BARU: MATA PASSWORD
     window.togglePassMaster = (id, icon) => {
         const inp = document.getElementById(id);
-        if (inp.type === 'password') {
-            inp.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            inp.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
+        if (inp.type === 'password') { inp.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } 
+        else { inp.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
     };
 
-    // FUNGSI BARU: LUPA PASSWORD (KIRIM EMAIL)
     window.lupaPasswordMaster = () => {
         window.location.href = "mailto:admin.centere@gmail.com?subject=REQUEST RESET PASSWORD MASTER CIS&body=Halo Tim IT / Super Admin,%0A%0AMohon bantu reset password untuk akses Master Pusat / C-Panel saya.%0A%0ATerima kasih.";
     };
@@ -834,10 +853,6 @@
 
     window.hapusAdmin = async (id, nama) => { if(confirm(`Yakin ingin menghapus akses untuk admin: ${nama}?`)) { await deleteDoc(doc(db, "Akun_Admin", id)); showToast("Admin dihapus."); window.loadDaftarAdmin(); } };
 
-
-    // ==========================================
-    // FITUR BARU: LIVE MONITOR & OMSET CALCULATOR
-    // ==========================================
     let liveUsersMap = new Map();
     let omsetUpdateInterval = null;
 
@@ -850,18 +865,12 @@
                 let prevData = liveUsersMap.get(uid);
 
                 if (prevData) {
-                    if (d.saldo_doge !== prevData.saldo_doge) {
-                        d.last_seen_local = now; 
-                    } else {
-                        d.last_seen_local = prevData.last_seen_local || 0; 
-                    }
-                } else {
-                    d.last_seen_local = d.kecepatan_hash > 0 ? now : 0;
-                }
+                    if (d.saldo_doge !== prevData.saldo_doge) { d.last_seen_local = now; } 
+                    else { d.last_seen_local = prevData.last_seen_local || 0; }
+                } else { d.last_seen_local = d.kecepatan_hash > 0 ? now : 0; }
                 liveUsersMap.set(uid, d);
             });
         });
-
         if(omsetUpdateInterval) clearInterval(omsetUpdateInterval);
         omsetUpdateInterval = setInterval(window.renderLiveDashboard, 1000);
     };
@@ -870,21 +879,13 @@
     window.cariLiveUser = () => { cariUserLiveInput = document.getElementById('searchLiveUser').value.toLowerCase(); window.renderLiveDashboard(); };
 
     window.renderLiveDashboard = () => {
-        let totalSpeedSistem = 0;
-        let onlineCount = 0;
-        let offlineCount = 0;
-        let now = Date.now();
-        let tbodyHtml = "";
-        let no = 1;
+        let totalSpeedSistem = 0; let onlineCount = 0; let offlineCount = 0; let now = Date.now(); let tbodyHtml = ""; let no = 1;
 
         liveUsersMap.forEach((u, uid) => {
-            let isOnline = false;
-            let statusBadge = "";
-            let timeDiff = now - (u.last_seen_local || 0);
+            let isOnline = false; let statusBadge = ""; let timeDiff = now - (u.last_seen_local || 0);
 
             if (timeDiff < 30000 && u.kecepatan_hash > 0 && u.status_akun === "AKTIF") {
-                isOnline = true;
-                onlineCount++;
+                isOnline = true; onlineCount++;
                 statusBadge = `<span class='status-dot dot-online'></span> <b style='color:#2ecc71;'>Mining / Online</b>`;
                 totalSpeedSistem += u.kecepatan_hash; 
             } else {
@@ -910,38 +911,18 @@
         document.getElementById('liveOnlineCount').innerText = onlineCount;
         document.getElementById('liveOfflineCount').innerText = offlineCount;
 
-        let vrscPerSec = totalHashFinal;
-        let vrscPerMin = vrscPerSec * 60;
-        let vrscPerHr = vrscPerSec * 3600;
-        let vrscPerDay = vrscPerSec * 86400;
-        let vrscPerWeek = vrscPerDay * 7;
-        let vrscPerMonth = vrscPerDay * 30;
+        let vrscPerSec = totalHashFinal; let vrscPerMin = vrscPerSec * 60; let vrscPerHr = vrscPerSec * 3600; let vrscPerDay = vrscPerSec * 86400; let vrscPerWeek = vrscPerDay * 7; let vrscPerMonth = vrscPerDay * 30;
 
-        document.getElementById('omsetSecVrsc').innerText = formatKripto(vrscPerSec);
-        document.getElementById('omsetSecIdr').innerText = "Rp " + Math.floor(vrscPerSec * globalVrscPriceIdr).toLocaleString('id-ID');
-        
-        document.getElementById('omsetMinVrsc').innerText = formatKripto(vrscPerMin);
-        document.getElementById('omsetMinIdr').innerText = "Rp " + Math.floor(vrscPerMin * globalVrscPriceIdr).toLocaleString('id-ID');
-
-        document.getElementById('omsetHrVrsc').innerText = formatKripto(vrscPerHr);
-        document.getElementById('omsetHrIdr').innerText = "Rp " + Math.floor(vrscPerHr * globalVrscPriceIdr).toLocaleString('id-ID');
-
-        document.getElementById('omsetDayVrsc').innerText = formatKripto(vrscPerDay);
-        document.getElementById('omsetDayIdr').innerText = "Rp " + Math.floor(vrscPerDay * globalVrscPriceIdr).toLocaleString('id-ID');
-
-        document.getElementById('omsetWeekVrsc').innerText = formatKripto(vrscPerWeek);
-        document.getElementById('omsetWeekIdr').innerText = "Rp " + Math.floor(vrscPerWeek * globalVrscPriceIdr).toLocaleString('id-ID');
-
-        document.getElementById('omsetMonthVrsc').innerText = formatKripto(vrscPerMonth);
-        document.getElementById('omsetMonthIdr').innerText = "Rp " + Math.floor(vrscPerMonth * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetSecVrsc').innerText = formatKripto(vrscPerSec); document.getElementById('omsetSecIdr').innerText = "Rp " + Math.floor(vrscPerSec * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetMinVrsc').innerText = formatKripto(vrscPerMin); document.getElementById('omsetMinIdr').innerText = "Rp " + Math.floor(vrscPerMin * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetHrVrsc').innerText = formatKripto(vrscPerHr); document.getElementById('omsetHrIdr').innerText = "Rp " + Math.floor(vrscPerHr * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetDayVrsc').innerText = formatKripto(vrscPerDay); document.getElementById('omsetDayIdr').innerText = "Rp " + Math.floor(vrscPerDay * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetWeekVrsc').innerText = formatKripto(vrscPerWeek); document.getElementById('omsetWeekIdr').innerText = "Rp " + Math.floor(vrscPerWeek * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetMonthVrsc').innerText = formatKripto(vrscPerMonth); document.getElementById('omsetMonthIdr').innerText = "Rp " + Math.floor(vrscPerMonth * globalVrscPriceIdr).toLocaleString('id-ID');
 
         document.getElementById('tblLiveUser').innerHTML = tbodyHtml === "" ? "<tr><td colspan='4' style='text-align:center;'>Tidak ada data radar.</td></tr>" : tbodyHtml;
     };
 
-
-    // ==========================================
-    // SISA LOGIKA LAMA 
-    // ==========================================
     async function fetchVrscPrice() {
       try { let simbolDan = String.fromCharCode(38); const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=verus-coin' + simbolDan + 'vs_currencies=idr,usd'); const d = await r.json(); globalVrscPriceIdr = d['verus-coin'].idr; globalVrscPriceUsdt = d['verus-coin'].usd; document.getElementById('widgetVrscIdr').innerText = "Rp " + globalVrscPriceIdr.toLocaleString('id-ID'); document.getElementById('widgetVrscUsdt').innerText = "$ " + globalVrscPriceUsdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 4}); document.getElementById('setHarga').value = globalVrscPriceIdr; window.hitungKalkulator(); window.updateHashSlider();
       } catch(e){ console.error("Gagal menarik harga VRSC", e); }
@@ -996,16 +977,66 @@
     window.delPaket = async (id) => { if(confirm("Hapus paket ini?")) { await deleteDoc(doc(db, "Config_Mining", id)); loadPaket(); } };
 
     document.getElementById('btnCetakToken').addEventListener('click', async () => {
-      const tim = document.getElementById('distTim').value; const nom = parseInt(document.getElementById('nomToken').value); const jml = parseInt(document.getElementById('jmlToken').value); const durasiHari = parseInt(document.getElementById('durasiToken').value) || 30; 
-      let jenisTkn = 'MINING'; const selectJenis = document.getElementById('jenisTokenPabrik'); if(selectJenis) { jenisTkn = selectJenis.value; } const log = document.getElementById('logToken'); let targetPemilik = tim; let targetUserEmail = "";
-      if(tim === 'USER') { targetPemilik = document.getElementById('inpTargetUserPabrik').value.trim(); if(!targetPemilik) { alert("Masukkan Username atau Email pemain!"); return; } const q1 = query(collection(db, "Akun_Publik"), where("email", "==", targetPemilik)); const q2 = query(collection(db, "Akun_Publik"), where("username", "==", targetPemilik)); let res1 = await getDocs(q1); let res2 = await getDocs(q2); if(res1.empty && res2.empty) { alert("Pemain tidak ditemukan di database!"); return; } targetUserEmail = !res1.empty ? res1.docs[0].data().email : res2.docs[0].data().email; }
-      log.innerText = "Memproses Token..."; document.getElementById('btnCetakToken').disabled = true;
+      const tim = document.getElementById('distTim').value; 
+      const nom = parseInt(document.getElementById('nomToken').value); 
+      const jml = parseInt(document.getElementById('jmlToken').value); 
+      const durasiHari = parseInt(document.getElementById('durasiToken').value) || 30; 
+      
+      let jenisTkn = 'MINING'; const selectJenis = document.getElementById('jenisTokenPabrik'); if(selectJenis) { jenisTkn = selectJenis.value; } 
+      const log = document.getElementById('logToken'); 
+      
+      let targetUserEmail = "";
+      let targetUsernameFinal = "";
+      let finalPemilik = tim;
+
+      if(tim === 'USER') { 
+          let rawInput = document.getElementById('inpTargetUserPabrik').value.trim(); 
+          if(!rawInput) { alert("Masukkan Username atau Email pemain!"); return; } 
+          
+          let searchKey = rawInput.includes('@') ? rawInput.toLowerCase() : rawInput.toUpperCase().replace(/\s/g, "");
+
+          log.innerText = "Mencari data pemain...";
+          document.getElementById('btnCetakToken').disabled = true;
+
+          const q1 = query(collection(db, "Akun_Publik"), where("email", "==", searchKey)); 
+          const q2 = query(collection(db, "Akun_Publik"), where("username", "==", searchKey)); 
+          let res1 = await getDocs(q1); let res2 = await getDocs(q2); 
+          
+          if(res1.empty && res2.empty) { 
+              alert("❌ GAGAL: Pemain tidak ditemukan di database! Pastikan Username atau Email diketik dengan benar."); 
+              log.innerText = "";
+              document.getElementById('btnCetakToken').disabled = false; 
+              return; 
+          } 
+          
+          let foundDoc = !res1.empty ? res1.docs[0].data() : res2.docs[0].data();
+          targetUserEmail = foundDoc.email;
+          targetUsernameFinal = foundDoc.username || "";
+          finalPemilik = targetUserEmail; 
+      }
+      
+      log.innerText = "Memproses Pencetakan Token..."; 
+      document.getElementById('btnCetakToken').disabled = true;
+      
       for(let i = 0; i < jml; i++){
         let t = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for(let j = 0; j < 16; j++) t += chars.charAt(Math.floor(Math.random() * chars.length)); let tk = `${t.slice(0,4)}-${t.slice(4,8)}-${t.slice(8,12)}-${t.slice(12,16)}`;
-        await addDoc(collection(db, "Database_Token"), { kode_token: tk, nominal_rupiah: nom, durasi_hari: durasiHari, status: "AKTIF", distribusi_ke: jenisTkn, pemilik: tim === 'USER' ? targetUserEmail : tim, pemilik_username: tim === 'USER' ? targetPemilik : "", pengirim: "Pabrik Master", pembuat: "Master Admin", dibuat_pada: serverTimestamp(), dipakai_oleh: null });
-        if(tim === 'USER') { await addDoc(collection(db, "Notifikasi_Personal"), { email: targetUserEmail, pesan: `🚀 PUSAT mengirimkan Token ${jenisTkn} (${durasiHari} Hari) senilai Rp ${nom.toLocaleString('id-ID')}! Kode: ${tk}`, timestamp_local: Date.now() }); }
+        
+        await addDoc(collection(db, "Database_Token"), { 
+            kode_token: tk, nominal_rupiah: nom, durasi_hari: durasiHari, status: "AKTIF", distribusi_ke: jenisTkn, 
+            pemilik: finalPemilik, 
+            pemilik_username: targetUsernameFinal, 
+            pengirim: "Pusat (Master)", 
+            pembuat: "Master Admin", 
+            dibuat_pada: serverTimestamp(), 
+            dipakai_oleh: null 
+        });
+        
+        if(tim === 'USER') { 
+            await addDoc(collection(db, "Notifikasi_Personal"), { email: targetUserEmail, pesan: `🚀 PUSAT mengirimkan Token ${jenisTkn} senilai Rp ${nom.toLocaleString('id-ID')}! Kode: ${tk}`, timestamp_local: Date.now() }); 
+        }
       }
-      log.innerText = tim === 'USER' ? `Sukses mengirim ${jml} Token ${jenisTkn} ke ${targetPemilik}!` : `Sukses mencetak ${jml} Lembar Token ${jenisTkn} untuk ${tim}!`; document.getElementById('btnCetakToken').disabled = false;
+      log.innerText = tim === 'USER' ? `✅ Sukses mengirim ${jml} Token ${jenisTkn} ke ${targetUsernameFinal}!` : `✅ Sukses mencetak ${jml} Token ${jenisTkn} untuk ${tim}!`; 
+      document.getElementById('btnCetakToken').disabled = false;
     });
 
     window.loadDataTim = async () => {
