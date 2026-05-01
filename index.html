@@ -250,6 +250,15 @@
         <hr style='border:1px dashed #e2e8f0; margin:20px 0;'/>
         <h4 style='color:#9b59b6; margin-top:0;'><i class='fa-solid fa-plus-circle'></i> Tambah Paket Database</h4>
         <div style='display:flex; flex-wrap: wrap; gap:10px;'><div class='form-group' style='flex:1; min-width: 120px;'><label>Nominal (Rp)</label><input id='setNominal' inputmode='decimal' oninput='onNominalInput()' type='text'></div><div class='form-group' style='flex:1; min-width: 120px;'><label>Speed (D/s)</label><input id='setSpeed' inputmode='decimal' oninput='onSpeedInput()' type='text'></div><div class='form-group' style='flex:1; min-width: 120px;'><label>Durasi (Hari)</label><input id='setHari' inputmode='numeric' oninput='hitungKalkulator()' type='text' value='30'></div><div class='form-group' style='flex:1; min-width: 120px;'><label>Harga VRSC (Rp)</label><input id='setHarga' inputmode='decimal' oninput='hitungKalkulator()' type='text' value='1600'></div></div>
+        <div style='background:#f8f9fa; border:2px dashed #9b59b6; border-radius:10px; padding:15px; margin-bottom:15px;'>
+          <div class='calc-grid'>
+            <div class='calc-item'><div class='calc-title'>HASIL 1 JAM</div><div class='calc-val' id='resJam'>0.000000</div></div>
+            <div class='calc-item'><div class='calc-title'>HASIL 1 HARI</div><div class='calc-val' id='resHari' style='color:#27ae60;'>0.000000</div></div>
+            <div class='calc-item'><div class='calc-title'>HASIL 1 MINGGU</div><div class='calc-val' id='resMinggu' style='color:#3498db;'>0.000000</div></div>
+            <div class='calc-item'><div class='calc-title'>HASIL 30 HARI</div><div class='calc-val' id='resBulan' style='color:#e74c3c;'>0.000000</div></div>
+          </div>
+          <div class='calc-total'><div style='font-size: 0.75rem; font-weight: bold; text-transform: uppercase;'>TOTAL ASET RUPIAH SELAMA <span id='lblDurasi'>30</span> HARI</div><div id='resTotalRp' style='font-family:Orbitron; font-size:1.8rem; font-weight:900; color:#f1c40f;'>Rp 0</div><div style='font-size:0.75rem; margin-top:5px; font-weight:bold; color:#ecf0f1;'>( Total Panen: <span id='resTotalDoge'>0.000000</span> VRSC )</div><div id='resRoi' style='font-size:0.85rem; margin-top:10px; background:rgba(0,0,0,0.2); padding:5px; border-radius:5px;'>-</div></div>
+        </div>
         <button class='btn-main' id='btnSimpanPaket' style='background:#9b59b6;'>Simpan Paket ke Database</button>
       </div>
       <div class='card-panel'><h4>Daftar Paket Aktif</h4><div class='table-wrap'><table id='tblPaketTable'><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Nominal</th><th>Speed &amp; Durasi</th><th>Aksi</th></tr></thead><tbody id='tblPaket'></tbody></table></div></div>
