@@ -728,7 +728,7 @@
         
         try { 
             // 1. HAPUS SEMUA MEMBER KECUALI 1 UPLINE UTAMA
-            const targetSisa = 'ADMIN'; // Ganti dengan Username yang ingin Aba sisakan
+            const targetSisa = 'ADMIN'; // Ganti jika Username Upline Anda berbeda
             const snapU = await getDocs(collection(db, "Akun_Publik")); 
             for (const d of snapU.docs) { 
                 if(d.data().username !== targetSisa) {
@@ -756,10 +756,10 @@
                 } 
             } 
             
-            alert("🚀 FACTORY RESET BERHASIL!\n\nDatabase kini bersih. Hanya tersisa member [" + targetSisa + "] sebagai Upline perdana."); 
+            alert("🚀 FACTORY RESET BERHASIL!\n\nDatabase & Cache kini bersih. Hanya tersisa member [" + targetSisa + "] sebagai Upline perdana."); 
             
-            // Segarkan tampilan agar tidak nge-blank
-            window.location.reload();
+            // 3. SAPU BERSIH CACHE ADMIN & HARD RELOAD
+            window.location.href = window.location.href;
 
         } catch(e) { 
             alert("❌ Gagal total! Pastikan koneksi internet stabil."); 
