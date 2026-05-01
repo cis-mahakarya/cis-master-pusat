@@ -145,8 +145,15 @@
           <h2><i class='fa-solid fa-server'></i> CIS COMMAND</h2>
           <p style='color:#bdc3c7; font-size:0.8rem; margin-bottom:20px;'>Master &amp; C-Panel Authentication</p>
           <input class='login-input' id='logUser' placeholder='Admin Username' type='text'>
-          <input class='login-input' id='logPass' placeholder='Encryption Key' type='password'>
+          
+          <!-- TOMBOL MATA PASSWORD & LUPA PASSWORD DITAMBAHKAN DI SINI -->
+          <div style='position: relative; width: 100%;'>
+              <input class='login-input' id='logPass' placeholder='Encryption Key' type='password' style='padding-right: 40px;'>
+              <i class='fa-solid fa-eye' onclick='togglePassMaster("logPass", this)' style='position: absolute; right: 15px; top: 16px; color: #bdc3c7; cursor: pointer; font-size: 1.2rem;'></i>
+          </div>
           <button class='login-btn' id='btnLogin' onclick='eksekusiLoginAdmin()'>SECURE LOGIN</button>
+          <div style='margin-top: 20px; font-size: 0.8rem; color: #bdc3c7;'>Lupa Password? <a href='#' onclick='lupaPasswordMaster()' style='color: #f1c40f; text-decoration: none; font-weight: bold;'>Reset via Email</a></div>
+      
       </div>
   </div>
 
@@ -158,7 +165,6 @@
     </div>
 
     <div class='grid-menu'>
-      <!-- MENU BARU: LIVE MONITOR & OMSET -->
       <div class='menu-box' id='menu-live' onclick='openScreen("scr-live")' style='border-color:#2ecc71;'>
         <i class='fa-solid fa-satellite-dish' style='color:#2ecc71;'></i><span>Live Monitor</span>
       </div>
@@ -201,12 +207,9 @@
     </div>
   </div>
 
-  <!-- SCREEN BARU: LIVE MONITOR & OMSET -->
   <div class='admin-screen' id='scr-live'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Live Monitor &amp; Omset</div>
     <div class='screen-content'>
-      
-      <!-- KALKULATOR OMSET GLOBAL -->
       <div class='live-dashboard'>
           <h3 style='margin-top:0; color:#2ecc71; display:flex; justify-content:space-between; align-items:center;'>
               <span><i class='fa-solid fa-globe'></i> GLOBAL SYSTEM LOAD</span>
@@ -222,7 +225,6 @@
                   <div><span class='status-dot dot-online'></span><b id='liveOnlineCount' style='color:#2ecc71;'>0</b> Online &nbsp; | &nbsp; <span class='status-dot dot-offline'></span><b id='liveOfflineCount' style='color:#7f8c8d;'>0</b> Offline</div>
               </div>
           </div>
-          
           <div style='font-size:0.8rem; color:#94a3b8; text-align:center; margin-top:20px; font-weight:bold;'>BEBAN PRODUKSI KOIN (OMSET MINER GLOBAL)</div>
           <div class='omset-grid'>
               <div class='omset-box'>
@@ -257,8 +259,6 @@
               </div>
           </div>
       </div>
-
-      <!-- TABEL STATUS MINER REALTIME -->
       <div class='card-panel'>
         <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
             <h4 style='margin:0; color:#2c3e50;'><i class='fa-solid fa-users-viewfinder'></i> Live Tracker Miner</h4>
@@ -466,7 +466,7 @@
             <option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option>
             <option value='USER'>🚀 KIRIM LANGSUNG KE PEMAIN</option>
           </select>
-          <input class='input-dark' id='inpTargetUserPabrik' placeholder='Ketik Username atau Email Pemain' style='display:none; margin-top:10px;' type='text'>
+          <input class='input-dark' id='inpTargetUserPabrik' placeholder='Ketik Username atau Email Pemain' style='display:none; margin-top:10px; width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:8px;' type='text'>
         </div>
         <div class='form-group' style='border: 1px dashed #3498db; padding: 10px; border-radius: 8px; background: #ebf5fb;'>
           <label style='color: #2980b9;'><i class='fa-solid fa-tags'></i> Jenis Token yang Dicetak:</label>
@@ -740,6 +740,25 @@
     // FASE 1: LOGIKA LOGIN & MANAJEMEN C-PANEL
     // ==========================================
     let currentAdminRole = ""; let currentAdminAkses = [];
+
+    // FUNGSI BARU: MATA PASSWORD
+    window.togglePassMaster = (id, icon) => {
+        const inp = document.getElementById(id);
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            inp.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    };
+
+    // FUNGSI BARU: LUPA PASSWORD (KIRIM EMAIL)
+    window.lupaPasswordMaster = () => {
+        window.location.href = "mailto:admin.centere@gmail.com?subject=REQUEST RESET PASSWORD MASTER CIS&body=Halo Tim IT / Super Admin,%0A%0AMohon bantu reset password untuk akses Master Pusat / C-Panel saya.%0A%0ATerima kasih.";
+    };
 
     window.eksekusiLoginAdmin = async () => {
         let u = document.getElementById('logUser').value.trim(); let p = document.getElementById('logPass').value.trim(); let btn = document.getElementById('btnLogin');
