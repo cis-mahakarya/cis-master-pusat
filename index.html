@@ -717,86 +717,56 @@
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
     window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\n\nSeluruh riwayat Hashrate, Saldo Rupiah/VRSC, Gudang Token, Mutasi, Notifikasi, dan Request WD milik user [${email}] akan dihapus permanen. \n\nLanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_doge: 0 }); const qT = query(collection(db, "Database_Token"), where("pemilik", "==", email)); const snapT = await getDocs(qT); for (const d of snapT.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } const qM = query(collection(db, "Mutasi_Mining"), where("email", "==", email)); const snapM = await getDocs(qM); for (const d of snapM.docs) { await deleteDoc(doc(db, "Mutasi_Mining", d.id)); } const qN = query(collection(db, "Notifikasi_Personal"), where("email", "==", email)); const snapN = await getDocs(qN); for (const d of snapN.docs) { await deleteDoc(doc(db, "Notifikasi_Personal", d.id)); } const qW = query(collection(db, "Request_Withdraw"), where("email_pemohon", "==", email)); const snapW = await getDocs(qW); for (const d of snapW.docs) { await deleteDoc(doc(db, "Request_Withdraw", d.id)); } showToast(`Data akun ${email} berhasil di-reset total layaknya baru mendaftar!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat mencoba me-reset user."); } };
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
-    window.masterReset = async () => { if(!document.getElementById('unlockReset').checked) return alert("Buka kunci terlebih dahulu!"); if(!confirm("PERINGATAN KERAS! Anda yakin ingin me-reset SEMUA USER secara total?")) return; if(prompt("Ketik 'RESET' huruf besar semua:") !== "RESET") return alert("Master Reset dibatalkan."); const btn = document.getElementById('btnMasterReset'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MERESET DATA TOTAL..."; btn.disabled = true; try { const snapU = await getDocs(collection(db, "Akun_Publik")); for (const d of snapU.docs) { await updateDoc(doc(db, "Akun_Publik", d.id), { saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_doge: 0 }); } const snapT = await getDocs(collection(db, "Database_Token")); for (const d of snapT.docs) { if (d.data().pemilik) await deleteDoc(doc(db, "Database_Token", d.id)); } const colsToDelete = ["Mutasi_Mining", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw"]; for (const col of colsToDelete) { const snap = await getDocs(collection(db, col)); for (const d of snap.docs) { await deleteDoc(doc(db, col, d.id)); } } alert("MASTER RESET TOTAL BERHASIL! Semua Saldo, Mutasi, dan Notifikasi telah dihapus."); } catch(e) { alert("Terjadi kesalahan saat Master Reset."); } btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> EKSEKUSI MASTER RESET"; btn.disabled = false; document.getElementById('unlockReset').checked = false; window.toggleMasterReset(); loadUser(); };
-
-    let unsubApproval = null;
-    window.toggleAllWD = (source) => { let checkboxes = document.querySelectorAll('.chk-wd'); checkboxes.forEach(chk => { chk.checked = source.checked; }); };
-    window.switchTabWd = (tab) => { document.getElementById('areaWdPending').style.display = tab === 'pending' ? 'block' : 'none'; document.getElementById('areaWdRiwayat').style.display = tab === 'riwayat' ? 'block' : 'none'; document.getElementById('tabWdPending').style.borderBottom = tab === 'pending' ? '2px solid #e67e22' : 'none'; document.getElementById('tabWdRiwayat').style.borderBottom = tab === 'riwayat' ? '2px solid #e67e22' : 'none'; document.getElementById('tabWdPending').style.color = tab === 'pending' ? '#e67e22' : '#7f8c8d'; document.getElementById('tabWdRiwayat').style.color = tab === 'riwayat' ? '#e67e22' : '#7f8c8d'; if(tab === 'riwayat') window.loadRiwayatWD(); else window.loadApprovalWD(); };
-    window.loadApprovalWD = () => { const tbody = document.getElementById('tblApproval'); if(unsubApproval) unsubApproval(); const q = query(collection(db, "Request_Withdraw"), where("status", "==", "PENDING"), orderBy("waktu_request", "asc")); unsubApproval = onSnapshot(q, (snap) => { let html = ""; if(snap.empty) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; font-weight:bold; color:#27ae60;'>TIDAK ADA ANTREAN WD</td></tr>"; return; } let no = 1; snap.forEach(doc => { let d = doc.data(); let waktu = formatTanggalJam(d.waktu_request); let tujuan = d.distribusi_ke === 'REG' ? `WA: ${d.target_wa}` : `User: ${d.target_username}`; let chkBox = `<input type='checkbox' class='chk-wd' value='${doc.id}' data-userdoc='${d.doc_id_pemohon}' data-nominal='${d.nominal_rupiah}' data-jenis='${d.distribusi_ke}' data-email='${d.email_pemohon}' data-targetuser='${d.target_username}' data-targetwa='${d.target_wa}'>`; let btnTolak = `<button class='action-btn btn-del' style='width:100%; padding: 8px;' onclick='window.tolakWD("${doc.id}", "${d.email_pemohon}")'><i class='fa-solid fa-times'></i> TOLAK</button>`; html += `<tr><td style='text-align:center;'>${chkBox}</td><td style='text-align:center;'>${no++}</td><td style='font-size:0.8rem;'><b>${d.username_pemohon}</b><br/><span style='font-size:0.65rem; color:#7f8c8d;'>${waktu}</span></td><td style='font-size:0.8rem; font-weight:bold; color:#f39c12;'>${d.distribusi_ke}<br/><span style='color:#3498db'>${tujuan}</span></td><td style='color:#e74c3c; font-weight:900;'>Rp ${d.nominal_rupiah.toLocaleString('id-ID')}</td><td>${btnTolak}</td></tr>`; }); tbody.innerHTML = html; document.getElementById('chkAllWD').checked = false; }); };
-    window.loadRiwayatWD = async () => { const tbody = document.getElementById('tblApprovalRiwayat'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat arsip riwayat...</td></tr>"; try { const snap = await getDocs(collection(db, "Request_Withdraw")); let dataArr = []; snap.forEach(doc => { let d = doc.data(); if(d.status !== "PENDING") { dataArr.push(d); } }); dataArr.sort((a, b) => { let timeA = a.waktu_request ? a.waktu_request.seconds : 0; let timeB = b.waktu_request ? b.waktu_request.seconds : 0; return timeB - timeA; }); let html = ""; let no = 1; dataArr.slice(0, 100).forEach(d => { let waktu = formatTanggalJam(d.waktu_request); let statusBadge = d.status === "APPROVED" ? "<span class='badge bg-green'><i class='fa-solid fa-check'></i> DISETUJUI</span>" : "<span class='badge bg-red'><i class='fa-solid fa-times'></i> DITOLAK</span>"; let tkHasil = d.kode_token_hasil ? `<br/><span style='font-size:0.75rem; font-family:Orbitron; color:#8e44ad; font-weight:bold;'>${d.kode_token_hasil}</span>` : ''; let tujuan = d.distribusi_ke === 'REG' ? `WA: ${d.target_wa}` : `User: ${d.target_username}`; html += `<tr><td style='text-align:center;'>${no++}</td><td style='font-size:0.75rem; color:#7f8c8d;'>${waktu}</td><td style='font-size:0.8rem;'><b>${d.username_pemohon}</b><br/><span style='color:#3498db'>${d.distribusi_ke}: ${tujuan}</span></td><td><b style='color:#2c3e50;'>Rp ${d.nominal_rupiah.toLocaleString('id-ID')}</b><br/>${statusBadge}${tkHasil}</td></tr>`; }); tbody.innerHTML = html === "" ? "<tr><td colspan='4' style='text-align:center;'>Belum ada arsip riwayat WD.</td></tr>" : html; } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat arsip.</td></tr>"; console.error(e); } };
-    
-    window.eksekusiWDBatch = async () => { 
-        let checkboxes = document.querySelectorAll('.chk-wd:checked'); 
-        if(checkboxes.length === 0) return alert("Pilih minimal satu permintaan WD!"); 
-        if(!confirm(`MENYETUJUI ${checkboxes.length} PERMINTAAN WD?`)) return; 
+    window.masterReset = async () => { 
+        if(!document.getElementById('unlockReset').checked) return alert("Buka kunci terlebih dahulu!"); 
+        if(!confirm("PERINGATAN SANGAT KERAS!\n\nSeluruh data member, token, dan riwayat akan DIHAPUS PERMANEN dari database.\n\nSistem akan kembali seperti baru diinstal.\n\nLanjutkan?")) return; 
+        if(prompt("Ketik 'RESET' untuk konfirmasi penghancuran data:") !== "RESET") return alert("Master Reset dibatalkan."); 
         
-        const btn = document.getElementById('btnAccBatch'); 
-        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MEMPROSES WD MASAL..."; 
+        const btn = document.getElementById('btnMasterReset'); 
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGHANCURKAN DATA..."; 
         btn.disabled = true; 
-        let successCount = 0; let failCount = 0; 
         
-        for(let i = 0; i < checkboxes.length; i++) { 
-            let chk = checkboxes[i]; 
-            let reqId = chk.value; 
-            let userDocId = chk.getAttribute('data-userdoc'); 
-            let nominal = parseInt(chk.getAttribute('data-nominal')); 
-            let jenisToken = chk.getAttribute('data-jenis'); 
-            let emailPemohon = chk.getAttribute('data-email'); 
-            let targetUser = chk.getAttribute('data-targetuser'); 
-            let targetWa = chk.getAttribute('data-targetwa'); 
-            
-            try { 
-                let emailPenerimaToken = emailPemohon; 
-                if (targetUser && targetUser !== "") { 
-                    const qTarget = query(collection(db, "Akun_Publik"), where("username", "==", targetUser)); 
-                    const snapTarget = await getDocs(qTarget); 
-                    if (!snapTarget.empty) emailPenerimaToken = snapTarget.docs[0].data().email; 
-                    else throw "User tujuan fiktif"; 
+        try { 
+            // 1. HAPUS SEMUA MEMBER KECUALI 1 UPLINE UTAMA
+            const targetSisa = 'ADMIN'; // Ganti dengan Username yang ingin Aba sisakan
+            const snapU = await getDocs(collection(db, "Akun_Publik")); 
+            for (const d of snapU.docs) { 
+                if(d.data().username !== targetSisa) {
+                    await deleteDoc(doc(db, "Akun_Publik", d.id)); 
+                } else {
+                    // Reset member sisa ini ke kondisi 0
+                    await updateDoc(doc(db, "Akun_Publik", d.id), {
+                        saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, 
+                        saldo_rupiah: 0, total_bonus_sponsor_doge: 0, device_id: ""
+                    });
+                }
+            } 
+
+            // 2. HAPUS SEMUA KOLEKSI LOG & TOKEN (SAPU JAGAT)
+            const listKoleksi = [
+                "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", 
+                "Notifikasi_Personal", "Notifikasi_Global", 
+                "Request_Withdraw", "Pesan_Bantuan", "System_Config"
+            ]; 
+
+            for (const namaKoleksi of listKoleksi) { 
+                const snap = await getDocs(collection(db, namaKoleksi)); 
+                for (const d of snap.docs) { 
+                    await deleteDoc(doc(db, namaKoleksi, d.id)); 
                 } 
-                
-                await runTransaction(db, async (transaction) => { 
-                    const userRef = doc(db, "Akun_Publik", userDocId); 
-                    const userDoc = await transaction.get(userRef); 
-                    if (!userDoc.exists()) throw "Akun hilang"; 
-                    const saldoAsli = userDoc.data().saldo_rupiah || 0; 
-                    if (saldoAsli < nominal) throw "Saldo Kurang"; 
-                    
-                    transaction.update(userRef, { saldo_rupiah: saldoAsli - nominal }); 
-                    
-                    let t = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
-                    for(let j = 0; j < 16; j++) t += chars.charAt(Math.floor(Math.random() * chars.length)); 
-                    let kodeBaru = `${t.slice(0,4)}-${t.slice(4,8)}-${t.slice(8,12)}-${t.slice(12,16)}`; 
-                    
-                    // INI INTI PENYEMBUHANNYA: Cap Pemilik Token ditempel di sini
-                    transaction.set(doc(collection(db, "Database_Token")), { 
-                        kode_token: kodeBaru, 
-                        nominal_rupiah: nominal, 
-                        status: "AKTIF", 
-                        pembuat: emailPenerimaToken, 
-                        pemilik: emailPenerimaToken, 
-                        distribusi_ke: jenisToken, 
-                        pemilik_username: targetUser || userDoc.data().username, 
-                        pengirim: emailPemohon, 
-                        dibuat_pada: serverTimestamp(), 
-                        dipakai_oleh: null 
-                    }); 
-                    
-                    transaction.update(doc(db, "Request_Withdraw"), { status: "APPROVED", kode_token_hasil: kodeBaru }); 
-                    transaction.set(doc(collection(db, "Mutasi_Pusat")), { jenis: "OUT", nominal: nominal, deskripsi: `Pencairan WD a.n ${emailPemohon}`, waktu: serverTimestamp() }); 
-                    transaction.set(doc(collection(db, "Mutasi_Mining")), { email: emailPemohon, jenis: "IN", deskripsi: `✅ WD Disetujui (Cetak ${jenisToken})`, nominal: nominal, timestamp_local: Date.now() }); 
-                    
-                    // Notifikasi ke penerima
-                    if(emailPenerimaToken !== emailPemohon) { 
-                        transaction.set(doc(collection(db, "Notifikasi_Personal")), { email: emailPenerimaToken, pesan: `🎁 KIRIMAN MASUK! Token ${jenisToken} Rp ${nominal.toLocaleString('id-ID')} dari ${emailPemohon}.`, timestamp_local: Date.now() }); 
-                    } 
-                }); 
-                successCount++; 
-            } catch(e) { failCount++; } 
+            } 
+            
+            alert("🚀 FACTORY RESET BERHASIL!\n\nDatabase kini bersih. Hanya tersisa member [" + targetSisa + "] sebagai Upline perdana."); 
+            
+            // Segarkan tampilan agar tidak nge-blank
+            window.location.reload();
+
+        } catch(e) { 
+            alert("❌ Gagal total! Pastikan koneksi internet stabil."); 
+            console.error(e);
+            btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; 
+            btn.disabled = false;
         } 
-        alert(`PROSES WD SELESAI!\n✅ Sukses: ${successCount}\n❌ Gagal: ${failCount}`); 
-        btn.innerHTML = "<i class='fa-solid fa-check-double'></i> Setujui Otomatis (Terpilih)"; 
-        btn.disabled = false;
-        window.loadApprovalWD(); 
     };
 
   </script>
