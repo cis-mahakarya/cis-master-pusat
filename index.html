@@ -723,26 +723,38 @@
         if(prompt("Ketik 'RESET' untuk konfirmasi penghancuran data:") !== "RESET") return alert("Master Reset dibatalkan."); 
         
         const btn = document.getElementById('btnMasterReset'); 
-        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGHANCURKAN DATA..."; 
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGHANCURKAN & MEMBANGUN ULANG..."; 
         btn.disabled = true; 
         
         try { 
-            // 1. HAPUS SEMUA MEMBER KECUALI 1 UPLINE UTAMA
-            const targetSisa = 'ADMIN'; // Ganti jika Username Upline Anda berbeda
+            // 1. HAPUS SEMUA MEMBER (KOSONGKAN TOTAL)
             const snapU = await getDocs(collection(db, "Akun_Publik")); 
             for (const d of snapU.docs) { 
-                if(d.data().username !== targetSisa) {
-                    await deleteDoc(doc(db, "Akun_Publik", d.id)); 
-                } else {
-                    // Reset member sisa ini ke kondisi 0
-                    await updateDoc(doc(db, "Akun_Publik", d.id), {
-                        saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, 
-                        saldo_rupiah: 0, total_bonus_sponsor_doge: 0, device_id: ""
-                    });
-                }
+                await deleteDoc(doc(db, "Akun_Publik", d.id)); 
             } 
 
-            // 2. HAPUS SEMUA KOLEKSI LOG & TOKEN (SAPU JAGAT)
+            // 2. CIPTAKAN AKUN 01 (AKUN INDUK ABADI)
+            // Akun ini otomatis dibuat dengan status AKTIF dan kebal terhadap Reset!
+            await addDoc(collection(db, "Akun_Publik"), {
+                username: "CIS01",           // Ini adalah Username Upline Utama
+                email: "cis01@gmail.com",    // Email login Akun 01
+                wa: "6281234567890",
+                password: "admin",           // Password login Akun 01
+                tx_pin: "123456",            // PIN Transaksi awal
+                referred_by: "MASTER",       // Tanpa Upline (Dari Master)
+                saldo_doge: 0,
+                kecepatan_hash: 0,
+                expired_at: Date.now() + (365 * 86400000), // Otomatis aktif 1 Tahun!
+                status_akun: "AKTIF",
+                edit_user: 0,
+                edit_email: 0,
+                created_at: serverTimestamp(),
+                saldo_rupiah: 0,
+                total_bonus_sponsor_doge: 0,
+                device_id: ""
+            });
+
+            // 3. HAPUS SEMUA KOLEKSI LOG, TOKEN, & SETTINGAN (SAPU JAGAT)
             const listKoleksi = [
                 "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", 
                 "Notifikasi_Personal", "Notifikasi_Global", 
@@ -756,9 +768,9 @@
                 } 
             } 
             
-            alert("🚀 FACTORY RESET BERHASIL!\n\nDatabase & Cache kini bersih. Hanya tersisa member [" + targetSisa + "] sebagai Upline perdana."); 
+            alert("🚀 FACTORY RESET BERHASIL!\n\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan sebagai Upline Perdana."); 
             
-            // 3. SAPU BERSIH CACHE ADMIN & HARD RELOAD
+            // 4. SAPU BERSIH CACHE ADMIN & HARD RELOAD
             window.location.href = window.location.href;
 
         } catch(e) { 
