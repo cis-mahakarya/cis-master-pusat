@@ -716,6 +716,7 @@
         if(!snap.empty) {
             const data = snap.docs[0].data();
             let tgReg = document.getElementById('toggleAktivasiReg'); if(tgReg) tgReg.checked = data.req_token === true;
+            let tgFree = document.getElementById('toggleFreemium'); if(tgFree) tgFree.checked = data.is_freemium === true;
             let inpHari = document.getElementById('inpHariGratis'); if(inpHari) inpHari.value = data.free_days !== undefined ? data.free_days : 30;
             let tgPerpanjang = document.getElementById('togglePerpanjang'); if(tgPerpanjang) tgPerpanjang.checked = data.req_perpanjang !== false;
             let tgDevice = document.getElementById('toggleDeviceLock'); if(tgDevice) tgDevice.checked = data.device_lock_active !== false;
@@ -726,11 +727,16 @@
     }
     
     window.simpanConfigPendaftaran = async () => {
-        let isReqReg = document.getElementById('toggleAktivasiReg').checked; let freeDays = parseInt(document.getElementById('inpHariGratis').value) || 0; let isReqPerpanjang = document.getElementById('togglePerpanjang').checked; let isDeviceLock = document.getElementById('toggleDeviceLock').checked; let bSpeed = getFloatVal('regBonusSpeed'); let spClaim = getFloatVal('inpSponsorClaim'); let spTopup = getFloatVal('inpSponsorTopup');
+        let isReqReg = document.getElementById('toggleAktivasiReg').checked; 
+        let isFreemium = document.getElementById('toggleFreemium').checked;
+        let freeDays = parseInt(document.getElementById('inpHariGratis').value) || 0; 
+        let isReqPerpanjang = document.getElementById('togglePerpanjang').checked; 
+        let isDeviceLock = document.getElementById('toggleDeviceLock').checked; 
+        let bSpeed = getFloatVal('regBonusSpeed'); let spClaim = getFloatVal('inpSponsorClaim'); let spTopup = getFloatVal('inpSponsorTopup');
         const btn = document.querySelector(`button[onclick='simpanConfigPendaftaran()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
         const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REGISTRATION")));
-        let payload = { tipe: "REGISTRATION", req_token: isReqReg, free_days: freeDays, req_perpanjang: isReqPerpanjang, device_lock_active: isDeviceLock, bonus_speed: bSpeed, persentase_bonus_claim: spClaim, persentase_bonus_topup: spTopup };
-        try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); alert("Konfigurasi Pendaftaran & Keamanan Berhasil Disimpan!"); } catch(e) { alert("Gagal menyimpan konfigurasi."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Pengaturan"; btn.disabled = false;
+        let payload = { tipe: "REGISTRATION", req_token: isReqReg, is_freemium: isFreemium, free_days: freeDays, req_perpanjang: isReqPerpanjang, device_lock_active: isDeviceLock, bonus_speed: bSpeed, persentase_bonus_claim: spClaim, persentase_bonus_topup: spTopup };
+        try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Konfigurasi Berhasil Disimpan!"); } catch(e) { alert("Gagal menyimpan konfigurasi."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Pengaturan"; btn.disabled = false;
     }
 
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
