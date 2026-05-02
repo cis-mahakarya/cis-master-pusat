@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <!-- ========================================== -->
+  <!-- [OBAT ANTI-KEDIP] Bypass Layar Login       -->
+  <!-- ========================================== -->
+  <script>
+      if(localStorage.getItem("cisAdminLog")) {
+          document.documentElement.classList.add("sesi-aktif");
+      }
+  </script>
+  <style>
+      html.sesi-aktif #login-screen { display: none !important; }
+  </style>
+
   <meta charset="UTF-8">
   <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
   <meta content='noindex, nofollow' name='robots'>
@@ -544,7 +556,7 @@
         } catch(e) { alert("Gagal koneksi ke server auth."); btn.innerText = "SECURE LOGIN"; btn.disabled = false; }
     };
 
-    function prosesSuksesLogin(role, aksesArr, nama) {
+    window.prosesSuksesLogin = function(role, aksesArr, nama) {
         currentAdminRole = role; currentAdminAkses = aksesArr;
         document.getElementById('login-screen').style.display = 'none';
         if(role === "AGEN") { alert(`Selamat datang Agen ${nama}. Dasbor Agen sedang dalam pengembangan (Fase 2).`); return; }
@@ -558,7 +570,15 @@
         fetchVrscPrice(); loadConfigPendaftaran(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
     }
 
-    window.logoutAdmin = () => { currentAdminRole = ""; currentAdminAkses = []; localStorage.removeItem("cisAdminLog"); document.getElementById('mainDashboard').style.display = 'none'; document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('logUser').value = ""; document.getElementById('logPass').value = ""; let btn = document.getElementById('btnLogin'); btn.innerText = "SECURE LOGIN"; btn.disabled = false; document.getElementById('login-screen').style.display = 'flex'; };
+    window.logoutAdmin = () => { 
+        // 1. Bersihkan ingatan memori login
+        currentAdminRole = ""; 
+        currentAdminAkses = []; 
+        localStorage.removeItem("cisAdminLog"); 
+        
+        // 2. Refresh paksa halaman ke kondisi awal yang bersih
+        window.location.reload(); 
+    };
 
     // ==========================================
     // 6. MANAJEMEN C-PANEL (ASISTEN)
@@ -878,20 +898,26 @@
     };
 
     // ==========================================
-    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI SUPER CEPAT)
+    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI)
     // ==========================================
-    // Dieksekusi langsung tanpa menunggu loading selesai agar halaman login tidak "berkedip"
-    const savedSession = localStorage.getItem("cisAdminLog");
-    if (savedSession) {
-        try {
-            const data = JSON.parse(savedSession);
-            // Kartu identitas ditemukan! Langsung buka pintu menuju Dashboard!
-            prosesSuksesLogin(data.role, data.aksesArr, data.nama);
-        } catch(e) {
-            // Jika memori rusak/error, bersihkan paksa
-            localStorage.removeItem("cisAdminLog");
+    window.addEventListener('load', () => {
+        let savedSession = localStorage.getItem("cisAdminLog");
+        if (savedSession) {
+            try {
+                let data = JSON.parse(savedSession);
+                document.documentElement.classList.add("sesi-aktif");
+                window.prosesSuksesLogin(data.role, data.aksesArr, data.nama);
+            } catch(e) {
+                // Jika memori rusak, munculkan kembali layar login
+                localStorage.removeItem("cisAdminLog");
+                document.documentElement.classList.remove("sesi-aktif");
+                document.getElementById('login-screen').style.display = 'flex';
+            }
+        } else {
+             // Jika belum login, pastikan layar login muncul
+             document.documentElement.classList.remove("sesi-aktif");
+             document.getElementById('login-screen').style.display = 'flex';
         }
-    }
     });
 
   </script>
