@@ -878,20 +878,20 @@
     };
 
     // ==========================================
-    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI)
+    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI SUPER CEPAT)
     // ==========================================
-    window.addEventListener('load', () => {
-        let savedSession = localStorage.getItem("cisAdminLog");
-        if (savedSession) {
-            try {
-                let data = JSON.parse(savedSession);
-                // Langsung masukkan admin ke dalam tanpa perlu login ulang!
-                prosesSuksesLogin(data.role, data.aksesArr, data.nama);
-            } catch(e) {
-                // Jika memori rusak, hapus paksa
-                localStorage.removeItem("cisAdminLog");
-            }
+    // Dieksekusi langsung tanpa menunggu loading selesai agar halaman login tidak "berkedip"
+    const savedSession = localStorage.getItem("cisAdminLog");
+    if (savedSession) {
+        try {
+            const data = JSON.parse(savedSession);
+            // Kartu identitas ditemukan! Langsung buka pintu menuju Dashboard!
+            prosesSuksesLogin(data.role, data.aksesArr, data.nama);
+        } catch(e) {
+            // Jika memori rusak/error, bersihkan paksa
+            localStorage.removeItem("cisAdminLog");
         }
+    }
     });
 
   </script>
