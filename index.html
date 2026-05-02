@@ -9,14 +9,27 @@
   
   <meta content='yes' name='mobile-web-app-capable'>
   <meta content='yes' name='apple-mobile-web-app-capable'>
+  
+  <!-- FONT & IKON -->
   <link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=Orbitron:wght@700;900&display=swap' rel='stylesheet'>
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'>
   
   <style>
+    /* ========================================== */
+    /* 1. PENGATURAN DASAR (GLOBAL STYLES)        */
+    /* ========================================== */
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f0f2f5; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
     * { box-sizing: border-box; outline: none; }
-    .container { width: 100%; max-width: 1000px; padding: 20px;}
-    
+    .container { width: 100%; max-width: 1000px; padding: 20px; }
+
+    html { font-size: 13px; }
+    @media screen and (min-width: 360px) { html { font-size: 14px; } }
+    @media screen and (min-width: 414px) { html { font-size: 15px; } }
+    @media screen and (min-width: 500px) { html { font-size: 16.5px; } }
+
+    /* ========================================== */
+    /* 2. HALAMAN LOGIN                           */
+    /* ========================================== */
     #login-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at top, #2c3e50, #0b0f19); display: flex; align-items: center; justify-content: center; z-index: 99999; }
     .login-card { background: rgba(255,255,255,0.05); padding: 40px 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
     .login-card h2 { color: #f1c40f; font-family: 'Orbitron'; margin-top: 0; letter-spacing: 2px; }
@@ -25,9 +38,12 @@
     .login-btn { background: #3498db; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
     .login-btn:active { transform: scale(0.95); }
 
+    /* ========================================== */
+    /* 3. HEADER & MENU DASHBOARD                 */
+    /* ========================================== */
     .main-header { text-align: center; margin-bottom: 30px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; }
-    .main-header h1 { color: #2c3e50; margin: 0; font-family: Orbitron, sans-serif; font-size: 1.5rem;}
-    .main-header p { color: #7f8c8d; margin: 5px 0 0 0; font-weight: bold; font-size: 0.8rem;}
+    .main-header h1 { color: #2c3e50; margin: 0; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; }
+    .main-header p { color: #7f8c8d; margin: 5px 0 0 0; font-weight: bold; font-size: 0.8rem; }
     .logout-btn { position: absolute; right: 20px; top: 20px; background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
 
     .grid-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
@@ -35,45 +51,60 @@
     @media (min-width: 800px) { .grid-menu { grid-template-columns: repeat(4, 1fr); } }
     
     .menu-box { background: white; border-radius: 15px; padding: 20px 10px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; border-bottom: 5px solid #bdc3c7; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .menu-box:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+    .menu-box:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .menu-box i { font-size: 2rem; margin-bottom: 10px; }
-    .menu-box span { font-size: 0.7rem; font-weight: 800; color: #2c3e50; text-transform: uppercase; letter-spacing: 0.5px;}
+    .menu-box span { font-size: 0.7rem; font-weight: 800; color: #2c3e50; text-transform: uppercase; letter-spacing: 0.5px; }
 
+    /* ========================================== */
+    /* 4. STRUKTUR HALAMAN ADMIN (SCREENS)        */
+    /* ========================================== */
     .admin-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 1000; display: none; flex-direction: column; overflow-x: hidden; animation: slideIn 0.3s forwards; }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     
     .screen-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
     .btn-back { font-size: 1.2rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); transition: 0.2s; }
-    .screen-content { padding: 20px; overflow-y: auto; flex: 1; max-width: 1000px; margin: 0 auto; width: 100%;}
-    .card-panel { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;}
-    
+    .screen-content { padding: 20px; overflow-y: auto; flex: 1; max-width: 1000px; margin: 0 auto; width: 100%; }
+    .card-panel { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+
+    /* ========================================== */
+    /* 5. FORM, TOMBOL & KOMPONEN UI              */
+    /* ========================================== */
     .form-group { margin-bottom: 15px; width: 100%; }
-    label { font-size: 0.75rem; color: #7f8c8d; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 5px;}
-    input, select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; font-size: 0.9rem;}
+    label { font-size: 0.75rem; color: #7f8c8d; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 5px; }
+    input, select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-weight: 600; font-size: 0.9rem; }
     input:focus, select:focus, textarea:focus { border-color: #3498db; }
     
     .btn-main { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-    .btn-main:disabled { background: #bdc3c7; cursor: not-allowed;}
+    .btn-main:disabled { background: #bdc3c7; cursor: not-allowed; }
     
-    .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0;}
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px;}
-    th { background: #2c3e50; color: white; padding: 12px 10px; text-align: left; }
-    td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #2c3e50; vertical-align: middle;}
-    
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 2px;}
-    .bg-green { background: #d5f5e3; color: #27ae60; } .bg-red { background: #fadbd8; color: #c0392b; } .bg-dark { background: #34495e; color: #fff; } .bg-yellow { background: #fcf3cf; color: #f39c12; }
-    
-    .action-btn { padding: 6px 10px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.8rem; margin-right:5px; margin-bottom:5px; transition: 0.2s;}
+    .action-btn { padding: 6px 10px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.8rem; margin-right: 5px; margin-bottom: 5px; transition: 0.2s; }
     .btn-block { background: #f39c12; } .btn-del { background: #e74c3c; } .btn-edit { background: #3498db; } .btn-reset { background: #9b59b6; }
 
-    .switch-wrap { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;}
+    .switch-wrap { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
     .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider-tg { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
     .slider-tg:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider-tg { background-color: #27ae60; } input:checked + .slider-tg:before { transform: translateX(22px); }
 
-    .live-dashboard { background: radial-gradient(circle at top right, #1a2536, #0b0f19); border-radius: 15px; padding: 20px; color: white; border: 2px solid #2ecc71; box-shadow: 0 10px 30px rgba(46, 204, 113, 0.2); margin-bottom: 20px;}
+    /* ========================================== */
+    /* 6. TABEL & LABEL (BADGE)                   */
+    /* ========================================== */
+    .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+    th { background: #2c3e50; color: white; padding: 12px 10px; text-align: left; }
+    td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #2c3e50; vertical-align: middle; }
+    
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 2px; }
+    .bg-green { background: #d5f5e3; color: #27ae60; } 
+    .bg-red { background: #fadbd8; color: #c0392b; } 
+    .bg-dark { background: #34495e; color: #fff; } 
+    .bg-yellow { background: #fcf3cf; color: #f39c12; }
+
+    /* ========================================== */
+    /* 7. LIVE DASHBOARD & KALKULATOR             */
+    /* ========================================== */
+    .live-dashboard { background: radial-gradient(circle at top right, #1a2536, #0b0f19); border-radius: 15px; padding: 20px; color: white; border: 2px solid #2ecc71; box-shadow: 0 10px 30px rgba(46, 204, 113, 0.2); margin-bottom: 20px; }
     .omset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
     @media (min-width: 768px) { .omset-grid { grid-template-columns: repeat(3, 1fr); } }
     .omset-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; text-align: center; }
@@ -86,44 +117,44 @@
     .dot-offline { background-color: #7f8c8d; box-shadow: none; }
     @keyframes blinker { 50% { opacity: 0; } }
 
-    .calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;}
-    .calc-item { background: #f8f9fa; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;}
-    .calc-title { font-size: 0.65rem; color: #7f8c8d; font-weight: 900; letter-spacing: 1px;}
-    .calc-val { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 0.95rem; color: #2c3e50; margin-top: 5px;}
+    .calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+    .calc-item { background: #f8f9fa; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; }
+    .calc-title { font-size: 0.65rem; color: #7f8c8d; font-weight: 900; letter-spacing: 1px; }
+    .calc-val { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 0.95rem; color: #2c3e50; margin-top: 5px; }
     .calc-total { background: #9b59b6; color: white; padding: 15px; border-radius: 8px; text-align: center; }
     
-    .slider-container { background: #2c3e50; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center; border: 2px solid #3498db;}
+    .slider-container { background: #2c3e50; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center; border: 2px solid #3498db; }
     .slider-custom { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #34495e; outline: none; margin: 15px 0; }
-    .slider-custom::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; border-radius: 50%; background: #3498db; cursor: pointer; border: 3px solid #fff;}
-    .s-res-val { color: #f1c40f; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: bold; margin-top: 5px;}
+    .slider-custom::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 25px; border-radius: 50%; background: #3498db; cursor: pointer; border: 3px solid #fff; }
+    .s-res-val { color: #f1c40f; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: bold; margin-top: 5px; }
 
-    .inbox-list { max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;}
-    .inbox-item { padding: 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center;}
-    .chat-body { flex: 1; padding: 20px; overflow-y: auto; background: #ecf0f1; display: flex; flex-direction: column; gap: 10px; height: 400px; border: 1px solid #bdc3c7; border-radius: 8px; margin-bottom: 10px;}
-    .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 0.85rem; line-height: 1.4;}
-    .chat-user { background: #fff; align-self: flex-start; border-bottom-left-radius: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #2c3e50;}
-    .chat-admin { background: #d5f5e3; align-self: flex-end; border-bottom-right-radius: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #1e8449;}
-    .chat-footer { display: flex; gap: 10px; align-items: flex-end;}
+    /* ========================================== */
+    /* 8. CHAT & MODAL POPUPS                     */
+    /* ========================================== */
+    .inbox-list { max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+    .inbox-item { padding: 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .chat-body { flex: 1; padding: 20px; overflow-y: auto; background: #ecf0f1; display: flex; flex-direction: column; gap: 10px; height: 400px; border: 1px solid #bdc3c7; border-radius: 8px; margin-bottom: 10px; }
+    .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 0.85rem; line-height: 1.4; }
+    .chat-user { background: #fff; align-self: flex-start; border-bottom-left-radius: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #2c3e50; }
+    .chat-admin { background: #d5f5e3; align-self: flex-end; border-bottom-right-radius: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #1e8449; }
+    .chat-footer { display: flex; gap: 10px; align-items: flex-end; }
     
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
-    .modal-card { background: #fff; border-radius: 15px; width: 90%; max-width: 500px; padding: 25px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;}
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .modal-card { background: #fff; border-radius: 15px; width: 90%; max-width: 500px; padding: 25px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
     
     .chk-wd { width: 20px; height: 20px; cursor: pointer; }
     .akses-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #bdc3c7; }
     .akses-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: bold; color: #2c3e50; }
-
-    html { font-size: 13px; }
-    @media screen and (min-width: 360px) { html { font-size: 14px; } }
-    @media screen and (min-width: 414px) { html { font-size: 15px; } }
-    @media screen and (min-width: 500px) { html { font-size: 16.5px; } }
   </style>
 </head>
 <body>
 
+  <!-- TOAST NOTIFICATION -->
   <div id='toastBox' style='position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#2ecc71; color:white; padding:12px 25px; border-radius:30px; font-size:0.85rem; font-weight:bold; z-index:999999; opacity:0; visibility:hidden; transition:0.4s; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.2);'>
       <span id='toastMsg'>Pesan</span>
   </div>
 
+  <!-- HALAMAN LOGIN -->
   <div id='login-screen'>
       <div class='login-card'>
           <h2><i class='fa-solid fa-server'></i> CIS COMMAND</h2>
@@ -137,7 +168,9 @@
           <div style='margin-top: 20px; font-size: 0.8rem; color: #bdc3c7;'>Lupa Password? <a href='#' onclick='lupaPasswordMaster()' style='color: #f1c40f; text-decoration: none; font-weight: bold;'>Reset via Email</a></div>
       </div>
   </div>
-
+  <!-- ========================================== -->
+  <!-- MENU UTAMA (DASHBOARD)                     -->
+  <!-- ========================================== -->
   <div class='container' id='mainDashboard' style='display:none;'>
     <div class='main-header'>
       <h1><i class='fa-solid fa-server'></i> PORTAL ADMIN</h1>
@@ -163,6 +196,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: BUKU KAS INDUK                     -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-akuntansi'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Akuntansi &amp; Buku Kas Induk</div>
     <div class='screen-content'>
@@ -188,6 +224,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: LIVE MONITOR & OMSET               -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-live'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Live Monitor &amp; Omset</div>
     <div class='screen-content'>
@@ -214,6 +253,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: MANAJEMEN C-PANEL                  -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-cpanel'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Akses C-Panel</div>
     <div class='screen-content'>
@@ -227,6 +269,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: SETTING PAKET & HASHRATE           -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-paket'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Paket &amp; Hashrate</div>
     <div class='screen-content'>
@@ -261,6 +306,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: SISTEM APLIKASI & PENDAFTARAN      -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-sistem'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
@@ -279,6 +327,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: GLOBAL STATS                       -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-stats'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
     <div class='screen-content'>
@@ -286,6 +337,9 @@
     </div>
   </div>
   
+  <!-- ========================================== -->
+  <!-- SCREEN: PABRIK TOKEN                       -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-pabrik'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pabrik Token</div>
     <div class='screen-content'>
@@ -304,6 +358,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: MANAJEMEN TIM                      -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-team'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
     <div class='screen-content'>
@@ -320,6 +377,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: DATA MINER & DANGER ZONE           -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-miner'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Data Miner &amp; Kendali Akun</div>
     <div class='screen-content'>
@@ -327,11 +387,20 @@
       <div class='card-panel' style='border-top: 5px solid #e74c3c;'>
         <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;'><h4 style='margin:0; color:#e74c3c;'><i class='fa-solid fa-server'></i> Database User</h4><input id='searchUser' onkeyup='cariUserAdmin()' placeholder='Cari User/Email...' style='width:200px; padding:8px; border-radius:5px; border:1px solid #bdc3c7;' type='text'></div>
         <div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Info Member</th><th>Data Akun (Bisa Diedit)</th><th>Status &amp; Akses</th></tr></thead><tbody id='tblUser'><tr><td colspan='4'>Memuat...</td></tr></tbody></table></div>
-        <div style='margin-top:30px; border:2px dashed #c0392b; padding:15px; border-radius:10px; background:#fadbd8;'><h4 style='color:#c0392b; margin-top:0;'><i class='fa-solid fa-skull-crossbones'></i> DANGER ZONE (ZONA BERBAHAYA)</h4><div class='switch-wrap' style='background:white; border-color:#e74c3c;'><div><b style='color:#c0392b;'>Buka Kunci Master Reset</b></div><label class='switch'><input id='unlockReset' onchange='toggleMasterReset()' type='checkbox'><span class='slider-tg' style='background-color:#ccc;'></span></label></div><button class='btn-main' disabled='true' id='btnMasterReset' onclick='masterReset()' style='background:#c0392b; opacity:0.5; cursor:not-allowed;'><i class='fa-solid fa-triangle-exclamation'></i> EKSEKUSI MASTER RESET</button></div>
+        
+        <!-- MASTER RESET / DANGER ZONE -->
+        <div style='margin-top:30px; border:2px dashed #c0392b; padding:15px; border-radius:10px; background:#fadbd8;'>
+            <h4 style='color:#c0392b; margin-top:0;'><i class='fa-solid fa-skull-crossbones'></i> DANGER ZONE (ZONA BERBAHAYA)</h4>
+            <div class='switch-wrap' style='background:white; border-color:#e74c3c;'><div><b style='color:#c0392b;'>Buka Kunci Master Reset</b></div><label class='switch'><input id='unlockReset' onchange='toggleMasterReset()' type='checkbox'><span class='slider-tg' style='background-color:#ccc;'></span></label></div>
+            <button class='btn-main' disabled='true' id='btnMasterReset' onclick='masterReset()' style='background:#c0392b; opacity:0.5; cursor:not-allowed;'><i class='fa-solid fa-triangle-exclamation'></i> EKSEKUSI MASTER RESET</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: ANTREAN WD (APPROVAL)              -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-approval'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Antrean Persetujuan WD</div>
     <div class='screen-content'>
@@ -343,6 +412,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: AUDIT KEAMANAN                     -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-audit'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Keamanan &amp; Audit (Anti-Curang)</div>
     <div class='screen-content'>
@@ -351,6 +423,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: INBOX CHAT & BANTUAN               -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-chat'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Inbox Bantuan</div>
     <div class='screen-content'>
@@ -359,6 +434,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: INJEKSI REWARD                     -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-reward'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
     <div class='screen-content'>
@@ -366,6 +444,9 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- SCREEN: PENGUMUMAN / NOTIFIKASI            -->
+  <!-- ========================================== -->
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
@@ -373,7 +454,9 @@
     </div>
   </div>
 
-  <!-- MODAL POPUP LAINNYA -->
+  <!-- ========================================== -->
+  <!-- MODALS (JENDELA POP-UP OVERLAY)            -->
+  <!-- ========================================== -->
   <div class='modal-overlay' id='modalJaringan' style='z-index:9999;'>
     <div class='modal-card' style='max-width: 500px; max-height: 80vh; display: flex; flex-direction: column; background:#fff;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#3498db; font-family:Orbitron; margin:0;'><i class='fa-solid fa-network-wired'></i> POHON JARINGAN</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalJaringan").style.display="none"' style='cursor:pointer; color:#e74c3c; font-size:1.2rem;'></i></div><div style='background:#2c3e50; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center;'><span style='color:#bdc3c7; font-size:0.8rem;'>Sponsor Utama:</span><br/><b id='sponsorUtama' style='color:#f1c40f; font-size:1.1rem;'>NamaUser</b></div><div id='jaringanList' style='overflow-y:auto; flex:1; padding-right:5px;'></div></div>
   </div>
@@ -389,9 +472,14 @@
   <div class='modal-overlay' id='modalLacakUser' style='z-index:10001;'>
     <div class='modal-card' style='max-width: 400px;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#8e44ad; margin:0;'><i class='fa-solid fa-satellite-dish'></i> Lacak Perangkat</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalLacakUser").style.display="none"' style='cursor:pointer; color:#e74c3c; font-size:1.2rem;'></i></div><div style='background:#162032; padding:15px; border-radius:8px; border:1px dashed #8e44ad;'><div style='text-align:center; margin-bottom:15px;'><span style='color:#bdc3c7; font-size:0.8rem;'>Target User:</span><br/><b id='trackUserTitle' style='color:#fff; font-size:1.1rem;'>NamaUser</b></div><div style='margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:10px;'><div style='font-size:0.75rem; color:#94a3b8;'>Perangkat &amp; OS:</div><div id='trackDevice' style='color:#f1c40f; font-weight:bold;'>-</div></div><div style='margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:10px;'><div style='font-size:0.75rem; color:#94a3b8;'>IP Address:</div><div id='trackIP' style='color:#00f2fe; font-weight:bold;'>-</div></div><div style='margin-bottom:10px; border-bottom:1px solid #334155; padding-bottom:10px;'><div style='font-size:0.75rem; color:#94a3b8;'>Lokasi:</div><div id='trackLocation' style='color:#2ecc71; font-weight:bold;'>-</div></div><div><div style='font-size:0.75rem; color:#94a3b8;'>Provider Internet (ISP):</div><div id='trackISP' style='color:#e2e8f0; font-weight:bold;'>-</div></div></div><button class='btn-main' onclick='document.getElementById("modalLacakUser").style.display="none"' style='background:#334155; margin-top:15px;'>TUTUP PENCARIAN</button></div>
   </div>
-  
+  <!-- ========================================== -->
+  <!-- MESIN JAVASCRIPT & FIREBASE CORE           -->
+  <!-- ========================================== -->
   <script type='module'>
 
+    // ==========================================
+    // 1. PENGAMANAN & ANTI-HACK DASAR
+    // ==========================================
     if (window.top !== window.self) window.top.location = window.self.location;
     window.isSecurityActive = true; 
 
@@ -399,25 +487,36 @@
     document.addEventListener('keydown', e => { if(window.isSecurityActive) { if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; } if (e.ctrlKey && ['u','U','s','S','p','P'].includes(e.key)) { e.preventDefault(); return false; } if (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) { e.preventDefault(); return false; } } });
     document.addEventListener('dragstart', e => { if(window.isSecurityActive) e.preventDefault(); });
 
+    // ==========================================
+    // 2. VARIABEL GLOBAL & HELPER FORMAT
+    // ==========================================
     let globalVrscPriceIdr = 0; let globalVrscPriceUsdt = 0;
     let globalSpeedMultiplier = 1.0; 
+    let currentAdminRole = ""; let currentAdminAkses = [];
+    
     function formatKripto(angka) { return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 10 }).format(angka); }
     function getFloatVal(id) { let el = document.getElementById(id); if (!el) return 0; let val = el.value.toString().trim().replace(/%/g, '').replace(/,/g, '.'); let parts = val.split('.'); if (parts.length > 2) { val = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1]; } return parseFloat(val) || 0; }
     function formatTanggalJam(ts) { if(!ts) return "<span style='color:#bdc3c7'>-</span>"; let d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) + " WIB"; }
 
+    // ==========================================
+    // 3. KONTROL UI (NAVIGASI & TOAST)
+    // ==========================================
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
         if(id === 'scr-team') window.loadDataTim(); 
-        if(id === 'scr-approval') window.switchTabWd('pending'); 
+        if(id === 'scr-approval' && typeof window.switchTabWd === 'function') window.switchTabWd('pending'); 
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner') window.loadUser();
-        if(id === 'scr-chat') window.loadInbox();
+        if(id === 'scr-chat' && typeof window.loadInbox === 'function') window.loadInbox();
     };
     
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; if(typeof window.closeChat === 'function') window.closeChat(); };
     window.showToast = (msg) => { const box = document.getElementById('toastBox'); document.getElementById('toastMsg').innerText = msg; box.style.opacity = 1; box.style.visibility = 'visible'; box.style.top = '50px'; setTimeout(() => { box.style.opacity = 0; box.style.visibility = 'hidden'; box.style.top = '20px'; }, 3000); };
 
+    // ==========================================
+    // 4. INIT FIREBASE
+    // ==========================================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, runTransaction, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
@@ -425,8 +524,9 @@
     const app = initializeApp({ apiKey: "AIzaSyAbCd6ybj0jG5pykMyjQo5wetNhLRTDAbA", authDomain: "cis-server-utama.firebaseapp.com", projectId: "cis-server-utama", storageBucket: "cis-server-utama.firebasestorage.app", messagingSenderId: "70183885296", appId: "1:70183885296:web:01ff52b10937fe0684a535" });
     const db = getFirestore(app); const storage = getStorage(app);
 
-    let currentAdminRole = ""; let currentAdminAkses = [];
-
+    // ==========================================
+    // 5. SISTEM LOGIN & OTENTIKASI ADMIN
+    // ==========================================
     window.togglePassMaster = (id, icon) => { const inp = document.getElementById(id); if (inp.type === 'password') { inp.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { inp.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } };
     window.lupaPasswordMaster = () => { window.location.href = "mailto:admin.centere@gmail.com?subject=REQUEST RESET PASSWORD MASTER CIS&body=Halo Tim IT / Super Admin,%0A%0AMohon bantu reset password untuk akses Master Pusat / C-Panel saya.%0A%0ATerima kasih."; };
 
@@ -460,6 +560,9 @@
 
     window.logoutAdmin = () => { currentAdminRole = ""; currentAdminAkses = []; localStorage.removeItem("cisAdminLog"); document.getElementById('mainDashboard').style.display = 'none'; document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('logUser').value = ""; document.getElementById('logPass').value = ""; let btn = document.getElementById('btnLogin'); btn.innerText = "SECURE LOGIN"; btn.disabled = false; document.getElementById('login-screen').style.display = 'flex'; };
 
+    // ==========================================
+    // 6. MANAJEMEN C-PANEL (ASISTEN)
+    // ==========================================
     window.toggleAksesMenu = () => { let role = document.getElementById('addAdminRole').value; if(role === 'CPANEL') document.getElementById('wrapAksesCpanel').style.display = 'block'; else document.getElementById('wrapAksesCpanel').style.display = 'none'; };
 
     window.eksekusiBuatAdmin = async () => {
@@ -492,6 +595,9 @@
 
     window.hapusAdmin = async (id, nama) => { if(confirm(`Yakin ingin menghapus akses untuk admin: ${nama}?`)) { await deleteDoc(doc(db, "Akun_Admin", id)); showToast("Admin dihapus."); window.loadDaftarAdmin(); } };
 
+    // ==========================================
+    // 7. AKUNTANSI & BUKU KAS INDUK
+    // ==========================================
     window.loadAkuntansiPusat = async () => {
         const tbody = document.getElementById('tblAkuntansiPusat');
         tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Mensinkronkan Buku Kas...</td></tr>";
@@ -510,6 +616,9 @@
         } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat buku kas pusat.</td></tr>"; }
     };
 
+    // ==========================================
+    // 8. LIVE MONITOR & TRACKER
+    // ==========================================
     let liveUsersMap = new Map(); let omsetUpdateInterval = null;
     window.initLiveMonitor = () => {
         onSnapshot(collection(db, "Akun_Publik"), (snap) => {
@@ -551,6 +660,9 @@
       } catch(e){ console.error("Gagal menarik harga VRSC", e); }
     }
 
+    // ==========================================
+    // 9. SETTING PAKET & KALKULATOR HASHRATE
+    // ==========================================
     window.updateHashSlider = function() { let mhs = document.getElementById('slideHash').value; document.getElementById('valSliderMhs').innerText = mhs + " MH/s"; let baseVrscRewardPerMhs = 0.015; let vrscPerHari = mhs * baseVrscRewardPerMhs; let rpPerHari = Math.floor(vrscPerHari * globalVrscPriceIdr); let speedCIS = vrscPerHari / 86400; document.getElementById('valHashDoge').innerText = vrscPerHari.toFixed(2) + " VRSC"; document.getElementById('valHashRp').innerText = "Rp " + rpPerHari.toLocaleString('id-ID'); document.getElementById('valSpeedCIS').innerText = speedCIS.toFixed(8) + " D/s"; };
     window.salinSpeedKeForm = function() { let textSpeed = document.getElementById('valSpeedCIS').innerText.replace(" D/s", ""); document.getElementById('setSpeed').value = parseFloat(textSpeed); window.hitungKalkulator(); };
 
@@ -565,11 +677,19 @@
       let roiEl = document.getElementById('resRoi'); if (nominal > 0) { roiEl.innerHTML = profitRp >= 0 ? `<span style="color:#2ecc71;">+ Rp ${profitRp.toLocaleString('id-ID')} (${roiPersen}%)</span>` : `<span style="color:#e74c3c;">- Rp ${Math.abs(profitRp).toLocaleString('id-ID')} (${roiPersen}%)</span>`; } else { roiEl.innerHTML = "-"; }
     };
 
-    async function loadGlobalStats() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('statInpOnline').value = data.online || 1204; document.getElementById('statInpReg').value = data.registered || 8450; document.getElementById('statInpWd').value = data.withdrawn || 452890; } }
-    window.simpanGlobalStats = async () => { let onl = parseInt(document.getElementById('statInpOnline').value) || 0; let reg = parseInt(document.getElementById('statInpReg').value) || 0; let wd = parseInt(document.getElementById('statInpWd').value) || 0; let hargaManual = getFloatVal('setHarga') || 2500; const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: wd, harga_doge_pusat: hargaManual }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); alert("Statistik & Harga Live Berhasil Disinkronkan ke User!"); } catch(e) { alert("Gagal Simpan!"); } };
+    window.loadPaket = async () => { const tbody = document.getElementById('tblPaket'); tbody.innerHTML = ''; const snap = await getDocs(query(collection(db, "Config_Mining"), orderBy("nominal", "asc"))); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada paket.</td></tr>"; return; } let no = 1; snap.forEach(d => { const p = d.data(); let waktu = formatTanggalJam(p.dibuat_pada); let speedTampil = new Intl.NumberFormat('en-US', { maximumFractionDigits: 10 }).format(p.speed); tbody.innerHTML += `<tr><td style='text-align:center; font-weight:bold;'>${no++}</td><td style='font-size:0.75rem; color:#7f8c8d;'>${waktu}</td><td><b>Rp ${p.nominal.toLocaleString('id-ID')}</b></td><td><span style='color:#9b59b6; font-weight:900;'>${speedTampil} D/s</span><br/><span style='font-size:0.75rem;'>${p.durasi_hari} Hari</span></td><td><button class='action-btn btn-del' onclick='window.delPaket("${d.id}")'><i class='fa-solid fa-trash'></i></button></td></tr>`; }); }
+    
+    document.getElementById('btnSimpanPaket').addEventListener('click', async () => { const n = getFloatVal('setNominal'); const s = getFloatVal('setSpeed'); const h = parseInt(document.getElementById('setHari').value); if(!n || !s || !h) { alert("Isi form Nominal, Speed, dan Durasi!"); return; } const btn = document.getElementById('btnSimpanPaket'); btn.innerText = "Menyimpan..."; await addDoc(collection(db, "Config_Mining"), { nominal: n, speed: s, durasi_hari: h, dibuat_pada: serverTimestamp() }); showToast("Paket Tersimpan!"); loadPaket(); btn.innerHTML = "Simpan Paket ke Database"; document.getElementById('setNominal').value = ""; document.getElementById('setSpeed').value = ""; document.getElementById('setHari').value = "30"; prevNominal = 0; window.hitungKalkulator(); });
+    window.delPaket = async (id) => { if(confirm("Hapus paket ini?")) { await deleteDoc(doc(db, "Config_Mining", id)); loadPaket(); } };
 
     async function loadSpeedMultiplier() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); if(!snap.empty) { const data = snap.docs[0].data(); globalSpeedMultiplier = data.multiplier || 1.0; let inpMultiplier = document.getElementById('inpSpeedMultiplier'); if(inpMultiplier) inpMultiplier.value = globalSpeedMultiplier; } }
     window.simpanSpeedMultiplier = async () => { let multiplierVal = parseFloat(document.getElementById('inpSpeedMultiplier').value) || 1.0; if(multiplierVal <= 0) { alert("Pengali kecepatan tidak boleh 0 atau minus!"); return; } const btn = document.querySelector(`button[onclick='simpanSpeedMultiplier()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); let payload = { tipe: "SPEED_MULTIPLIER", multiplier: multiplierVal }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); globalSpeedMultiplier = multiplierVal; showToast("Kecepatan Global Berhasil Diupdate!"); } catch(e) { alert("Gagal menyimpan pengaturan kecepatan."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Update Kecepatan Global"; btn.disabled = false; };
+
+    // ==========================================
+    // 10. SYSTEM CONFIG (PENDAFTARAN & GAME)
+    // ==========================================
+    async function loadGlobalStats() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('statInpOnline').value = data.online || 1204; document.getElementById('statInpReg').value = data.registered || 8450; document.getElementById('statInpWd').value = data.withdrawn || 452890; } }
+    window.simpanGlobalStats = async () => { let onl = parseInt(document.getElementById('statInpOnline').value) || 0; let reg = parseInt(document.getElementById('statInpReg').value) || 0; let wd = parseInt(document.getElementById('statInpWd').value) || 0; let hargaManual = getFloatVal('setHarga') || 2500; const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: wd, harga_doge_pusat: hargaManual }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); alert("Statistik & Harga Live Berhasil Disinkronkan ke User!"); } catch(e) { alert("Gagal Simpan!"); } };
 
     async function loadConfigPendaftaran() {
         const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REGISTRATION")));
@@ -584,6 +704,7 @@
             if(spClaim) spClaim.value = data.persentase_bonus_claim || 0; if(spTopup) spTopup.value = data.persentase_bonus_topup || 0;
         }
     }
+    
     window.simpanConfigPendaftaran = async () => {
         let isReqReg = document.getElementById('toggleAktivasiReg').checked; let freeDays = parseInt(document.getElementById('inpHariGratis').value) || 0; let isReqPerpanjang = document.getElementById('togglePerpanjang').checked; let isDeviceLock = document.getElementById('toggleDeviceLock').checked; let bSpeed = getFloatVal('regBonusSpeed'); let spClaim = getFloatVal('inpSponsorClaim'); let spTopup = getFloatVal('inpSponsorTopup');
         const btn = document.querySelector(`button[onclick='simpanConfigPendaftaran()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
@@ -595,10 +716,9 @@
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let valReward = getFloatVal('inpRewardGame'); let valBonus = getFloatVal('inpBonusGame'); let jamMulai = document.getElementById('inpJamMulai').value || "00:00"; let jamSelesai = document.getElementById('inpJamSelesai').value || "00:00"; const btn = document.querySelector(`button[onclick='simpanConfigGame()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); let payload = { tipe: "GAME_CONFIG", reward_claim: valReward, bonus_claim: valBonus, jam_mulai: jamMulai, jam_selesai: jamSelesai }; if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Diperbarui!"); } catch (e) { alert("Gagal menyimpan konfigurasi game."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Reward Game"; btn.disabled = false; };
 
-    window.loadPaket = async () => { const tbody = document.getElementById('tblPaket'); tbody.innerHTML = ''; const snap = await getDocs(query(collection(db, "Config_Mining"), orderBy("nominal", "asc"))); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada paket.</td></tr>"; return; } let no = 1; snap.forEach(d => { const p = d.data(); let waktu = formatTanggalJam(p.dibuat_pada); let speedTampil = new Intl.NumberFormat('en-US', { maximumFractionDigits: 10 }).format(p.speed); tbody.innerHTML += `<tr><td style='text-align:center; font-weight:bold;'>${no++}</td><td style='font-size:0.75rem; color:#7f8c8d;'>${waktu}</td><td><b>Rp ${p.nominal.toLocaleString('id-ID')}</b></td><td><span style='color:#9b59b6; font-weight:900;'>${speedTampil} D/s</span><br/><span style='font-size:0.75rem;'>${p.durasi_hari} Hari</span></td><td><button class='action-btn btn-del' onclick='window.delPaket("${d.id}")'><i class='fa-solid fa-trash'></i></button></td></tr>`; }); }
-    document.getElementById('btnSimpanPaket').addEventListener('click', async () => { const n = getFloatVal('setNominal'); const s = getFloatVal('setSpeed'); const h = parseInt(document.getElementById('setHari').value); if(!n || !s || !h) { alert("Isi form Nominal, Speed, dan Durasi!"); return; } const btn = document.getElementById('btnSimpanPaket'); btn.innerText = "Menyimpan..."; await addDoc(collection(db, "Config_Mining"), { nominal: n, speed: s, durasi_hari: h, dibuat_pada: serverTimestamp() }); showToast("Paket Tersimpan!"); loadPaket(); btn.innerHTML = "Simpan Paket ke Database"; document.getElementById('setNominal').value = ""; document.getElementById('setSpeed').value = ""; document.getElementById('setHari').value = "30"; prevNominal = 0; window.hitungKalkulator(); });
-    window.delPaket = async (id) => { if(confirm("Hapus paket ini?")) { await deleteDoc(doc(db, "Config_Mining", id)); loadPaket(); } };
-
+    // ==========================================
+    // 11. PABRIK TOKEN & DISTRIBUSI TIM
+    // ==========================================
     document.getElementById('btnCetakToken').addEventListener('click', async () => {
       const tim = document.getElementById('distTim').value; 
       const nom = parseInt(document.getElementById('nomToken').value); 
@@ -671,6 +791,9 @@
         try { const snap = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim))); for (const d of snap.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } showToast(`Data ${tim} berhasil di-reset!`); window.loadDataTim(); } catch (e) { alert(`Gagal mereset data ${tim}.`); } btn.innerHTML = oldText; btn.disabled = false;
     };
 
+    // ==========================================
+    // 12. DATA MINER & KENDALI AKUN (DANGER ZONE)
+    // ==========================================
     let allUsersData = [];
     window.cariUserAdmin = () => { let input = document.getElementById('searchUser').value.toLowerCase(); let rows = document.querySelectorAll('#tblUser tr'); rows.forEach(row => { let text = row.innerText.toLowerCase(); row.style.display = text.includes(input) ? '' : 'none'; }); };
 
@@ -709,14 +832,18 @@
     window.lihatMutasiUser = async (email, username) => { document.getElementById('mutasiUserTitle').innerText = "Buku Besar: " + (username || email); document.getElementById('modalMutasiUser').style.display = 'flex'; const tbody = document.getElementById('tblMutasiUser'); tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data transaksi...</td></tr>"; try { const snap = await getDocs(query(collection(db, "Mutasi_Mining"), where("email", "==", email))); let dataArr = []; snap.forEach(d => dataArr.push(d.data())); dataArr.sort((a, b) => (b.timestamp_local || 0) - (a.timestamp_local || 0)); if(dataArr.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#7f8c8d;'>Tidak ada riwayat mutasi untuk user ini.</td></tr>"; return; } let html = ""; dataArr.slice(0, 100).forEach(x => { let tgl = new Date(x.timestamp_local).toLocaleString('id-ID'); let cl = x.jenis === "IN" ? "#27ae60" : "#c0392b"; let sign = x.jenis === "IN" ? "+" : "-"; let formatUang = x.deskripsi.toLowerCase().includes("reward") || x.deskripsi.toLowerCase().includes("sponsor") || x.deskripsi.toLowerCase().includes("upgrade") || x.deskripsi.toLowerCase().includes("yield") ? `${formatKripto(x.nominal || 0)} VRSC` : `Rp ${(x.nominal||0).toLocaleString('id-ID')}`; html += `<tr><td style='font-size:0.75rem; color:#7f8c8d;'>${tgl}</td><td style='font-size:0.8rem; font-weight:bold; color:#2c3e50;'>${x.deskripsi}</td><td style='color:${cl}; font-weight:900;'>${sign}${formatUang}</td></tr>`; }); tbody.innerHTML = html; } catch(e) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; console.error(e); } };
 
     window.loginAsUser = (email, pass) => { alert(`🚪 PINTU MASUK AKUN (IMPERSONATE)\n\nEmail: ${email}\nPassword: ${pass}`); };
+    
     window.lihatJaringan = (username) => { if(!username || username === "undefined") return alert("User ini tidak memiliki username yang valid."); document.getElementById('sponsorUtama').innerText = username; document.getElementById('modalJaringan').style.display = 'flex'; let html = buildTreeHTML(username, 1); if(html === "") html = "<div style='text-align:center; color:#95a5a6; padding:20px;'><i class='fa-solid fa-folder-open'></i> Belum ada downline.</div>"; document.getElementById('jaringanList').innerHTML = html; };
 
     function buildTreeHTML(sponsorName, level) { let html = ""; let downlines = allUsersData.filter(u => u.referred_by === sponsorName); if(downlines.length > 0) { downlines.forEach(d => { let padding = (level - 1) * 20; let speed = (d.kecepatan_hash || 0).toFixed(6); html += `<div style='margin-left:${padding}px; border-left:2px solid #3498db; padding-left:15px; margin-bottom:10px; position:relative;'><div style='position:absolute; left:-2px; top:15px; width:15px; height:2px; background:#3498db;'></div><div style='background:#f8f9fa; padding:10px; border-radius:8px; border:1px solid #bdc3c7;'><b style='color:#2c3e50; font-size:0.9rem;'>${d.username || 'No-Name'}</b> <span class='badge' style='background:#f39c12; color:#000; font-size:0.55rem;'>Level ${level}</span><br/><small style='color:#2ecc71; font-weight:bold;'><i class='fa-solid fa-bolt'></i> ${speed} D/s</small></div></div>`; html += buildTreeHTML(d.username, level + 1); }); } return html; }
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
+    
     window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\n\nSeluruh riwayat Hashrate, Saldo Rupiah/VRSC, Gudang Token, Mutasi, Notifikasi, dan Request WD milik user [${email}] akan dihapus permanen. \n\nLanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_doge: 0 }); const qT = query(collection(db, "Database_Token"), where("pemilik", "==", email)); const snapT = await getDocs(qT); for (const d of snapT.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } const qM = query(collection(db, "Mutasi_Mining"), where("email", "==", email)); const snapM = await getDocs(qM); for (const d of snapM.docs) { await deleteDoc(doc(db, "Mutasi_Mining", d.id)); } const qN = query(collection(db, "Notifikasi_Personal"), where("email", "==", email)); const snapN = await getDocs(qN); for (const d of snapN.docs) { await deleteDoc(doc(db, "Notifikasi_Personal", d.id)); } const qW = query(collection(db, "Request_Withdraw"), where("email_pemohon", "==", email)); const snapW = await getDocs(qW); for (const d of snapW.docs) { await deleteDoc(doc(db, "Request_Withdraw", d.id)); } showToast(`Data akun ${email} berhasil di-reset total layaknya baru mendaftar!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat mencoba me-reset user."); } };
+    
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
+    
     window.masterReset = async () => { 
         if(!document.getElementById('unlockReset').checked) return alert("Buka kunci terlebih dahulu!"); 
         if(!confirm("PERINGATAN SANGAT KERAS!\n\nSeluruh data member, token, dan riwayat akan DIHAPUS PERMANEN dari database.\n\nSistem akan kembali seperti baru diinstal.\n\nLanjutkan?")) return; 
@@ -727,59 +854,45 @@
         btn.disabled = true; 
         
         try { 
-            // 1. HAPUS SEMUA MEMBER (KOSONGKAN TOTAL)
             const snapU = await getDocs(collection(db, "Akun_Publik")); 
-            for (const d of snapU.docs) { 
-                await deleteDoc(doc(db, "Akun_Publik", d.id)); 
-            } 
+            for (const d of snapU.docs) { await deleteDoc(doc(db, "Akun_Publik", d.id)); } 
 
-            // 2. CIPTAKAN AKUN 01 (AKUN INDUK ABADI)
-            // Akun ini otomatis dibuat dengan status AKTIF dan kebal terhadap Reset!
             await addDoc(collection(db, "Akun_Publik"), {
-                username: "CIS01",           // Ini adalah Username Upline Utama
-                email: "cis01@gmail.com",    // Email login Akun 01
-                wa: "6281234567890",
-                password: "admin",           // Password login Akun 01
-                tx_pin: "123456",            // PIN Transaksi awal
-                referred_by: "MASTER",       // Tanpa Upline (Dari Master)
-                saldo_doge: 0,
-                kecepatan_hash: 0,
-                expired_at: Date.now() + (365 * 86400000), // Otomatis aktif 1 Tahun!
-                status_akun: "AKTIF",
-                edit_user: 0,
-                edit_email: 0,
-                created_at: serverTimestamp(),
-                saldo_rupiah: 0,
-                total_bonus_sponsor_doge: 0,
-                device_id: ""
+                username: "CIS01", email: "cis01@gmail.com", wa: "6281234567890", password: "admin", tx_pin: "123456", referred_by: "MASTER", 
+                saldo_doge: 0, kecepatan_hash: 0, expired_at: Date.now() + (365 * 86400000), status_akun: "AKTIF", edit_user: 0, edit_email: 0, 
+                created_at: serverTimestamp(), saldo_rupiah: 0, total_bonus_sponsor_doge: 0, device_id: ""
             });
 
-            // 3. HAPUS SEMUA KOLEKSI LOG, TOKEN, & SETTINGAN (SAPU JAGAT)
-            const listKoleksi = [
-                "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", 
-                "Notifikasi_Personal", "Notifikasi_Global", 
-                "Request_Withdraw", "Pesan_Bantuan", "System_Config"
-            ]; 
-
+            const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config" ]; 
             for (const namaKoleksi of listKoleksi) { 
                 const snap = await getDocs(collection(db, namaKoleksi)); 
-                for (const d of snap.docs) { 
-                    await deleteDoc(doc(db, namaKoleksi, d.id)); 
-                } 
+                for (const d of snap.docs) { await deleteDoc(doc(db, namaKoleksi, d.id)); } 
             } 
             
             alert("🚀 FACTORY RESET BERHASIL!\n\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan sebagai Upline Perdana."); 
-            
-            // 4. SAPU BERSIH CACHE ADMIN & HARD RELOAD
             window.location.href = window.location.href;
-
         } catch(e) { 
-            alert("❌ Gagal total! Pastikan koneksi internet stabil."); 
-            console.error(e);
-            btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; 
-            btn.disabled = false;
+            alert("❌ Gagal total! Pastikan koneksi internet stabil."); console.error(e);
+            btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; btn.disabled = false;
         } 
     };
+
+    // ==========================================
+    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI)
+    // ==========================================
+    window.addEventListener('load', () => {
+        let savedSession = localStorage.getItem("cisAdminLog");
+        if (savedSession) {
+            try {
+                let data = JSON.parse(savedSession);
+                // Langsung masukkan admin ke dalam tanpa perlu login ulang!
+                prosesSuksesLogin(data.role, data.aksesArr, data.nama);
+            } catch(e) {
+                // Jika memori rusak, hapus paksa
+                localStorage.removeItem("cisAdminLog");
+            }
+        }
+    });
 
   </script>
 </body>
