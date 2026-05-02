@@ -718,6 +718,7 @@
             let tgReg = document.getElementById('toggleAktivasiReg'); if(tgReg) tgReg.checked = data.req_token === true;
             let tgFree = document.getElementById('toggleFreemium'); if(tgFree) tgFree.checked = data.is_freemium === true;
             let inpHari = document.getElementById('inpHariGratis'); if(inpHari) inpHari.value = data.free_days !== undefined ? data.free_days : 30;
+            // ... (kode lainnya tetap sama)
             let tgPerpanjang = document.getElementById('togglePerpanjang'); if(tgPerpanjang) tgPerpanjang.checked = data.req_perpanjang !== false;
             let tgDevice = document.getElementById('toggleDeviceLock'); if(tgDevice) tgDevice.checked = data.device_lock_active !== false;
             let bSpeed = document.getElementById('regBonusSpeed'); if(bSpeed) bSpeed.value = data.bonus_speed || 0;
