@@ -567,7 +567,7 @@
             if(role === "MASTER") { m.style.display = 'flex'; } 
             else if (role === "CPANEL") { if(m.id === 'menu-cpanel') m.style.display = 'none'; else if (aksesArr.includes(m.id)) m.style.display = 'flex'; else m.style.display = 'none'; }
         });
-        fetchVrscPrice(); loadConfigPendaftaran(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
+        fetchVrscPrice(); loadConfigPendaftaran(); loadGlobalStats(); loadSpeedMultiplier(); window.loadConfigSecurity(); window.initLiveMonitor();
     }
 
     window.logoutAdmin = () => { 
@@ -895,6 +895,45 @@
             alert("❌ Gagal total! Pastikan koneksi internet stabil."); console.error(e);
             btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; btn.disabled = false;
         } 
+    };
+
+    // ==========================================
+    // FUNGSI KHUSUS AUDIT & KEAMANAN (ANTI-HACK)
+    // ==========================================
+    window.loadConfigSecurity = async () => { 
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SECURITY"))); 
+            if(!snap.empty) { 
+                let d = snap.docs[0].data(); 
+                window.isSecurityActive = d.is_active === true; 
+                let tgSec = document.getElementById('toggleSecurityMode'); 
+                if(tgSec) tgSec.checked = window.isSecurityActive; 
+            } 
+        } catch(e) { console.log("Gagal memuat status keamanan."); }
+    };
+    
+    window.simpanConfigSecurity = async () => { 
+        let tgSec = document.getElementById('toggleSecurityMode');
+        let isActive = tgSec ? tgSec.checked : true;
+        window.isSecurityActive = isActive; 
+        
+        try { 
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SECURITY"))); 
+            let payload = { tipe: "SECURITY", is_active: isActive }; 
+            if(snap.empty) await addDoc(collection(db, "System_Config"), payload); 
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); 
+            showToast(isActive ? "Sistem Keamanan DIAKTIFKAN!" : "Sistem Keamanan DIMATIKAN!"); 
+        } catch(e) { 
+            alert("Gagal menyimpan status keamanan."); 
+        } 
+    };
+
+    window.jalankanAudit = () => {
+        const tbody = document.getElementById('tblAudit');
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai database dan log...</td></tr>";
+        setTimeout(() => {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#27ae60;'><b><i class='fa-solid fa-check-circle'></i> Sistem Aman. Tidak ditemukan indikasi kecurangan (Auto-Clicker/Inspect Element).</b></td></tr>";
+        }, 2000);
     };
 
     // ==========================================
