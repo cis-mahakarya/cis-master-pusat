@@ -1008,7 +1008,7 @@
     };
 
     // ==========================================
-    // 14. MESIN ANTREAN WD & APPROVAL
+    // 13. MESIN ANTREAN WD & APPROVAL
     // ==========================================
     window.switchTabWd = (tab) => {
         if(tab === 'pending') {
@@ -1085,7 +1085,7 @@
     };
 
     // ==========================================
-    // FUNGSI KHUSUS AUDIT & KEAMANAN (ANTI-HACK)
+    // 14. FUNGSI KHUSUS AUDIT & KEAMANAN (ANTI-HACK)
     // ==========================================
     window.loadConfigSecurity = async () => { 
         try {
@@ -1124,7 +1124,7 @@
     };
 
     // ==========================================
-    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI)
+    // 15. AUTO-LOGIN (SISTEM PENGINGAT SESI)
     // ==========================================
     window.addEventListener('load', () => {
         let savedSession = localStorage.getItem("cisAdminLog");
@@ -1146,7 +1146,7 @@
         }
 
     // ==========================================
-    // MESIN INJEKSI REWARD (TOMBOL KIRIM)
+    // 16. MESIN INJEKSI REWARD (TOMBOL KIRIM)
     // ==========================================
     window.kirimReward = async () => {
         const target = document.getElementById('rewardTarget').value;
@@ -1222,6 +1222,48 @@
         }
 
         btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD";
+        btn.disabled = false;
+    };
+
+    // ==========================================
+    // 17. MESIN PENGUMUMAN GLOBAL (BROADCAST TOA)
+    // ==========================================
+    window.kirimPengumuman = async () => {
+        const pesan = document.getElementById('inputPengumuman').value.trim();
+        const btn = document.getElementById('btnKirimPengumuman');
+        const log = document.getElementById('logPengumuman');
+
+        if(!pesan) {
+            alert("Isi pesan pengumuman terlebih dahulu!");
+            return;
+        }
+
+        // Ubah tombol jadi loading
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGIRIM BROADCAST...";
+        btn.disabled = true;
+
+        try {
+            // Tembakkan ke Firebase koleksi Notifikasi_Global
+            await addDoc(collection(db, "Notifikasi_Global"), {
+                pesan: pesan,
+                pengirim: "Master Pusat",
+                timestamp_local: Date.now()
+            });
+
+            log.innerText = "✅ Broadcast berhasil dikirim ke seluruh user aktif!";
+            document.getElementById('inputPengumuman').value = "";
+            showToast("Pengumuman Global Terkirim!");
+            
+            // Hilangkan pesan sukses setelah 4 detik
+            setTimeout(() => { log.innerText = ""; }, 4000);
+
+        } catch (error) {
+            console.error("Error broadcast:", error);
+            log.innerHTML = "<span style='color:#e74c3c;'>❌ Gagal mengirim broadcast. Cek koneksi internet.</span>";
+        }
+
+        // Kembalikan tombol ke semula
+        btn.innerHTML = "<i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User";
         btn.disabled = false;
     };
       
