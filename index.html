@@ -1266,6 +1266,150 @@
         btn.innerHTML = "<i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User";
         btn.disabled = false;
     };
+
+      // ==========================================
+    // 17. MESIN INBOX BANTUAN (CUSTOMER SERVICE)
+    // ==========================================
+    let chatUnsub = null;
+    let currentChatEmail = "";
+
+    window.loadInbox = async () => {
+        const listDiv = document.getElementById('inboxList');
+        listDiv.innerHTML = "<div style='padding:20px; text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai pesan masuk...</div>";
+        try {
+            // Tarik data pesan, urutkan dari yang terbaru
+            const snap = await getDocs(query(collection(db, "Pesan_Bantuan"), orderBy("waktu", "desc"), limit(100)));
+            let usersMap = new Map();
+            
+            // Kelompokkan pesan berdasarkan Email User
+            snap.forEach(doc => {
+                let d = doc.data();
+                if(!usersMap.has(d.email)) {
+                    usersMap.set(d.email, { 
+                        email: d.email, 
+                        username: d.username, 
+                        lastMsg: d.pesan, 
+                        waktu: d.waktu, 
+                        unread: (d.status === 'OPEN' && d.sender === 'USER') 
+                    });
+                }
+            });
+
+            let html = "";
+            usersMap.forEach(u => {
+                let timeStr = u.waktu ? formatTanggalJam(u.waktu) : "-";
+                let boldStyle = u.unread ? "font-weight:900; color:#e74c3c;" : "font-weight:600; color:#7f8c8d;";
+                let unreadDot = u.unread ? "<div style='width:12px; height:12px; background:#e74c3c; border-radius:50%; margin-left:10px; box-shadow:0 0 8px #e74c3c;'></div>" : "";
+                
+                html += `<div class='inbox-item' onclick='window.bukaChat("${u.email}", "${u.username}")'>
+                    <div style='flex:1; overflow:hidden;'>
+                        <div style='display:flex; justify-content:space-between; margin-bottom:5px;'>
+                            <b style='color:#3498db; font-size:1rem;'>${u.username}</b>
+                            <span style='font-size:0.65rem; color:#bdc3c7;'>${timeStr}</span>
+                        </div>
+                        <div style='font-size:0.85rem; ${boldStyle} white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
+                            ${u.lastMsg}
+                        </div>
+                    </div>
+                    ${unreadDot}
+                </div>`;
+            });
+            listDiv.innerHTML = html || "<div style='padding:30px; text-align:center; color:#7f8c8d;'><i class='fa-solid fa-mug-hot' style='font-size:2rem; margin-bottom:10px;'></i><br/>Santai Bosque, belum ada pesan masuk.</div>";
+        } catch(e) {
+            console.error("Inbox Error:", e);
+            listDiv.innerHTML = "<div style='padding:20px; text-align:center; color:red;'>Gagal memuat inbox. Cek koneksi Anda.</div>";
+        }
+    };
+
+    window.bukaChat = async (email, username) => {
+        currentChatEmail = email;
+        document.getElementById('chatRoomTitle').innerText = "Chat dengan: " + username;
+        document.getElementById('inboxList').style.display = 'none';
+        document.getElementById('inScreenChat').style.display = 'flex';
+        
+        const chatBody = document.getElementById('chatBody');
+        chatBody.innerHTML = "<div style='text-align:center; padding:20px;'><i class='fa-solid fa-spinner fa-spin'></i> Menyambungkan percakapan...</div>";
+
+        if(chatUnsub) chatUnsub(); // Bersihkan radar lama jika ada
+
+        // Pasang Radar Real-Time untuk chat user ini
+        const q = query(collection(db, "Pesan_Bantuan"), where("email", "==", email), orderBy("waktu", "asc"));
+        chatUnsub = onSnapshot(q, (snap) => {
+            let html = "";
+            snap.forEach(doc => {
+                let d = doc.data();
+                let timeStr = d.waktu ? new Date(d.waktu.toMillis()).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : "";
+                
+                if(d.sender === 'USER') {
+                    html += `<div class='chat-bubble chat-user'>
+                        <b style='font-size:0.7rem; color:#3498db;'>${d.username}</b><br/>
+                        ${d.pesan}
+                        <div style='text-align:right; font-size:0.6rem; color:#bdc3c7; margin-top:5px;'>${timeStr}</div>
+                    </div>`;
+                    
+                    // Tandai pesan sudah dibaca (Ubah status OPEN jadi CLOSE)
+                    if(d.status === 'OPEN') {
+                        updateDoc(doc.ref, { status: 'CLOSE' }).catch(()=>{});
+                    }
+                } else {
+                    html += `<div class='chat-bubble chat-admin'>
+                        <b style='font-size:0.7rem; color:#27ae60;'>Master Pusat</b><br/>
+                        ${d.pesan}
+                        <div style='text-align:right; font-size:0.6rem; color:#7f8c8d; margin-top:5px;'>${timeStr}</div>
+                    </div>`;
+                }
+            });
+            chatBody.innerHTML = html === "" ? "<div style='text-align:center; color:#7f8c8d;'>Belum ada percakapan.</div>" : html;
+            
+            // Otomatis scroll ke pesan paling bawah
+            setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100);
+        });
+    };
+
+    window.kirimBalasan = async () => {
+        const input = document.getElementById('inputPesan');
+        const pesan = input.value.trim();
+        if(!pesan || !currentChatEmail) return;
+
+        const btn = document.getElementById('btnSendChat');
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i>";
+        btn.disabled = true;
+
+        try {
+            // 1. Simpan pesan admin ke database chat
+            await addDoc(collection(db, "Pesan_Bantuan"), {
+                email: currentChatEmail,
+                username: "Pusat", 
+                pesan: pesan,
+                waktu: serverTimestamp(),
+                status: "CLOSE",
+                sender: "ADMIN"
+            });
+            
+            // 2. Tembakkan notifikasi lonceng ke HP User
+            await addDoc(collection(db, "Notifikasi_Personal"), {
+                email: currentChatEmail,
+                pesan: `💬 Balasan CS Pusat: "${pesan}"`,
+                timestamp_local: Date.now()
+            });
+
+            input.value = ""; // Kosongkan input setelah terkirim
+        } catch(e) {
+            console.error(e);
+            alert("Gagal mengirim pesan.");
+        }
+
+        btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i>";
+        btn.disabled = false;
+        input.focus();
+    };
+
+    window.closeChat = () => {
+        if(chatUnsub) { chatUnsub(); chatUnsub = null; }
+        document.getElementById('inScreenChat').style.display = 'none';
+        document.getElementById('inboxList').style.display = 'block';
+        window.loadInbox(); // Segarkan ulang daftar inbox
+    };
       
     });
 
