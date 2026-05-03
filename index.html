@@ -905,7 +905,7 @@
     };
 
     // ==========================================
-    // FUNGSI KHUSUS AUDIT & KEAMANAN (ANTI-HACK)
+    // 13. FUNGSI KHUSUS AUDIT & KEAMANAN (ANTI-HACK)
     // ==========================================
     window.loadConfigSecurity = async () => { 
         try {
@@ -944,7 +944,7 @@
     };
 
     // ==========================================
-    // 13. AUTO-LOGIN (SISTEM PENGINGAT SESI)
+    // 14. AUTO-LOGIN (SISTEM PENGINGAT SESI)
     // ==========================================
     window.addEventListener('load', () => {
         let savedSession = localStorage.getItem("cisAdminLog");
@@ -965,7 +965,7 @@
              document.getElementById('login-screen').style.display = 'flex';
         }
     // ==========================================
-    // 14. MESIN INJEKSI REWARD (TOMBOL KIRIM)
+    // 15. MESIN INJEKSI REWARD (TOMBOL KIRIM)
     // ==========================================
     window.kirimReward = async () => {
         const target = document.getElementById('rewardTarget').value;
@@ -1045,7 +1045,7 @@
     };
 
     // ==========================================
-    // 15. MESIN ANTREAN WD & APPROVAL
+    // 16. MESIN ANTREAN WD & APPROVAL
     // ==========================================
     window.switchTabWd = (tab) => {
         if(tab === 'pending') {
