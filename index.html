@@ -964,8 +964,8 @@
              document.documentElement.classList.remove("sesi-aktif");
              document.getElementById('login-screen').style.display = 'flex';
         }
-// ==========================================
-    // MESIN INJEKSI REWARD (TOMBOL KIRIM)
+    // ==========================================
+    // 14. MESIN INJEKSI REWARD (TOMBOL KIRIM)
     // ==========================================
     window.kirimReward = async () => {
         const target = document.getElementById('rewardTarget').value;
@@ -1042,6 +1042,150 @@
 
         btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD";
         btn.disabled = false;
+    };
+
+    // ==========================================
+    // 15. MESIN ANTREAN WD & APPROVAL
+    // ==========================================
+    window.switchTabWd = (tab) => {
+        if(tab === 'pending') {
+            document.getElementById('areaWdPending').style.display = 'block';
+            document.getElementById('areaWdRiwayat').style.display = 'none';
+            document.getElementById('tabWdPending').style.color = '#e67e22';
+            document.getElementById('tabWdPending').style.borderBottom = '2px solid #e67e22';
+            document.getElementById('tabWdRiwayat').style.color = '#7f8c8d';
+            document.getElementById('tabWdRiwayat').style.borderBottom = 'none';
+            window.loadAntreanWD();
+        } else {
+            document.getElementById('areaWdPending').style.display = 'none';
+            document.getElementById('areaWdRiwayat').style.display = 'block';
+            document.getElementById('tabWdRiwayat').style.color = '#e67e22';
+            document.getElementById('tabWdRiwayat').style.borderBottom = '2px solid #e67e22';
+            document.getElementById('tabWdPending').style.color = '#7f8c8d';
+            document.getElementById('tabWdPending').style.borderBottom = 'none';
+            window.loadRiwayatWD();
+        }
+    };
+
+    window.loadAntreanWD = async () => {
+        const tbody = document.getElementById('tblApproval');
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat antrean...</td></tr>";
+        try {
+            const snap = await getDocs(query(collection(db, "Request_Withdraw"), where("status", "==", "PENDING"), orderBy("waktu_request", "asc")));
+            let html = ""; let no = 1;
+            snap.forEach(d => {
+                let x = d.data();
+                let waktu = formatTanggalJam(x.waktu_request);
+                html += `<tr>
+                    <td style='text-align:center;'><input type='checkbox' class='chk-wd-item' value='${d.id}' data-email='${x.email_pemohon}' data-user='${x.username_pemohon}' data-nom='${x.nominal_rupiah}' data-jenis='${x.distribusi_ke}' data-target='${x.target_username}'></td>
+                    <td style='text-align:center;'>${no++}</td>
+                    <td><b style='color:#3498db;'>${x.username_pemohon}</b><br/><span style='font-size:0.7rem; color:#7f8c8d;'>${x.email_pemohon}</span><br/><span style='font-size:0.7rem;'>${waktu}</span></td>
+                    <td><b style='color:#f39c12;'>Rp ${x.nominal_rupiah.toLocaleString('id-ID')}</b><br/><span class='badge bg-dark'>Cetak: ${x.distribusi_ke}</span><br/><span style='font-size:0.75rem; color:#2ecc71;'>Target: ${x.target_username}</span></td>
+                    <td>
+                        <button class='action-btn bg-green' onclick='window.approveWD("${d.id}", "${x.email_pemohon}", "${x.username_pemohon}", ${x.nominal_rupiah}, "${x.distribusi_ke}", "${x.target_username}")' style='margin-bottom:5px;'><i class='fa-solid fa-check'></i> ACC</button>
+                        <button class='action-btn btn-del' onclick='window.rejectWD("${d.id}", "${x.email_pemohon}", ${x.nominal_rupiah})'><i class='fa-solid fa-xmark'></i> TOLAK</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html === "" ? "<tr><td colspan='5' style='text-align:center; color:#7f8c8d;'>Hore! Antrean WD kosong.</td></tr>" : html;
+        } catch(e) { console.error(e); tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal memuat antrean.</td></tr>"; }
+    };
+
+    window.loadRiwayatWD = async () => {
+        const tbody = document.getElementById('tblApprovalRiwayat');
+        tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat riwayat...</td></tr>";
+        try {
+            const snap = await getDocs(query(collection(db, "Request_Withdraw"), where("status", "!=", "PENDING"), limit(50)));
+            let dataArr = []; snap.forEach(d => Object.assign(d.data(), {id: d.id}) && dataArr.push(d.data()));
+            dataArr.sort((a,b) => (b.waktu_request?.seconds || 0) - (a.waktu_request?.seconds || 0));
+            let html = ""; let no = 1;
+            dataArr.forEach(x => {
+                let waktu = formatTanggalJam(x.waktu_request);
+                let sttBadge = x.status === "DISETUJUI" ? "<span class='badge bg-green'>DISETUJUI</span>" : "<span class='badge bg-red'>DITOLAK</span>";
+                html += `<tr><td style='text-align:center;'>${no++}</td><td style='font-size:0.75rem; color:#7f8c8d;'>${waktu}</td><td><b>${x.username_pemohon}</b><br/><span style='font-size:0.7rem;'>Target: ${x.target_username} (${x.distribusi_ke})</span></td><td><b style='color:#f39c12;'>Rp ${x.nominal_rupiah.toLocaleString('id-ID')}</b><br/>${sttBadge}</td></tr>`;
+            });
+            tbody.innerHTML = html === "" ? "<tr><td colspan='4' style='text-align:center;'>Belum ada riwayat WD.</td></tr>" : html;
+        } catch(e) { console.error(e); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat riwayat.</td></tr>"; }
+    };
+
+    window.approveWD = async (id, email, username, nominal, jenisToken, targetUser) => {
+        if(!confirm(`Setujui WD Rp ${nominal.toLocaleString('id-ID')} untuk ${username}?\nToken akan dicetak untuk: ${targetUser}`)) return;
+        try {
+            // 1. Ubah status Request_Withdraw
+            await updateDoc(doc(db, "Request_Withdraw", id), { status: "DISETUJUI" });
+            
+            // 2. Buat Kode Unik Token
+            let t = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for(let j = 0; j < 16; j++) t += chars.charAt(Math.floor(Math.random() * chars.length)); 
+            let tk = `${t.slice(0,4)}-${t.slice(4,8)}-${t.slice(8,12)}-${t.slice(12,16)}`;
+            
+            // 3. Cari email si target jika dikirim ke teman
+            let emailTarget = email;
+            if (targetUser !== username) {
+                const targetSnap = await getDocs(query(collection(db, "Akun_Publik"), where("username", "==", targetUser)));
+                if (!targetSnap.empty) emailTarget = targetSnap.docs[0].data().email;
+            }
+
+            // 4. Masukkan Token ke Gudang Data
+            await addDoc(collection(db, "Database_Token"), { 
+                kode_token: tk, nominal_rupiah: nominal, durasi_hari: 30, status: "AKTIF", distribusi_ke: jenisToken, 
+                pemilik: emailTarget, pemilik_username: targetUser, pengirim: username, pembuat: "Pusat", 
+                dibuat_pada: serverTimestamp(), dipakai_oleh: null 
+            });
+            
+            // 5. Kirim Notifikasi Sukses ke Pemohon
+            await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `✅ Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda telah DISETUJUI! Token telah masuk ke stok ${targetUser}.`, timestamp_local: Date.now() });
+            
+            // 6. Catat Mutasi Pusat
+            await addDoc(collection(db, "Mutasi_Pusat"), { jenis: "OUT", nominal: nominal, deskripsi: `Cairkan WD (Token ${jenisToken}) dari ${username}`, waktu: serverTimestamp() });
+            
+            showToast("WD Disetujui & Token Dicetak!");
+            window.loadAntreanWD();
+        } catch(e) { console.error(e); alert("Terjadi kesalahan."); }
+    };
+
+    window.rejectWD = async (id, email, nominal) => {
+        let alasan = prompt("Masukkan alasan penolakan (opsional):", "Data tidak valid / Mencurigakan");
+        if(alasan === null) return;
+        try {
+            // 1. Ubah status jadi Ditolak
+            await updateDoc(doc(db, "Request_Withdraw", id), { status: "DITOLAK", alasan_tolak: alasan });
+            
+            // 2. Refund Saldo Rupiah User
+            const userDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", email)));
+            if(!userDoc.empty) {
+                let currentSaldoRp = userDoc.docs[0].data().saldo_rupiah || 0;
+                await updateDoc(doc(db, "Akun_Publik", userDoc.docs[0].id), { saldo_rupiah: currentSaldoRp + nominal });
+            }
+            
+            // 3. Notifikasi
+            await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `❌ Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda DITOLAK. Alasan: ${alasan}. Saldo Rupiah telah dikembalikan ke dompet.`, timestamp_local: Date.now() });
+            
+            showToast("WD Ditolak & Saldo Direfund!");
+            window.loadAntreanWD();
+        } catch(e) { console.error(e); alert("Terjadi kesalahan."); }
+    };
+
+    window.toggleAllWD = (chk) => { document.querySelectorAll('.chk-wd-item').forEach(c => c.checked = chk.checked); };
+    
+    window.eksekusiWDBatch = async () => {
+        let checked = document.querySelectorAll('.chk-wd-item:checked');
+        if(checked.length === 0) return alert("Pilih minimal 1 WD yang akan disetujui!");
+        if(!confirm(`Setujui otomatis ${checked.length} Antrean WD sekaligus?`)) return;
+        
+        const btn = document.getElementById('btnAccBatch');
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Memproses Massal..."; btn.disabled = true;
+        
+        try {
+            for(let c of checked) {
+                let id = c.value; let email = c.getAttribute('data-email'); let user = c.getAttribute('data-user'); 
+                let nom = parseInt(c.getAttribute('data-nom')); let jenis = c.getAttribute('data-jenis'); let targetUser = c.getAttribute('data-target');
+                await window.approveWD(id, email, user, nom, jenis, targetUser);
+            }
+            showToast(`Selesai! ${checked.length} WD berhasil disetujui.`);
+        } catch(e) { alert("Sebagian proses mungkin gagal, harap cek manual."); }
+        
+        btn.innerHTML = "<i class='fa-solid fa-check-double'></i> Setujui Otomatis (Terpilih)"; btn.disabled = false;
+        document.getElementById('chkAllWD').checked = false;
     };
       
     });
