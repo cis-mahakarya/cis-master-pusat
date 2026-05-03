@@ -519,7 +519,7 @@
         if(id === 'scr-approval' && typeof window.switchTabWd === 'function') window.switchTabWd('pending'); 
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
-        if(id === 'scr-miner') window.loadUser();
+        if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
         if(id === 'scr-chat' && typeof window.loadInbox === 'function') window.loadInbox();
     };
     
@@ -964,6 +964,86 @@
              document.documentElement.classList.remove("sesi-aktif");
              document.getElementById('login-screen').style.display = 'flex';
         }
+// ==========================================
+    // MESIN INJEKSI REWARD (TOMBOL KIRIM)
+    // ==========================================
+    window.kirimReward = async () => {
+        const target = document.getElementById('rewardTarget').value;
+        const addSpeed = getFloatVal('rewardSpeed');
+        const addHari = parseInt(document.getElementById('rewardHari').value) || 0;
+        const btn = document.getElementById('btnKirimReward');
+
+        if(addSpeed <= 0 && addHari <= 0) return alert("Isi minimal Tambahan Speed atau Durasi Hari!");
+
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGIRIM...";
+        btn.disabled = true;
+
+        try {
+            let usersToUpdate = [];
+            if (target === 'ALL') {
+                const snap = await getDocs(collection(db, "Akun_Publik"));
+                snap.forEach(doc => usersToUpdate.push({ id: doc.id, ...doc.data() }));
+            } else {
+                const snap = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", target)));
+                if(!snap.empty) usersToUpdate.push({ id: snap.docs[0].id, ...snap.docs[0].data() });
+            }
+
+            if(usersToUpdate.length === 0) {
+                alert("Target user tidak ditemukan!");
+                btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD";
+                btn.disabled = false;
+                return;
+            }
+
+            let batchCount = 0;
+            for (let u of usersToUpdate) {
+                let currentSpeed = parseFloat(u.kecepatan_hash) || 0;
+                let currentExp = parseInt(u.expired_at) || 0;
+
+                let newSpeed = currentSpeed + addSpeed;
+                let newExp = Math.max(currentExp, Date.now()) + (addHari * 86400000);
+
+                // Suntik ke Database User
+                await updateDoc(doc(db, "Akun_Publik", u.id), {
+                    kecepatan_hash: newSpeed,
+                    expired_at: newExp
+                });
+
+                // Buat Nota Mutasi
+                let msgDeskripsi = `System Reward: `;
+                if(addSpeed > 0) msgDeskripsi += `+${addSpeed} D/s `;
+                if(addHari > 0) msgDeskripsi += `+${addHari} Hari`;
+
+                await addDoc(collection(db, "Mutasi_Mining"), {
+                    email: u.email,
+                    jenis: "IN",
+                    deskripsi: msgDeskripsi,
+                    nominal: 0,
+                    timestamp_local: Date.now()
+                });
+
+                // Tembak Notifikasi Lonceng ke User
+                await addDoc(collection(db, "Notifikasi_Personal"), {
+                    email: u.email,
+                    pesan: `🎁 SELAMAT! Anda mendapat ${msgDeskripsi} dari Master Pusat.`,
+                    timestamp_local: Date.now()
+                });
+                batchCount++;
+            }
+
+            showToast(`Sukses kirim reward ke ${batchCount} user!`);
+            document.getElementById('rewardSpeed').value = "";
+            document.getElementById('rewardHari').value = "";
+
+        } catch (error) {
+            console.error(error);
+            alert("Terjadi kesalahan saat mengirim reward.");
+        }
+
+        btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD";
+        btn.disabled = false;
+    };
+      
     });
 
   </script>
