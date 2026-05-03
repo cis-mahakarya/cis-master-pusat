@@ -193,7 +193,7 @@
     <div class='grid-menu'>
       <div class='menu-box' id='menu-live' onclick='openScreen("scr-live")' style='border-color:#2ecc71;'><i class='fa-solid fa-satellite-dish' style='color:#2ecc71;'></i><span>Live Monitor</span></div>
       <div class='menu-box' id='menu-akuntansi' onclick='openScreen("scr-akuntansi")' style='border-color:#27ae60;'><i class='fa-solid fa-book-open-reader' style='color:#27ae60;'></i><span>Buku Kas Induk</span></div>
-      <div class='menu-box' id='menu-paket' onclick='openScreen("scr-paket")' style='border-color:#9b59b6;'><i class='fa-solid fa-tachometer-alt' style='color:#9b59b6;'></i><span>Setting Paket</span></div>
+      <div class='menu-box' id='menu-paket' onclick='openScreen("scr-paket")' style='border-color:#9b59b6;'><i class='fa-solid fa-tags' style='color:#9b59b6;'></i><span>Harga & Paket</span></div>
       <div class='menu-box' id='menu-sistem' onclick='openScreen("scr-sistem")' style='border-color:#1abc9c;'><i class='fa-solid fa-user-lock' style='color:#1abc9c;'></i><span>Daftar &amp; Game</span></div>
       <div class='menu-box' id='menu-stats' onclick='openScreen("scr-stats")' style='border-color:#8e44ad;'><i class='fa-solid fa-chart-line' style='color:#8e44ad;'></i><span>Global Stats</span></div>
       <div class='menu-box' id='menu-pabrik' onclick='openScreen("scr-pabrik")' style='border-color:#3498db;'><i class='fa-solid fa-industry' style='color:#3498db;'></i><span>Pabrik Token</span></div>
@@ -274,7 +274,7 @@
       <div class='card-panel' style='border-top: 5px solid #2c3e50;'>
         <h4 style='margin-top:0; color:#2c3e50;'><i class='fa-solid fa-user-plus'></i> Buat Akun Asisten Baru</h4>
         <div style='display:flex; gap:10px;'><div class='form-group'><label>Username</label><input id='addAdminUser' type='text'></div><div class='form-group'><label>Password</label><input id='addAdminPass' type='text'></div><div class='form-group'><label>Peran (Role)</label><select id='addAdminRole' onchange='toggleAksesMenu()'><option value='CPANEL'>Asisten (C-Panel)</option><option value='AGEN'>Agen Distributor (Fase 2)</option></select></div></div>
-        <div id='wrapAksesCpanel'><label>Berikan Izin Akses Menu (Hanya untuk C-Panel):</label><div class='akses-grid'><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-live'> Live Monitor &amp; Omset</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-akuntansi'> Buku Kas Induk</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-paket'> Setting Paket</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-sistem'> Daftar &amp; Game</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-stats'> Global Stats</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-pabrik'> Pabrik Token</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-team'> Data Tim</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-miner'> Data Miner</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-approval'> Antrean WD</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-audit'> Audit Keamanan</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-chat'> Inbox Bantuan</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-reward'> Injeksi Reward</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-notif'> Pengumuman</label></div></div>
+        <div id='wrapAksesCpanel'><label>Berikan Izin Akses Menu (Hanya untuk C-Panel):</label><div class='akses-grid'><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-live'> Live Monitor &amp; Omset</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-akuntansi'> Buku Kas Induk</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-paket'> Harga & Paket</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-sistem'> Daftar &amp; Game</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-stats'> Global Stats</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-pabrik'> Pabrik Token</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-team'> Data Tim</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-miner'> Data Miner</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-approval'> Antrean WD</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-audit'> Audit Keamanan</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-chat'> Inbox Bantuan</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-reward'> Injeksi Reward</label><label class='akses-item'><input class='chk-akses' type='checkbox' value='menu-notif'> Pengumuman</label></div></div>
         <button class='btn-main' id='btnBuatAdmin' onclick='eksekusiBuatAdmin()' style='margin-top:15px; background:#2c3e50;'><i class='fa-solid fa-save'></i> Simpan Akun Asisten</button>
       </div>
       <div class='card-panel'><h4>Daftar Admin Terdaftar</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Username &amp; Pass</th><th>Role Akses</th><th>Aksi</th></tr></thead><tbody id='tblAdminList'><tr><td colspan='4' style='text-align:center;'>Memuat...</td></tr></tbody></table></div></div>
@@ -282,33 +282,56 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN: SETTING PAKET & HARGA PASAR        -->
+  <!-- SCREEN: HARGA PASAR & SETTING PAKET        -->
   <!-- ========================================== -->
   <div class='admin-screen' id='scr-paket'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Paket, Hashrate &amp; Harga Pasar</div>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Harga Pasar &amp; Paket Hashrate</div>
     <div class='screen-content'>
       <div class='card-panel' style='background: linear-gradient(135deg, #2c3e50, #34495e); color: white; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border: 1px solid #bdc3c7;'><div><div style='font-size: 0.75rem; color: #bdc3c7; font-weight: bold;'><i class='fa-solid fa-chart-line'></i> LIVE RATE VRSC</div><div id='widgetVrscIdr' style='font-family: Orbitron, sans-serif; font-size: 1.4rem; font-weight: 900; color: #2ecc71;'>Rp 0</div></div><div style='text-align: right;'><div style='font-size: 0.7rem; color: #bdc3c7;'>vs USDT</div><div id='widgetVrscUsdt' style='font-family: Orbitron, sans-serif; font-size: 1.1rem; font-weight: bold; color: #f1c40f;'>$ 0.00</div></div></div>
       
-      <!-- PANEL HARGA PASAR BARU -->
+      <!-- ========================================== -->
+      <!-- FITUR BARU: MANAJEMEN DAFTAR HARGA PASAR   -->
+      <!-- ========================================== -->
       <div class='card-panel' style='border-top: 5px solid #e67e22;'>
-        <h4 style='margin-top:0; color:#e67e22;'><i class='fa-solid fa-tags'></i> Atur Harga Pasar (Marketplace)</h4>
+        <h4 style='margin-top:0; color:#e67e22;'><i class='fa-solid fa-tags'></i> Manajemen Daftar Harga Pasar</h4>
+        <p style='font-size:0.75rem; color:#7f8c8d; margin-top:-5px;'>Daftar ini akan otomatis muncul di web user publik dan dropdown Pabrik Token.</p>
         <div style='display:flex; gap:10px; flex-wrap:wrap;'>
-          <div class='form-group' style='flex:1; min-width:120px;'>
-            <label>Modal Cetak REG (Rp)</label>
-            <input id='setModalReg' type='number' value='10000'>
+          <div class='form-group' style='flex:1; min-width:100px;'>
+            <label>Jenis Token</label>
+            <select id='setMpJenis'><option value='REG'>REG (Aktivasi)</option><option value='MINING'>MINING (Speed)</option></select>
           </div>
-          <div class='form-group' style='flex:1; min-width:120px;'>
-            <label>Harga Jual Pengepul REG (Rp)</label>
-            <input id='setJualReg' type='number' value='12000'>
+          <div class='form-group' style='flex:1; min-width:100px;'>
+            <label>Modal Pusat (Rp)</label>
+            <input id='setMpModal' type='number' placeholder='10000'>
           </div>
-          <div class='form-group' style='flex:1; min-width:120px;'>
-            <label>Margin Jual Paket MINING (%)</label>
-            <input id='setMarginMining' type='number' value='20'>
+          <div class='form-group' style='flex:1; min-width:100px;'>
+            <label>Harga Jual Agen (Rp)</label>
+            <input id='setMpJual' type='number' placeholder='12000'>
+          </div>
+          <div class='form-group' style='flex:2; min-width:150px;'>
+            <label>Keterangan / Fungsi</label>
+            <input id='setMpKet' type='text' placeholder='Contoh: Aktivasi Akun 30 Hari'>
           </div>
         </div>
-        <button class='btn-main' onclick='simpanHargaPasar()' style='background:#e67e22; margin-top:10px;'><i class='fa-solid fa-save'></i> Simpan Harga Pasar</button>
+        <button class='btn-main' onclick='simpanMarketPrice()' style='background:#e67e22; margin-top:10px;'><i class='fa-solid fa-save'></i> Tambah ke Harga Pasar</button>
+
+        <h4 style='margin-top:20px;'><i class='fa-solid fa-list'></i> Tabel Harga Pasar Saat Ini</h4>
+        <div class='table-wrap'>
+          <table>
+            <thead><tr><th>Jenis</th><th>Keterangan</th><th>Modal &amp; Jual</th><th>Aksi</th></tr></thead>
+            <tbody id='tblMarketPrice'><tr><td colspan='4' style='text-align:center;'>Memuat...</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
+      <!-- PANEL MULTIPLIER KONTROL GLOBAL -->
+      <div class='card-panel' style='border-top: 5px solid #e74c3c;'>
+        <h4 style='margin-top:0; color:#c0392b;'><i class='fa-solid fa-gauge-high'></i> Kontrol Kecepatan Koin (Speed Multiplier)</h4>
+        <div class='form-group'><label>Pengali Kecepatan (Multiplier)</label><input id='inpSpeedMultiplier' inputmode='decimal' step='0.1' style='border-color:#e74c3c; font-size:1.2rem; font-family:Orbitron; font-weight:bold; color:#c0392b;' type='number' value='1.0'></div>
+        <button class='btn-main' onclick='simpanSpeedMultiplier()' style='background:#e74c3c; margin-top:10px;'><i class='fa-solid fa-save'></i> Update Kecepatan Global</button>
+      </div>
+
+      <!-- PANEL PAKET HASHRATE -->
       <div class='card-panel'>
         <div class='slider-container'>
           <div style='color:#94a3b8; font-size:0.8rem; font-weight:bold; margin-bottom:5px;'>SIMULATOR KEKUATAN MINING (SCRYPT)</div>
@@ -319,7 +342,7 @@
         </div>
         <button class='btn-main' onclick='salinSpeedKeForm()' style='background:#f39c12; margin-bottom:20px;'><i class='fa-solid fa-arrow-down'></i> Gunakan Speed Ini</button>
         <hr style='border:1px dashed #e2e8f0; margin:20px 0;'/>
-        <h4 style='color:#9b59b6; margin-top:0;'><i class='fa-solid fa-plus-circle'></i> Tambah Paket Database</h4>
+        <h4 style='color:#9b59b6; margin-top:0;'><i class='fa-solid fa-plus-circle'></i> Tambah Logika Kecepatan Paket Database</h4>
         <div style='display:flex; flex-wrap: wrap; gap:10px;'><div class='form-group' style='flex:1; min-width: 120px;'><label>Modal Nominal (Rp)</label><input id='setNominal' inputmode='decimal' oninput='onNominalInput()' type='text'></div><div class='form-group' style='flex:1; min-width: 120px;'><label>Speed (D/s)</label><input id='setSpeed' inputmode='decimal' oninput='onSpeedInput()' type='text'></div><div class='form-group' style='flex:1; min-width: 120px;'><label>Durasi (Hari)</label><input id='setHari' inputmode='numeric' oninput='hitungKalkulator()' type='text' value='30'></div><div class='form-group' style='flex:1; min-width: 120px;'><label>Harga VRSC (Rp)</label><input id='setHarga' inputmode='decimal' oninput='hitungKalkulator()' type='text' value='1600'></div></div>
         
         <div style='background:#f8f9fa; border:2px dashed #9b59b6; border-radius:10px; padding:15px; margin-bottom:15px;'>
@@ -335,7 +358,6 @@
         <button class='btn-main' id='btnSimpanPaket' style='background:#9b59b6;'>Simpan Paket ke Database</button>
       </div>
       <div class='card-panel'><h4>Daftar Paket Aktif</h4><div class='table-wrap'><table id='tblPaketTable'><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Modal Nominal</th><th>Speed &amp; Durasi</th><th>Aksi</th></tr></thead><tbody id='tblPaket'></tbody></table></div></div>
-      <div class='card-panel' style='border-top: 5px solid #e74c3c;'><h4 style='margin-top:0; color:#c0392b;'><i class='fa-solid fa-gauge-high'></i> Kontrol Kecepatan Koin (Speed Multiplier)</h4><div class='form-group'><label>Pengali Kecepatan (Multiplier)</label><input id='inpSpeedMultiplier' inputmode='decimal' step='0.1' style='border-color:#e74c3c; font-size:1.2rem; font-family:Orbitron; font-weight:bold; color:#c0392b;' type='number' value='1.0'></div><button class='btn-main' onclick='simpanSpeedMultiplier()' style='background:#e74c3c; margin-top:10px;'><i class='fa-solid fa-save'></i> Update Kecepatan Global</button></div>
     </div>
   </div>
 
@@ -385,7 +407,14 @@
           <input class='input-dark' id='inpTargetUserPabrik' placeholder='Ketik Username atau Email Pemain' style='display:none; margin-top:10px; width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:8px;' type='text'>
         </div>
         <div class='form-group' style='border: 1px dashed #3498db; padding: 10px; border-radius: 8px; background: #ebf5fb;'><label style='color: #2980b9;'><i class='fa-solid fa-tags'></i> Jenis Token yang Dicetak:</label><select id='jenisTokenPabrik' style='border-color: #3498db;'><option value='REG'>Token Aktivasi Akun (REG)</option><option value='MINING'>Token Upgrade Mesin (MINING)</option></select></div>
-        <div style='display:flex; gap:10px; flex-wrap:wrap; margin-top: 15px;'><div class='form-group' style='flex:1; min-width:100px;'><label>Modal Nominal</label><select id='nomToken'><option value='10000'>10K</option><option value='50000'>50K</option><option value='100000'>100K</option><option value='500000'>500K</option><option value='1000000'>1 Juta</option></select></div><div class='form-group' style='flex:1; min-width:100px;'><label>Lembar</label><input id='jmlToken' inputmode='numeric' type='text' value='1'></div><div class='form-group' style='flex:1; min-width:100px;'><label>Masa Aktif (Hari)</label><input id='durasiToken' inputmode='numeric' type='text' value='30'></div></div>
+        <div style='display:flex; gap:10px; flex-wrap:wrap; margin-top: 15px;'>
+            
+            <div class='form-group' style='flex:1; min-width:100px;'>
+                <label>Nominal Sesuai Harga Pasar</label>
+                <select id='nomToken'><option value='10000'>Default 10K</option></select>
+            </div>
+            
+            <div class='form-group' style='flex:1; min-width:100px;'><label>Lembar</label><input id='jmlToken' inputmode='numeric' type='text' value='1'></div><div class='form-group' style='flex:1; min-width:100px;'><label>Masa Aktif (Hari)</label><input id='durasiToken' inputmode='numeric' type='text' value='30'></div></div>
         <button class='btn-main' id='btnCetakToken'><i class='fa-solid fa-print'></i> Cetak &amp; Distribusi</button><div id='logToken' style='margin-top:10px; text-align:center; color:#27ae60; font-weight:bold;'></div>
       </div>
     </div>
@@ -591,7 +620,7 @@
         
         // Panggil Semua Fungsi Muat Data
         fetchVrscPrice(); loadConfigPendaftaran(); loadGlobalStats(); loadSpeedMultiplier(); window.loadConfigSecurity(); window.initLiveMonitor();
-        if(typeof window.loadHargaPasar === 'function') window.loadHargaPasar();
+        if(typeof window.loadMarketPrice === 'function') window.loadMarketPrice();
     }
 
     window.logoutAdmin = () => { 
@@ -705,39 +734,57 @@
     }
 
     // ==========================================
-    // 9. SETTING PAKET & KALKULATOR HASHRATE & HARGA PASAR
+    // 9. SETTING PAKET & KALKULATOR HASHRATE & HARGA PASAR BARU
     // ==========================================
     
-    // Fungsi Baru: Manajemen Marketplace
-    window.loadHargaPasar = async () => {
+    window.loadMarketPrice = async () => {
+        const tbody = document.getElementById('tblMarketPrice');
+        const selNom = document.getElementById('nomToken');
+        if(tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat...</td></tr>";
+        let optHtml = "";
         try {
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "MARKETPLACE")));
-            if(!snap.empty) {
-                let d = snap.docs[0].data();
-                let elModalReg = document.getElementById('setModalReg');
-                let elJualReg = document.getElementById('setJualReg');
-                let elMargin = document.getElementById('setMarginMining');
-                if(elModalReg) elModalReg.value = d.modal_reg || 10000;
-                if(elJualReg) elJualReg.value = d.jual_reg || 12000;
-                if(elMargin) elMargin.value = d.margin_mining || 20;
-            }
-        } catch(e) { console.log("Gagal memuat harga pasar"); }
+            const snap = await getDocs(query(collection(db, "Config_Marketplace"), orderBy("modal", "asc")));
+            let html = "";
+            snap.forEach(d => {
+                let p = d.data();
+                let badgeColor = p.jenis === 'REG' ? '#f1c40f' : '#2ecc71';
+                html += `<tr>
+                    <td><span class='badge' style='background:${badgeColor}; color:#000;'>${p.jenis}</span></td>
+                    <td style='font-size:0.8rem;'>${p.keterangan}</td>
+                    <td><span style='color:#7f8c8d; font-size:0.75rem;'>Modal: Rp ${p.modal.toLocaleString('id-ID')}</span><br/><b style='color:#e67e22;'>Jual: Rp ${p.jual.toLocaleString('id-ID')}</b></td>
+                    <td><button class='action-btn btn-del' onclick='window.delMarketPrice("${d.id}")'><i class='fa-solid fa-trash'></i></button></td>
+                </tr>`;
+                
+                optHtml += `<option value='${p.modal}'>Rp ${(p.modal/1000)}K (${p.jenis})</option>`;
+            });
+            if(tbody) tbody.innerHTML = html === "" ? "<tr><td colspan='4' style='text-align:center;'>Belum ada data harga pasar.</td></tr>" : html;
+            if(selNom) selNom.innerHTML = optHtml === "" ? "<option value='10000'>Default 10K</option>" : optHtml;
+        } catch(e) { console.error(e); }
     };
-    
-    window.simpanHargaPasar = async () => {
-        let mReg = parseInt(document.getElementById('setModalReg').value) || 0;
-        let jReg = parseInt(document.getElementById('setJualReg').value) || 0;
-        let mMin = parseInt(document.getElementById('setMarginMining').value) || 0;
-        const btn = document.querySelector(`button[onclick='simpanHargaPasar()']`);
+
+    window.simpanMarketPrice = async () => {
+        let jenis = document.getElementById('setMpJenis').value;
+        let modal = parseInt(document.getElementById('setMpModal').value) || 0;
+        let jual = parseInt(document.getElementById('setMpJual').value) || 0;
+        let ket = document.getElementById('setMpKet').value.trim();
+        if(modal <= 0 || jual <= 0 || !ket) return alert("Isi Modal, Harga Jual, dan Keterangan!");
+        
+        const btn = document.querySelector(`button[onclick='simpanMarketPrice()']`);
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
         try {
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "MARKETPLACE")));
-            let payload = { tipe: "MARKETPLACE", modal_reg: mReg, jual_reg: jReg, margin_mining: mMin };
-            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
-            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
-            showToast("Harga Pasar Berhasil Disimpan!");
+            await addDoc(collection(db, "Config_Marketplace"), { jenis: jenis, modal: modal, jual: jual, keterangan: ket, timestamp: serverTimestamp() });
+            showToast("Harga Pasar Ditambahkan!");
+            document.getElementById('setMpModal').value = ""; document.getElementById('setMpJual').value = ""; document.getElementById('setMpKet').value = "";
+            window.loadMarketPrice();
         } catch(e) { alert("Gagal menyimpan harga pasar."); }
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Harga Pasar"; btn.disabled = false;
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> Tambah ke Harga Pasar"; btn.disabled = false;
+    };
+
+    window.delMarketPrice = async (id) => {
+        if(confirm("Hapus harga pasar ini?")) {
+            await deleteDoc(doc(db, "Config_Marketplace", id));
+            window.loadMarketPrice();
+        }
     };
 
     window.updateHashSlider = function() { let mhs = document.getElementById('slideHash').value; document.getElementById('valSliderMhs').innerText = mhs + " MH/s"; let baseVrscRewardPerMhs = 0.015; let vrscPerHari = mhs * baseVrscRewardPerMhs; let rpPerHari = Math.floor(vrscPerHari * globalVrscPriceIdr); let speedCIS = vrscPerHari / 86400; document.getElementById('valHashDoge').innerText = vrscPerHari.toFixed(2) + " VRSC"; document.getElementById('valHashRp').innerText = "Rp " + rpPerHari.toLocaleString('id-ID'); document.getElementById('valSpeedCIS').innerText = speedCIS.toFixed(8) + " D/s"; };
