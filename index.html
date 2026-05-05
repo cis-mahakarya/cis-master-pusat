@@ -846,8 +846,26 @@
     window.hitungKalkulator = function() {
       let nominal = getFloatVal('setNominal'); let speed = getFloatVal('setSpeed'); let harga = getFloatVal('setHarga'); let durasiHari = parseInt(document.getElementById('setHari').value) || 30;
       let perHari = speed * 86400; let totalVrsc = perHari * durasiHari; let totalRp = Math.floor(totalVrsc * harga); let profitRp = totalRp - nominal; let roiPersen = nominal > 0 ? ((profitRp / nominal) * 100).toFixed(2) : 0;
-      document.getElementById('resJam').innerText = (speed * 3600).toFixed(6) + " VRSC"; document.getElementById('resHari').innerText = perHari.toFixed(6) + " VRSC"; document.getElementById('resMinggu').innerText = (perHari * 7).toFixed(6) + " VRSC"; document.getElementById('resBulan').innerText = (perHari * 30).toFixed(6) + " VRSC"; document.getElementById('lblDurasi').innerText = durasiHari; document.getElementById('resTotalDoge').innerText = totalVrsc.toFixed(6); document.getElementById('resTotalRp').innerText = "Rp " + totalRp.toLocaleString('id-ID');
-      let roiEl = document.getElementById('resRoi'); if (nominal > 0) { roiEl.innerHTML = profitRp >= 0 ? `<span style="color:#2ecc71;">+ Rp ${profitRp.toLocaleString('id-ID')} (${roiPersen}%)</span>` : `<span style="color:#e74c3c;">- Rp ${Math.abs(profitRp).toLocaleString('id-ID')} (${roiPersen}%)</span>`; } else { roiEl.innerHTML = "-"; }
+      
+      // Update Nilai VRSC
+      document.getElementById('resJam').innerText = (speed * 3600).toFixed(6) + " VRSC"; 
+      document.getElementById('resHari').innerText = perHari.toFixed(6) + " VRSC"; 
+      document.getElementById('resMinggu').innerText = (perHari * 7).toFixed(6) + " VRSC"; 
+      document.getElementById('resBulan').innerText = (perHari * 30).toFixed(6) + " VRSC"; 
+      
+      // Update Nilai IDR (Baru Ditambahkan)
+      document.getElementById('resJamIdr').innerText = "Rp " + Math.floor((speed * 3600) * harga).toLocaleString('id-ID');
+      document.getElementById('resHariIdr').innerText = "Rp " + Math.floor(perHari * harga).toLocaleString('id-ID');
+      document.getElementById('resMingguIdr').innerText = "Rp " + Math.floor((perHari * 7) * harga).toLocaleString('id-ID');
+      document.getElementById('resBulanIdr').innerText = "Rp " + Math.floor((perHari * 30) * harga).toLocaleString('id-ID');
+
+      document.getElementById('lblDurasi').innerText = durasiHari; document.getElementById('resTotalDoge').innerText = totalVrsc.toFixed(6); document.getElementById('resTotalRp').innerText = "Rp " + totalRp.toLocaleString('id-ID');
+      
+      // Indikator Profit/Loss (ROI)
+      let roiEl = document.getElementById('resRoi'); 
+      if (nominal > 0) { 
+          roiEl.innerHTML = profitRp >= 0 ? `<span style="color:#2ecc71;"><i class="fa-solid fa-arrow-trend-up"></i> + Rp ${profitRp.toLocaleString('id-ID')} (${roiPersen}%)</span>` : `<span style="color:#e74c3c;"><i class="fa-solid fa-arrow-trend-down"></i> - Rp ${Math.abs(profitRp).toLocaleString('id-ID')} (${roiPersen}%)</span>`; 
+      } else { roiEl.innerHTML = "-"; }
     };
 
     window.loadPaket = async () => { const tbody = document.getElementById('tblPaket'); tbody.innerHTML = ''; const snap = await getDocs(query(collection(db, "Config_Mining"), orderBy("nominal", "asc"))); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada paket.</td></tr>"; return; } let no = 1; snap.forEach(d => { const p = d.data(); let waktu = formatTanggalJam(p.dibuat_pada); let speedTampil = new Intl.NumberFormat('en-US', { maximumFractionDigits: 10 }).format(p.speed); tbody.innerHTML += `<tr><td style='text-align:center; font-weight:bold;'>${no++}</td><td style='font-size:0.75rem; color:#7f8c8d;'>${waktu}</td><td><b>Rp ${p.nominal.toLocaleString('id-ID')}</b></td><td><span style='color:#9b59b6; font-weight:900;'>${speedTampil} D/s</span><br/><span style='font-size:0.75rem;'>${p.durasi_hari} Hari</span></td><td><button class='action-btn btn-del' onclick='window.delPaket("${d.id}")'><i class='fa-solid fa-trash'></i></button></td></tr>`; }); }
