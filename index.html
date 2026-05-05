@@ -671,6 +671,7 @@
         // Panggil Semua Fungsi Muat Data
         fetchVrscPrice(); loadConfigPendaftaran(); loadGlobalStats(); loadSpeedMultiplier(); window.loadConfigSecurity(); window.initLiveMonitor();
         if(typeof window.loadMarketPrice === 'function') window.loadMarketPrice();
+        if(typeof window.loadPaket === 'function') window.loadPaket();
     }
 
     window.logoutAdmin = () => { 
