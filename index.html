@@ -581,10 +581,11 @@
   <div class='modal-overlay' id='modalMutasiUser' style='z-index:10005;'>
     <div class='modal-card' style='max-width: 600px;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#e2e8f0; margin:0;'><i class='fa-solid fa-receipt'></i> Buku Besar (Ledger) User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalMutasiUser").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><div id='mutasiUserTitle' style='background:#0b0f19; padding:10px; border-radius:8px; margin-bottom:15px; font-weight:bold; color:#38bdf8; border: 1px solid #334155;'>NamaUser</div><div class='table-wrap' style='max-height: 400px; overflow-y: auto;'><table><thead><tr><th>Waktu</th><th>Deskripsi Transaksi</th><th>Nominal</th></tr></thead><tbody id='tblMutasiUser'><tr><td colspan='3' style='text-align:center;'>Memuat...</td></tr></tbody></table></div></div>
   </div>
+
 <div class='modal-overlay' id='modalEditData' style='z-index:10000;'>
-    <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun Admin / User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input class='input-dark no-icon' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input class='input-dark no-icon' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input class='input-dark no-icon' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input class='input-dark no-icon' id='editInpUpline' type='text'></div></div><div class='form-group'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
+    <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun Admin / User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input class='input-dark no-icon' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input class='input-dark no-icon' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input class='input-dark no-icon' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input class='input-dark no-icon' id='editInpUpline' type='text'></div></div><div class='form-group'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
-	
+  
 <script type='module'>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -602,9 +603,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ==========================================
-    // VARIABEL GLOBAL & HELPER FORMAT
-    // ==========================================
     let globalVrscPriceIdr = 0; let globalVrscPriceUsdt = 0; let globalSpeedMultiplier = 1.0; 
     let currentAdminRole = ""; let currentAdminAkses = []; let allUsersData = [];
 
@@ -612,15 +610,11 @@
     function getFloatVal(id) { let el = document.getElementById(id); if (!el) return 0; let val = el.value.toString().trim().replace(/%/g, '').replace(/,/g, '.'); let parts = val.split('.'); if (parts.length > 2) { val = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1]; } return parseFloat(val) || 0; }
     function formatTanggalJam(ts) { if(!ts) return "<span style='color:#64748b'>-</span>"; let d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) + " WIB"; }
 
-    // ==========================================
-    // KONTROL UI & LOGIN
-    // ==========================================
     window.togglePassMaster = (id, icon) => { const inp = document.getElementById(id); if (inp.type === 'password') { inp.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { inp.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } };
     window.showToast = (msg) => { const box = document.getElementById('toastBox'); document.getElementById('toastMsg').innerText = msg; box.style.opacity = 1; box.style.visibility = 'visible'; box.style.top = '50px'; setTimeout(() => { box.style.opacity = 0; box.style.visibility = 'hidden'; box.style.top = '20px'; }, 3000); };
     
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
-        // Panggil fungsi saat layar dibuka
         if(id === 'scr-team') window.loadDataTim(); 
         if(id === 'scr-approval') window.switchTabWd('pending'); 
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
@@ -637,15 +631,11 @@
         if(!u || !p) return alert("ID dan Key wajib diisi!");
         btn.innerText = "VERIFYING ENCRYPTION..."; btn.disabled = true;
 
-        // ==========================================
-        // PINTU DARURAT LOGIN (KHUSUS WEB KLONING)
-        // ==========================================
         if(u === "master" && p === "cis2026") {
             localStorage.setItem("cisAdminLog_v2", JSON.stringify({role: "MASTER", aksesArr: ["all"], nama: "Master Dewa"}));
             window.prosesSuksesLogin("MASTER", ["all"], "Master Dewa");
             return;
         }
-        // ==========================================
 
         try {
             const q = query(collection(db, "Akun_Admin"), where("username", "==", u), where("password", "==", p)); 
@@ -677,7 +667,6 @@
             else if (role === "CPANEL") { if(m.id === 'menu-cpanel') m.style.display = 'none'; else if (aksesArr.includes(m.id)) m.style.display = 'flex'; else m.style.display = 'none'; }
         });
         
-        // Panggil Semua Fungsi Muat Data Init
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
         window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); showToast("Access Granted: Welcome Commander.");
     }
@@ -689,9 +678,6 @@
         if (savedSession) { let data = JSON.parse(savedSession); document.documentElement.classList.add("sesi-aktif"); window.prosesSuksesLogin(data.role, data.aksesArr, data.nama); }
     });
 
-    // ==========================================
-    // FUNGSI PABRIK TOKEN
-    // ==========================================
     document.getElementById('btnCetakToken').addEventListener('click', async () => {
       const tim = document.getElementById('distTim').value; 
       const nom = parseInt(document.getElementById('nomToken').value); 
@@ -732,9 +718,6 @@
       log.innerText = tim === 'USER' ? `✅ Sukses mengirim ${jml} Token ${jenisTkn} ke ${targetUsernameFinal}!` : `✅ Sukses mencetak ${jml} Token ${jenisTkn} untuk ${tim}!`; document.getElementById('btnCetakToken').disabled = false;
     });
 
-    // ==========================================
-    // FUNGSI ANTREAN WD (APPROVAL)
-    // ==========================================
     window.switchTabWd = (tab) => {
         if(tab === 'pending') {
             document.getElementById('areaWdPending').style.display = 'block'; document.getElementById('areaWdRiwayat').style.display = 'none';
@@ -809,9 +792,6 @@
         btn.innerHTML = "<i class='fa-solid fa-check-double'></i> Setujui Otomatis (Terpilih)"; btn.disabled = false; document.getElementById('chkAllWD').checked = false;
     };
 
-    // ==========================================
-    // FUNGSI DATA MINER & KENDALI AKUN
-    // ==========================================
     window.cariUserAdmin = () => { let input = document.getElementById('searchUser').value.toLowerCase(); let rows = document.querySelectorAll('#tblUser tr'); rows.forEach(row => { let text = row.innerText.toLowerCase(); row.style.display = text.includes(input) ? '' : 'none'; }); };
 
     window.loadUser = async () => {
@@ -840,9 +820,25 @@
     window.eksekusiResetDevice = async () => { const inputTarget = document.getElementById('inpTargetDeviceReset').value.trim().toLowerCase(); if(!inputTarget) return alert("Masukkan Username atau Email user!"); const btn = document.getElementById('btnResetDevice'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MEMPROSES..."; btn.disabled = true; try { let targetUser = allUsersData.find(u => (u.username && u.username.toLowerCase() === inputTarget) || (u.email && u.email.toLowerCase() === inputTarget)); if (targetUser) { await updateDoc(doc(db, "Akun_Publik", targetUser.id), { device_id: "" }); alert(`SUKSES! Kunci perangkat [ ${targetUser.username} ] dihapus.`); document.getElementById('inpTargetDeviceReset').value = ""; loadUser(); } else { alert("GAGAL: Username atau Email tidak ditemukan."); } } catch (error) { alert("Terjadi kesalahan sistem."); } btn.innerHTML = "<i class='fa-solid fa-power-off'></i> RESET PERANGKAT"; btn.disabled = false; };
     window.forceUnlock = async (id, username) => { if(!confirm(`Buka kunci perangkat untuk user: ${username}?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { device_id: "" }); showToast(`Kunci perangkat ${username} dibuka!`); loadUser(); } catch(e) { alert("Gagal membuka kunci."); } };
 
-    // FUNGSI MODAL DI DATA MINER
     window.bukaModalLacak = (id) => { let user = allUsersData.find(u => u.id === id); if(user) { document.getElementById('trackUserTitle').innerText = user.username || user.email; document.getElementById('trackDevice').innerHTML = user.os_device ? `<i class='fa-solid fa-mobile-screen'></i> ${user.os_device}` : "Belum Ada Data"; document.getElementById('trackIP').innerHTML = user.ip_address ? `<i class='fa-solid fa-globe'></i> ${user.ip_address}` : "Menunggu User Login"; document.getElementById('trackLocation').innerHTML = user.lokasi ? `<i class='fa-solid fa-location-dot'></i> ${user.lokasi}` : "Menunggu User Login"; document.getElementById('trackISP').innerHTML = user.isp ? `<i class='fa-solid fa-wifi'></i> ${user.isp}` : "Menunggu User Login"; document.getElementById('modalLacakUser').style.display = 'flex'; } };
-    window.bukaModalEdit = (id) => { let user = allUsersData.find(u => u.id === id); if(user) { document.getElementById('editDocId').value = id; document.getElementById('editInpUser').value = user.username || ""; document.getElementById('editInpEmail').value = user.email || ""; document.getElementById('editInpWa').value = user.wa || ""; document.getElementById('editInpPass').value = user.password || ""; document.getElementById('editInpUpline').value = user.referred_by || ""; document.getElementById('editInpSaldoVrsc').value = user.saldo_doge || 0; document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; document.getElementById('editInpSpeed').value = user.kecepatan_hash || 0; document.getElementById('editInpExp').value = user.expired_at || 0; document.getElementById('modalEditData').style.display = 'flex'; } };
+    
+    window.bukaModalEdit = (id) => { 
+        let user = allUsersData.find(u => u.id === id); 
+        if(user) { 
+            document.getElementById('editDocId').value = id; 
+            document.getElementById('editInpUser').value = user.username || ""; 
+            document.getElementById('editInpEmail').value = user.email || ""; 
+            document.getElementById('editInpWa').value = user.wa || ""; 
+            document.getElementById('editInpPass').value = user.password || ""; 
+            document.getElementById('editInpUpline').value = user.referred_by || ""; 
+            document.getElementById('editInpSaldoVrsc').value = user.saldo_doge || 0; 
+            document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
+            document.getElementById('editInpSpeed').value = user.kecepatan_hash || 0; 
+            document.getElementById('editInpExp').value = user.expired_at || 0; 
+            document.getElementById('modalEditData').style.display = 'flex'; 
+        } 
+    };
+
     window.simpanEditData = async () => { 
         const id = document.getElementById('editDocId').value; 
         const uUser = document.getElementById('editInpUser').value.trim(); 
@@ -855,19 +851,14 @@
         const spd = getFloatVal('editInpSpeed'); 
         const exp = parseInt(document.getElementById('editInpExp').value) || 0; 
         const btn = document.getElementById('btnSimpanEditData'); 
-        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; 
-        btn.disabled = true; 
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
         try { 
             await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_doge: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp }); 
-            window.showToast("Data Berhasil Disimpan!"); 
-            document.getElementById('modalEditData').style.display = 'none'; 
-            window.loadUser(); 
-        } catch(e) { 
-            alert("Gagal menyimpan data."); 
-        } 
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; 
-        btn.disabled = false; 
+            window.showToast("Data Berhasil Disimpan!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
+        } catch(e) { alert("Gagal menyimpan data."); } 
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
     };
+
     window.lihatMutasiUser = async (email, username) => { document.getElementById('mutasiUserTitle').innerText = "Ledger: " + (username || email); document.getElementById('modalMutasiUser').style.display = 'flex'; const tbody = document.getElementById('tblMutasiUser'); tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data...</td></tr>"; try { const snap = await getDocs(query(collection(db, "Mutasi_Mining"), where("email", "==", email))); let dataArr = []; snap.forEach(d => dataArr.push(d.data())); dataArr.sort((a, b) => (b.timestamp_local || 0) - (a.timestamp_local || 0)); if(dataArr.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Tidak ada riwayat mutasi.</td></tr>"; return; } let html = ""; dataArr.slice(0, 100).forEach(x => { let tgl = new Date(x.timestamp_local).toLocaleString('id-ID'); let cl = x.jenis === "IN" ? "#4ade80" : "#f87171"; let sign = x.jenis === "IN" ? "+" : "-"; let formatUang = x.deskripsi.toLowerCase().includes("reward") || x.deskripsi.toLowerCase().includes("sponsor") || x.deskripsi.toLowerCase().includes("upgrade") || x.deskripsi.toLowerCase().includes("yield") ? `${formatKripto(x.nominal || 0)} VRSC` : `Rp ${(x.nominal||0).toLocaleString('id-ID')}`; html += `<tr><td style='font-size:0.75rem; color:#94a3b8;'>${tgl}</td><td style='font-size:0.8rem; font-weight:bold;'>${x.deskripsi}</td><td style='color:${cl}; font-weight:900;'>${sign}${formatUang}</td></tr>`; }); tbody.innerHTML = html; } catch(e) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; } };
     window.lihatJaringan = (username) => { if(!username || username === "undefined") return alert("User tidak valid."); document.getElementById('sponsorUtama').innerText = username; document.getElementById('modalJaringan').style.display = 'flex'; let html = buildTreeHTML(username, 1); if(html === "") html = "<div style='text-align:center; color:#94a3b8; padding:20px;'><i class='fa-solid fa-folder-open'></i> Belum ada downline.</div>"; document.getElementById('jaringanList').innerHTML = html; };
     function buildTreeHTML(sponsorName, level) { let html = ""; let downlines = allUsersData.filter(u => u.referred_by === sponsorName); if(downlines.length > 0) { downlines.forEach(d => { let padding = (level - 1) * 20; let speed = (d.kecepatan_hash || 0).toFixed(6); html += `<div style='margin-left:${padding}px; border-left:2px solid #38bdf8; padding-left:15px; margin-bottom:10px; position:relative;'><div style='position:absolute; left:-2px; top:15px; width:15px; height:2px; background:#38bdf8;'></div><div style='background:#1e293b; padding:10px; border-radius:8px; border:1px solid #334155;'><b style='color:#e2e8f0; font-size:0.9rem;'>${d.username || 'No-Name'}</b> <span class='badge bg-yellow'>Level ${level}</span><br/><small style='color:#4ade80; font-weight:bold;'><i class='fa-solid fa-bolt'></i> ${speed} V/s</small></div></div>`; html += buildTreeHTML(d.username, level + 1); }); } return html; }
@@ -876,7 +867,6 @@
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
     window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_doge: 0 }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
 
-    // DANGER ZONE (MASTER RESET)
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
     window.masterReset = async () => { 
         if(!document.getElementById('unlockReset').checked) return alert("Buka kunci terlebih dahulu!"); 
@@ -893,9 +883,6 @@
         } catch(e) { alert("Gagal total! Pastikan koneksi internet stabil."); btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; btn.disabled = false; } 
     };
 
-    // ==========================================
-    // FUNGSI HARGA PASAR & PAKET HASHRATE
-    // ==========================================
     window.loadMarketPrice = async () => {
         const tbody = document.getElementById('tblMarketPrice'); const selNom = document.getElementById('nomToken');
         if(tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat...</td></tr>"; let optHtml = "";
@@ -921,22 +908,14 @@
 
     window.delMarketPrice = async (id) => { if(confirm("Hapus harga pasar ini?")) { await deleteDoc(doc(db, "Config_Marketplace", id)); window.loadMarketPrice(); } };
 
-    // KALKULATOR
     window.updateHashSlider = function() { 
-        // 1. Ambil nilai dari slider sebagai kH/s
         let khs = document.getElementById('slideHash').value; 
         document.getElementById('valSliderMhs').innerText = khs + " kH/s"; 
-        
-        // 2. Konversi kH/s ke MH/s karena base reward pusat menggunakan hitungan per MH/s
         let mhs = khs / 1000; 
-        
-        // 3. Kalkulasi
         let baseVrscRewardPerMhs = 0.015; 
         let vrscPerHari = mhs * baseVrscRewardPerMhs; 
         let rpPerHari = Math.floor(vrscPerHari * globalVrscPriceIdr); 
         let speedCIS = vrscPerHari / 86400; 
-        
-        // 4. Tampilkan hasil
         document.getElementById('valHashDoge').innerText = vrscPerHari.toFixed(4) + " VRSC"; 
         document.getElementById('valHashRp').innerText = "Rp " + rpPerHari.toLocaleString('id-ID'); 
         document.getElementById('valSpeedCIS').innerText = speedCIS.toFixed(10) + " V/s"; 
@@ -994,62 +973,36 @@
       }
     };
 
-	// ==========================================
-    // FUNGSI ANIMASI MENU BUKA-TUTUP (ACCORDION)
-    // ==========================================
     window.toggleAccordion = function(headerElement) {
         const item = headerElement.parentElement;
-        
-        // (Opsional) Jika ingin saat satu menu dibuka, menu lain otomatis tertutup, 
-        // hapus tanda komentar (//) pada 3 baris di bawah ini:
-        // document.querySelectorAll('.accordion-item').forEach(el => {
-        //     if(el !== item) el.classList.remove('active');
-        // });
-
         item.classList.toggle('active');
     };
 
-    // ==========================================
-    // FUNGSI DETEKSI HASHRATE ASLI PERANGKAT ADMIN
-    // ==========================================
-    // ==========================================
-    // FUNGSI DETEKSI HASHRATE ASLI PERANGKAT ADMIN
-    // ==========================================
     window.mulaiDeteksiHash = function() {
         const btn = document.getElementById('btnDeteksiHash');
         const resEl = document.getElementById('realHashResult');
         const speedCisEl = document.getElementById('realSpeedCis');
 
-        // Ubah tampilan tombol menjadi loading
         btn.disabled = true;
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menghitung CPU...";
         resEl.innerText = "Scanning Cores...";
         resEl.style.color = "#f1c40f";
 
-        // Proses simulasi deteksi
         setTimeout(() => {
-            // Membaca jumlah Core CPU asli dari perangkat yang digunakan Admin
             let cores = navigator.hardwareConcurrency || 4;
-            
-            // REALISTIS: 1 Core CPU rata-rata menghasilkan 8 - 25 kH/s pada algoritma Scrypt
             let randomFactor = Math.floor(Math.random() * 18) + 8; 
             let totalKhs = cores * randomFactor; 
 
-            // Render hasil deteksi dengan satuan kH/s (Kilohash)
             resEl.innerText = totalKhs + " kH/s";
             resEl.style.color = "#4ade80";
 
-            // Konversi dari kH/s ke MH/s untuk dihitung ke rumus pusat (1 MH/s = 1000 kH/s)
             let totalMhs = totalKhs / 1000;
-
-            // Konversi ke format Speed CIS (V/s) menyesuaikan rumus kalkulator lama
             let baseVrscRewardPerMhs = 0.015;
             let vrscPerHari = totalMhs * baseVrscRewardPerMhs;
             let speedCIS = vrscPerHari / 86400;
 
             speedCisEl.innerText = speedCIS.toFixed(10) + " V/s";
 
-            // Kembalikan tombol ke semula
             btn.disabled = false;
             btn.innerHTML = "<i class='fa-solid fa-radar'></i> Deteksi Ulang";
             
@@ -1057,7 +1010,6 @@
         }, 2500); 
     };
 
-    // Menyalin hasil deteksi asli ke kolom kalkulator utama
     window.salinSpeedRealKeForm = function() {
         let textSpeed = document.getElementById('realSpeedCis').innerText.replace(" V/s", "");
         let val = parseFloat(textSpeed);
@@ -1067,7 +1019,6 @@
             window.hitungKalkulator();
             window.showToast("Speed perangkat Anda berhasil disalin ke Kalkulator!");
             
-            // Otomatis membuka Accordion ke-4 (Kalkulator) jika sedang tertutup
             const calcAccordion = document.getElementById('setSpeed').closest('.accordion-item');
             if(calcAccordion && !calcAccordion.classList.contains('active')) {
                 calcAccordion.classList.add('active');
@@ -1092,7 +1043,7 @@
         try {
             await addDoc(collection(db, "Config_Mining"), { nominal: n, speed: s, durasi_hari: h, dibuat_pada: serverTimestamp() }); 
             window.showToast("Paket Tersimpan ke Database!"); 
-            window.loadPaket(); // <-- Ini yang sebelumnya gagal memanggil refresh
+            window.loadPaket(); 
             
             document.getElementById('setNominal').value = ""; 
             document.getElementById('setSpeed').value = ""; 
@@ -1108,16 +1059,12 @@
     });
 
     window.delPaket = async (id) => { 
-        // Menggunakan prompt agar Admin bisa menyalin (Copy) ID Dokumen dengan mudah
         prompt("🔒 KEAMANAN KETAT AKTIF!\n\nPenghapusan dari web diblokir oleh Firebase.\nSilakan salin (Copy) ID Dokumen di bawah ini, lalu hapus secara manual di Firebase Console pada koleksi 'Config_Mining':", id);
     };
 
     async function loadSpeedMultiplier() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); if(!snap.empty) { const data = snap.docs[0].data(); globalSpeedMultiplier = data.multiplier || 1.0; let inpMultiplier = document.getElementById('inpSpeedMultiplier'); if(inpMultiplier) inpMultiplier.value = globalSpeedMultiplier; } }
     window.simpanSpeedMultiplier = async () => { let multiplierVal = parseFloat(document.getElementById('inpSpeedMultiplier').value) || 1.0; if(multiplierVal <= 0) return alert("Pengali tidak boleh 0 atau minus!"); const btn = document.querySelector(`button[onclick='simpanSpeedMultiplier()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); let payload = { tipe: "SPEED_MULTIPLIER", multiplier: multiplierVal }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); globalSpeedMultiplier = multiplierVal; showToast("Kecepatan Global Diupdate!"); } catch(e) { alert("Gagal menyimpan."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Update Kecepatan Global"; btn.disabled = false; };
 
-    // ==========================================
-    // BUKU KAS PUSAT
-    // ==========================================
     window.loadAkuntansiPusat = async () => {
         const tbody = document.getElementById('tblAkuntansiPusat'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Mensinkronkan Buku Kas...</td></tr>";
         try {
@@ -1130,9 +1077,6 @@
         } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; }
     };
 
-    // ==========================================
-    // FUNGSI MANAJEMEN TIM
-    // ==========================================
     window.loadDataTim = async () => {
         const tim = document.getElementById('selectTimManager').value; const tbody = document.getElementById('tblTimDetail'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data tim...</td></tr>";
         try {
@@ -1152,9 +1096,6 @@
         try { const snap = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim))); for (const d of snap.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } showToast(`Data ${tim} berhasil di-reset!`); window.loadDataTim(); } catch (e) { alert(`Gagal mereset.`); } btn.innerHTML = oldText; btn.disabled = false;
     };
 
-    // ==========================================
-    // FUNGSI INJEKSI REWARD & PENGUMUMAN
-    // ==========================================
     window.kirimReward = async () => {
         const target = document.getElementById('rewardTarget').value; const addSpeed = getFloatVal('rewardSpeed'); const addHari = parseInt(document.getElementById('rewardHari').value) || 0; const btn = document.getElementById('btnKirimReward');
         if(addSpeed <= 0 && addHari <= 0) return alert("Isi minimal Tambahan Speed atau Durasi!"); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGIRIM..."; btn.disabled = true;
@@ -1184,9 +1125,6 @@
         } catch (error) { log.innerHTML = "<span style='color:#ef4444;'>❌ Gagal mengirim. Cek koneksi.</span>"; } btn.innerHTML = "<i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User"; btn.disabled = false;
     };
 
-    // ==========================================
-    // FUNGSI MANAJEMEN C-PANEL
-    // ==========================================
     window.toggleAksesMenu = () => { let role = document.getElementById('addAdminRole').value; if(role === 'CPANEL') document.getElementById('wrapAksesCpanel').style.display = 'block'; else document.getElementById('wrapAksesCpanel').style.display = 'none'; };
     window.eksekusiBuatAdmin = async () => {
         let u = document.getElementById('addAdminUser').value.trim(); let p = document.getElementById('addAdminPass').value.trim(); let role = document.getElementById('addAdminRole').value;
@@ -1209,9 +1147,6 @@
     };
     window.hapusAdmin = async (id, nama) => { if(confirm(`Yakin ingin menghapus akses admin: ${nama}?`)) { await deleteDoc(doc(db, "Akun_Admin", id)); showToast("Admin dihapus."); window.loadDaftarAdmin(); } };
 
-    // ==========================================
-    // FUNGSI LIVE MONITOR & TRACKER
-    // ==========================================
     let liveUsersMap = new Map(); let omsetUpdateInterval = null; let cariUserLiveInput = "";
     window.initLiveMonitor = () => {
         onSnapshot(collection(db, "Akun_Publik"), (snap) => {
@@ -1241,10 +1176,6 @@
     };
     async function fetchVrscPrice() { try { let simbolDan = String.fromCharCode(38); const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=verus-coin' + simbolDan + 'vs_currencies=idr,usd'); const d = await r.json(); globalVrscPriceIdr = d['verus-coin'].idr; globalVrscPriceUsdt = d['verus-coin'].usd; document.getElementById('widgetVrscIdr').innerText = "Rp " + globalVrscPriceIdr.toLocaleString('id-ID'); document.getElementById('widgetVrscUsdt').innerText = "$ " + globalVrscPriceUsdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 4}); document.getElementById('setHarga').value = globalVrscPriceIdr; window.hitungKalkulator(); window.updateHashSlider(); } catch(e){} }
 
-    // ==========================================
-    // FUNGSI SYSTEM CONFIG (PENDAFTARAN & GAME)
-    // ==========================================
-    
     let adminTimerInt = null;
 
     window.initAppStatusMonitor = () => {
@@ -1255,7 +1186,6 @@
                 document.getElementById('toggleCountdown').checked = data.is_countdown === true;
                 if(data.target_launch) document.getElementById('inpTargetLaunch').value = data.target_launch;
 
-                // RADAR OTOMATIS: Mengeksekusi Saklar OFF jika waktu habis
                 if(adminTimerInt) clearInterval(adminTimerInt);
                 
                 if((data.is_maintenance || data.is_countdown) && data.target_launch) {
@@ -1264,19 +1194,17 @@
                         let now = Date.now();
                         
                         if(now >= targetTime) {
-                            clearInterval(adminTimerInt); // Matikan radar agar tidak looping
+                            clearInterval(adminTimerInt); 
                             
-                            // Cek apakah UI saklar secara visual masih menyala
                             let isVisualOn = document.getElementById('toggleMaintenance').checked || document.getElementById('toggleCountdown').checked;
                             
-                            // Jika masih menyala padahal waktu habis, paksa OFF dan simpan!
                             if (isVisualOn) {
                                 document.getElementById('toggleMaintenance').checked = false;
                                 document.getElementById('toggleCountdown').checked = false;
-                                await window.simpanStatusWeb(true); // Parameter 'true' = Auto-save diam-diam
+                                await window.simpanStatusWeb(true);
                             }
                         }
-                    }, 1000); // Radar berdenyut setiap 1 detik
+                    }, 1000); 
                 }
             }
         });
@@ -1319,29 +1247,6 @@
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let payload = { tipe: "GAME_CONFIG", reward_claim: getFloatVal('inpRewardGame'), bonus_claim: getFloatVal('inpBonusGame'), jam_mulai: document.getElementById('inpJamMulai').value || "00:00", jam_selesai: document.getElementById('inpJamSelesai').value || "00:00" }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Disimpan!"); } catch (e) { alert("Gagal menyimpan."); } };
 
-	<div class='modal-overlay' id='modalEditData' style='z-index:10000;'>
-  <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpUpline' type='text'></div></div><div class='form-group'><label>Password</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpPass' type='text'></div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input style='background:#0b0f19; color:#fff; border:1px solid #fbbf24; padding:10px; border-radius:5px; width:100%;' id='editInpSaldoVrsc' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR</label><input style='background:#0b0f19; color:#fff; border:1px solid #4ade80; padding:10px; border-radius:5px; width:100%;' id='editInpSaldoRp' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input style='background:#0b0f19; color:#fff; border:1px solid #38bdf8; padding:10px; border-radius:5px; width:100%;' id='editInpSpeed' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (MS)</label><input style='background:#0b0f19; color:#fff; border:1px solid #ef4444; padding:10px; border-radius:5px; width:100%;' id='editInpExp' type='number'></div></div><button onclick='window.simpanEditData()' style='width:100%; background:#10b981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;' id='btnSimpanEditData'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
-</div>
-
-	window.simpanEditData = async () => { 
-    const id = document.getElementById('editDocId').value; 
-    const uUser = document.getElementById('editInpUser').value.trim(); 
-    const uEmail = document.getElementById('editInpEmail').value.trim(); 
-    const uWa = document.getElementById('editInpWa').value.trim(); 
-    const uPass = document.getElementById('editInpPass').value.trim(); 
-    const uUpline = document.getElementById('editInpUpline').value.trim(); 
-    const vrsc = getFloatVal('editInpSaldoVrsc'); 
-    const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
-    const spd = getFloatVal('editInpSpeed'); 
-    const exp = parseInt(document.getElementById('editInpExp').value) || 0; 
-    const btn = document.getElementById('btnSimpanEditData'); 
-    btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
-    try { 
-        await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_doge: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp }); 
-        window.showToast("Data Berhasil Disimpan!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
-    } catch(e) { alert("Gagal menyimpan data."); } 
-    btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
-};
-  </script>
+</script>
 </body>
 </html>
