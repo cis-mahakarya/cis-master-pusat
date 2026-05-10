@@ -393,7 +393,7 @@
                   <div style='color:#94a3b8; font-size:0.8rem; font-weight:bold; margin-bottom:5px;'>SIMULATOR MANUAL KEKUATAN MINING (SCRYPT)</div>
                   <div class='s-res-val' id='valSliderMhs' style='font-size:1.5rem; color:#38bdf8;'>100 kH/s</div>
    		  <input class='slider-custom' id='slideHash' max='10000' min='10' step='10' oninput='updateHashSlider()' type='range' value='100'>
-                  <div style='display:flex; justify-content:space-around; margin-top:15px; background:#020617; padding:15px; border-radius:8px;'><div style='color:#fff; font-size:0.8rem;'>Est. Harian<br/><div class='s-res-val' id='valHashDoge'>0.00 VRSC</div></div><div style='color:#fff; font-size:0.8rem;'>Est. Rupiah<br/><div class='s-res-val' id='valHashRp'>Rp 0</div></div></div>
+                  <div style='display:flex; justify-content:space-around; margin-top:15px; background:#020617; padding:15px; border-radius:8px;'><div style='color:#fff; font-size:0.8rem;'>Est. Harian<br/><div class='s-res-val' id='valHashVrsc'>0.00 VRSC</div></div><div style='color:#fff; font-size:0.8rem;'>Est. Rupiah<br/><div class='s-res-val' id='valHashRp'>Rp 0</div></div></div>
                   <div style='margin-top:15px; padding:10px; background:rgba(255,255,255,0.1); border-radius:5px;'><div style='font-size:0.75rem; color:#94a3b8;'>SPEED UNTUK SISTEM CIS:</div><div id='valSpeedCIS' style='font-family:Orbitron; font-size:1.2rem; color:#38bdf8; font-weight:bold;'>0.00000000 V/s</div></div>
                 </div>
                 <button class='btn-main' onclick='salinSpeedKeForm()' style='background:#f59e0b; margin-top:10px;'><i class='fa-solid fa-arrow-down'></i> Gunakan Speed Simulasi Ini</button>
@@ -426,7 +426,7 @@
                     <div class='calc-total'>
                         <div style='font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color:#fbbf24; letter-spacing:1px;'>TOTAL ASET RUPIAH SELAMA <span id='lblDurasi' style='color:#fff;'>30</span> HARI</div>
                         <div id='resTotalRp' style='font-family:Orbitron; font-size:2rem; font-weight:900; color:#fff; margin:10px 0;'>Rp 0</div>
-                        <div style='font-size:0.85rem; margin-top:5px; font-weight:bold; color:#e2e8f0;'>( Total Panen: <span id='resTotalDoge' style='color:#fbbf24;'>0.000000</span> VRSC )</div>
+                        <div style='font-size:0.85rem; margin-top:5px; font-weight:bold; color:#e2e8f0;'>( Total Panen: <span id='resTotalVrsc' style='color:#fbbf24;'>0.000000</span> VRSC )</div>
                         <div id='resRoi' style='font-size:0.95rem; margin-top:10px; background:rgba(0,0,0,0.3); padding:8px; border-radius:8px; display:inline-block;'>-</div>
                     </div>
                 </div>
@@ -831,7 +831,7 @@
             document.getElementById('editInpWa').value = user.wa || ""; 
             document.getElementById('editInpPass').value = user.password || ""; 
             document.getElementById('editInpUpline').value = user.referred_by || ""; 
-            document.getElementById('editInpSaldoVrsc').value = user.saldo_doge || 0; 
+            document.getElementById('editInpSaldoVrsc').value = user.saldo_vrsc || 0; 
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
             document.getElementById('editInpSpeed').value = user.kecepatan_hash || 0; 
             document.getElementById('editInpExp').value = user.expired_at || 0; 
@@ -853,7 +853,7 @@
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
         try { 
-            await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_doge: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp }); 
+            await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp }); 
             window.showToast("Data Berhasil Disimpan!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
         } catch(e) { alert("Gagal menyimpan data."); } 
         btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
@@ -865,7 +865,7 @@
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
-    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_doge: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_doge: 0 }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
+    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0 }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
 
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
     window.masterReset = async () => { 
@@ -876,7 +876,7 @@
         const btn = document.getElementById('btnMasterReset'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGHANCURKAN & MEMBANGUN ULANG..."; btn.disabled = true; 
         try { 
             const snapU = await getDocs(collection(db, "Akun_Publik")); for (const d of snapU.docs) { await deleteDoc(doc(db, "Akun_Publik", d.id)); } 
-            await addDoc(collection(db, "Akun_Publik"), { username: "CIS01", email: "cis01@gmail.com", wa: "6281234567890", password: "admin", tx_pin: "123456", referred_by: "MASTER", saldo_doge: 0, kecepatan_hash: 0, expired_at: Date.now() + (365 * 86400000), status_akun: "AKTIF", created_at: serverTimestamp(), saldo_rupiah: 0, total_bonus_sponsor_doge: 0, device_id: "" });
+            await addDoc(collection(db, "Akun_Publik"), { username: "CIS01", email: "cis01@gmail.com", wa: "6281234567890", password: "admin", tx_pin: "123456", referred_by: "MASTER", saldo_vrsc: 0, kecepatan_hash: 0, expired_at: Date.now() + (365 * 86400000), status_akun: "AKTIF", created_at: serverTimestamp(), saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, device_id: "" });
             const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config" ]; 
             for (const kol of listKoleksi) { const snap = await getDocs(collection(db, kol)); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } 
             alert("✅ FACTORY RESET BERHASIL!\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan."); window.location.reload();
@@ -916,7 +916,7 @@
         let vrscPerHari = mhs * baseVrscRewardPerMhs; 
         let rpPerHari = Math.floor(vrscPerHari * globalVrscPriceIdr); 
         let speedCIS = vrscPerHari / 86400; 
-        document.getElementById('valHashDoge').innerText = vrscPerHari.toFixed(4) + " VRSC"; 
+        document.getElementById('valHashvrsc').innerText = vrscPerHari.toFixed(4) + " VRSC"; 
         document.getElementById('valHashRp').innerText = "Rp " + rpPerHari.toLocaleString('id-ID'); 
         document.getElementById('valSpeedCIS').innerText = speedCIS.toFixed(10) + " V/s"; 
     };
@@ -962,7 +962,7 @@
       document.getElementById('resBulanIdr').innerText = "Rp " + Math.floor((perHari * 30) * harga).toLocaleString('id-ID');
       
       document.getElementById('lblDurasi').innerText = durasiHari; 
-      document.getElementById('resTotalDoge').innerText = totalVrsc.toFixed(6); 
+      document.getElementById('resTotalVrsc').innerText = totalVrsc.toFixed(6); 
       document.getElementById('resTotalRp').innerText = "Rp " + totalRp.toLocaleString('id-ID');
       
       let roiEl = document.getElementById('resRoi'); 
@@ -1151,7 +1151,7 @@
     window.initLiveMonitor = () => {
         onSnapshot(collection(db, "Akun_Publik"), (snap) => {
             let now = Date.now();
-            snap.docChanges().forEach(change => { let d = change.doc.data(); let uid = change.doc.id; let prevData = liveUsersMap.get(uid); if (prevData) { if (d.saldo_doge !== prevData.saldo_doge) { d.last_seen_local = now; } else { d.last_seen_local = prevData.last_seen_local || 0; } } else { d.last_seen_local = d.kecepatan_hash > 0 ? now : 0; } liveUsersMap.set(uid, d); });
+            snap.docChanges().forEach(change => { let d = change.doc.data(); let uid = change.doc.id; let prevData = liveUsersMap.get(uid); if (prevData) { if (d.saldo_vrsc !== prevData.saldo_vrsc) { d.last_seen_local = now; } else { d.last_seen_local = prevData.last_seen_local || 0; } } else { d.last_seen_local = d.kecepatan_hash > 0 ? now : 0; } liveUsersMap.set(uid, d); });
         });
         if(omsetUpdateInterval) clearInterval(omsetUpdateInterval); omsetUpdateInterval = setInterval(window.renderLiveDashboard, 1000);
     };
