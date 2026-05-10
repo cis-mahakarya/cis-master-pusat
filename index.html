@@ -1319,6 +1319,29 @@
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let payload = { tipe: "GAME_CONFIG", reward_claim: getFloatVal('inpRewardGame'), bonus_claim: getFloatVal('inpBonusGame'), jam_mulai: document.getElementById('inpJamMulai').value || "00:00", jam_selesai: document.getElementById('inpJamSelesai').value || "00:00" }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Disimpan!"); } catch (e) { alert("Gagal menyimpan."); } };
 
+	<div class='modal-overlay' id='modalEditData' style='z-index:10000;'>
+  <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpUpline' type='text'></div></div><div class='form-group'><label>Password</label><input style='background:#0b0f19; color:#fff; border:1px solid #475569; padding:10px; border-radius:5px; width:100%;' id='editInpPass' type='text'></div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input style='background:#0b0f19; color:#fff; border:1px solid #fbbf24; padding:10px; border-radius:5px; width:100%;' id='editInpSaldoVrsc' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR</label><input style='background:#0b0f19; color:#fff; border:1px solid #4ade80; padding:10px; border-radius:5px; width:100%;' id='editInpSaldoRp' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input style='background:#0b0f19; color:#fff; border:1px solid #38bdf8; padding:10px; border-radius:5px; width:100%;' id='editInpSpeed' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (MS)</label><input style='background:#0b0f19; color:#fff; border:1px solid #ef4444; padding:10px; border-radius:5px; width:100%;' id='editInpExp' type='number'></div></div><button onclick='window.simpanEditData()' style='width:100%; background:#10b981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;' id='btnSimpanEditData'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
+</div>
+
+	window.simpanEditData = async () => { 
+    const id = document.getElementById('editDocId').value; 
+    const uUser = document.getElementById('editInpUser').value.trim(); 
+    const uEmail = document.getElementById('editInpEmail').value.trim(); 
+    const uWa = document.getElementById('editInpWa').value.trim(); 
+    const uPass = document.getElementById('editInpPass').value.trim(); 
+    const uUpline = document.getElementById('editInpUpline').value.trim(); 
+    const vrsc = getFloatVal('editInpSaldoVrsc'); 
+    const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
+    const spd = getFloatVal('editInpSpeed'); 
+    const exp = parseInt(document.getElementById('editInpExp').value) || 0; 
+    const btn = document.getElementById('btnSimpanEditData'); 
+    btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
+    try { 
+        await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_doge: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp }); 
+        window.showToast("Data Berhasil Disimpan!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
+    } catch(e) { alert("Gagal menyimpan data."); } 
+    btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
+};
   </script>
 </body>
 </html>
