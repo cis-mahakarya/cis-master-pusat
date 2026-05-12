@@ -1307,7 +1307,32 @@
         document.getElementById('omsetSecVrsc').innerText = formatKripto(vrscPerSec); document.getElementById('omsetSecIdr').innerText = "Rp " + Math.floor(vrscPerSec * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetMinVrsc').innerText = formatKripto(vrscPerMin); document.getElementById('omsetMinIdr').innerText = "Rp " + Math.floor(vrscPerMin * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetHrVrsc').innerText = formatKripto(vrscPerHr); document.getElementById('omsetHrIdr').innerText = "Rp " + Math.floor(vrscPerHr * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetDayVrsc').innerText = formatKripto(vrscPerDay); document.getElementById('omsetDayIdr').innerText = "Rp " + Math.floor(vrscPerDay * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetWeekVrsc').innerText = formatKripto(vrscPerWeek); document.getElementById('omsetWeekIdr').innerText = "Rp " + Math.floor(vrscPerWeek * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetMonthVrsc').innerText = formatKripto(vrscPerMonth); document.getElementById('omsetMonthIdr').innerText = "Rp " + Math.floor(vrscPerMonth * globalVrscPriceIdr).toLocaleString('id-ID');
         document.getElementById('tblLiveUser').innerHTML = tbodyHtml === "" ? "<tr><td colspan='4' style='text-align:center;'>Tidak ada data radar.</td></tr>" : tbodyHtml;
     };
-    async function fetchVrscPrice() { try { let simbolDan = String.fromCharCode(38); const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=verus-coin' + simbolDan + 'vs_currencies=idr,usd'); const d = await r.json(); globalVrscPriceIdr = d['verus-coin'].idr; globalVrscPriceUsdt = d['verus-coin'].usd; document.getElementById('widgetVrscIdr').innerText = "Rp " + globalVrscPriceIdr.toLocaleString('id-ID'); document.getElementById('widgetVrscUsdt').innerText = "$ " + globalVrscPriceUsdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 4}); document.getElementById('setHarga').value = globalVrscPriceIdr; window.hitungKalkulator(); window.updateHashSlider(); } catch(e){} }
+    async function fetchVrscPrice() { 
+        try { 
+            let simbolDan = String.fromCharCode(38); 
+            const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=verus-coin' + simbolDan + 'vs_currencies=idr,usd'); 
+            const d = await r.json(); 
+            
+            if (d && d['verus-coin']) {
+                globalVrscPriceIdr = d['verus-coin'].idr; 
+                globalVrscPriceUsdt = d['verus-coin'].usd; 
+                document.getElementById('widgetVrscIdr').innerHTML = "Rp " + globalVrscPriceIdr.toLocaleString('id-ID') + " <span style='color:#10b981; font-size:0.6rem;'>(Live)</span>"; 
+                document.getElementById('widgetVrscUsdt').innerText = "$ " + globalVrscPriceUsdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 4}); 
+                document.getElementById('setHarga').value = globalVrscPriceIdr; 
+            } else { throw "Harga Kosong"; }
+        } catch(e) {
+            globalVrscPriceIdr = 2500; 
+            try { 
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); 
+                if(!snap.empty && snap.docs[0].data().harga_vrsc_pusat) { globalVrscPriceIdr = snap.docs[0].data().harga_vrsc_pusat; } 
+            } catch(err) {}
+            document.getElementById('widgetVrscIdr').innerHTML = "Rp " + globalVrscPriceIdr.toLocaleString('id-ID') + " <span style='color:#f59e0b; font-size:0.6rem;'>(Backup)</span>"; 
+            document.getElementById('widgetVrscUsdt').innerText = "$ 0.16"; 
+            document.getElementById('setHarga').value = globalVrscPriceIdr;
+        } 
+        window.hitungKalkulator(); 
+        window.updateHashSlider(); 
+    }
 
     let adminTimerInt = null;
 
