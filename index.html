@@ -549,7 +549,39 @@
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #f59e0b;'><textarea id='inputPengumuman' placeholder='Ketik pengumuman penting (Maintenance, Promo, dll) di sini...' rows='4'></textarea><button class='btn-main' id='btnKirimPengumuman' onclick='kirimPengumuman()' style='background:#f59e0b; margin-top:15px;'><i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User</button><div id='logPengumuman' style='margin-top:10px; font-size:0.85rem; color:#10b981; font-weight:bold; text-align:center;'></div></div>
+      	<!-- KOTAK BANNER EVENT KLAIM -->
+      <div class='card-panel' style='border-top: 2px solid #38bdf8; margin-bottom: 20px;'>
+        <h4 style='margin-top:0; color:#38bdf8;'><i class='fa-solid fa-gift'></i> Pengaturan Banner Event (Area Claim)</h4>
+        
+        <div class='switch-wrap'>
+          <div><b style='color:#38bdf8;'><i class='fa-solid fa-power-off'></i> Status Banner Event</b></div>
+          <label class='switch'><input id='toggleEventBanner' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        
+        <div class='form-group'><label>Judul Event</label><input id='inpEventJudul' type='text' placeholder='Contoh: PROMO WEEKEND!'></div>
+        <div class='form-group'><label>Pesan Singkat</label><textarea id='inpEventPesan' rows='2' placeholder='Dapatkan extra reward khusus hari ini...'></textarea></div>
+        
+        <div class='form-group' style='border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.1);'>
+          <label style='color: #38bdf8;'>Pilih Tipe Reward</label>
+          <select id='selEventTipe' onchange='window.ubahFormEvent()' style='border-color: #38bdf8;'>
+            <option value='COIN'>1. Tambahan Coin VRSC Saja</option>
+            <option value='COIN_SPEED'>2. Tambahan Coin VRSC & Speed Hash</option>
+            <option value='COIN_TIME'>3. Tambahan Coin VRSC & Limit Batas Waktu</option>
+          </select>
+        </div>
+        
+        <div style='display:flex; gap:10px;'>
+          <div class='form-group' style='flex:1;'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventLimit'><label>Limit Klaim (x)</label><input id='inpEventLimit' type='number' value='0'></div>
+        </div>
+        
+        <div class='form-group'><label>Waktu Hitung Mundur Berakhir (Opsional)</label><input id='inpEventBatasWaktu' type='datetime-local' style='color:#fbbf24; font-weight:bold;'></div>
+        
+        <button class='btn-main' onclick='window.simpanEventBanner()' style='background:#38bdf8;'><i class='fa-solid fa-save'></i> Simpan & Update Banner</button>
+      </div>
+      <!-- END KOTAK BANNER EVENT KLAIM -->
+		<div class='card-panel' style='border-top: 2px solid #f59e0b;'><textarea id='inputPengumuman' placeholder='Ketik pengumuman penting (Maintenance, Promo, dll) di sini...' rows='4'></textarea><button class='btn-main' id='btnKirimPengumuman' onclick='kirimPengumuman()' style='background:#f59e0b; margin-top:15px;'><i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User</button><div id='logPengumuman' style='margin-top:10px; font-size:0.85rem; color:#10b981; font-weight:bold; text-align:center;'></div></div>
     </div>
   </div>
 
@@ -669,7 +701,7 @@
         });
         
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
-        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); showToast("Access Granted: Welcome Commander.");
+        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); showToast("Access Granted: Welcome Commander.");
     }
 
     window.logoutAdmin = () => { localStorage.removeItem("cisAdminLog_v2"); window.location.reload(); };
@@ -1117,6 +1149,58 @@
         } catch (error) { alert("Gagal mengirim reward."); } btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD"; btn.disabled = false;
     };
 
+	// --- SISTEM BANNER EVENT (KLAIM) ---
+    window.ubahFormEvent = () => {
+        let tipe = document.getElementById('selEventTipe').value;
+        document.getElementById('wrapEventSpeed').style.display = (tipe === 'COIN_SPEED') ? 'block' : 'none';
+        document.getElementById('wrapEventLimit').style.display = (tipe === 'COIN_TIME') ? 'block' : 'none';
+    };
+
+    window.loadEventBanner = async () => {
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PENGUMUMAN_KLAIM")));
+            if(!snap.empty) {
+                let d = snap.docs[0].data();
+                document.getElementById('toggleEventBanner').checked = d.is_active || false;
+                document.getElementById('inpEventJudul').value = d.judul || "";
+                document.getElementById('inpEventPesan').value = d.pesan || "";
+                document.getElementById('selEventTipe').value = d.reward_tipe || "COIN";
+                document.getElementById('inpEventCoin').value = d.reward_coin || 0;
+                document.getElementById('inpEventSpeed').value = d.reward_speed || 0;
+                document.getElementById('inpEventLimit').value = d.reward_limit || 0;
+                if(d.batas_waktu) document.getElementById('inpEventBatasWaktu').value = d.batas_waktu;
+                window.ubahFormEvent();
+            }
+        } catch(e) {}
+    };
+
+    window.simpanEventBanner = async () => {
+        const btn = document.querySelector(`button[onclick='window.simpanEventBanner()']`);
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
+        
+        let payload = {
+            tipe: "PENGUMUMAN_KLAIM",
+            is_active: document.getElementById('toggleEventBanner').checked,
+            judul: document.getElementById('inpEventJudul').value,
+            pesan: document.getElementById('inpEventPesan').value,
+            reward_tipe: document.getElementById('selEventTipe').value,
+            reward_coin: getFloatVal('inpEventCoin'),
+            reward_speed: getFloatVal('inpEventSpeed'),
+            reward_limit: parseInt(document.getElementById('inpEventLimit').value) || 0,
+            batas_waktu: document.getElementById('inpEventBatasWaktu').value
+        };
+        
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PENGUMUMAN_KLAIM")));
+            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+            showToast("Banner Event Berhasil Diupdate!");
+        } catch(e) { alert("Gagal menyimpan Banner Event."); }
+        
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan & Update Banner"; btn.disabled = false;
+    };
+    // -----------------------------------
+	
     window.kirimPengumuman = async () => {
         const pesan = document.getElementById('inputPengumuman').value.trim(); const btn = document.getElementById('btnKirimPengumuman'); const log = document.getElementById('logPengumuman');
         if(!pesan) return alert("Isi pesan pengumuman!"); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGIRIM BROADCAST..."; btn.disabled = true;
