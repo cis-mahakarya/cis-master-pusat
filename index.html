@@ -304,11 +304,23 @@
     <div class='screen-content'>
       <div class='card-panel' style='border-top: 2px solid #e67e22;'>
         <div style='display:flex; border-bottom:1px solid #334155; margin-bottom:15px;'><div id='tabWdPending' onclick='window.switchTabWd("pending")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#f59e0b; border-bottom:2px solid #f59e0b;'>Antrean (Pending)</div><div id='tabWdRiwayat' onclick='window.switchTabWd("riwayat")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'>Riwayat Selesai</div></div>
+        
         <div id='areaWdPending'>
+            <!-- SAKLAR AUTO WD -->
             <div class='switch-wrap' style='margin-bottom:15px; border-color:#10b981; background:rgba(16, 185, 129, 0.1);'>
-                <div><b style='color:#10b981;'><i class='fa-solid fa-robot'></i> Mode WD Otomatis</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Jika ON, sistem akan otomatis mencetak token saat user WD tanpa perlu ACC manual.</span></div>
+                <div><b style='color:#10b981;'><i class='fa-solid fa-robot'></i> Mode WD Otomatis</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Jika ON, sistem otomatis mencetak token saat user WD.</span></div>
                 <label class='switch'><input id='toggleAutoWd' type='checkbox' onchange='window.simpanAutoWd()'><span class='slider-tg'></span></label>
             </div>
+            
+            <button class='btn-main' id='btnAccBatch' onclick='eksekusiWDBatch()' style='background:#10b981; margin-bottom:15px;'><i class='fa-solid fa-check-double'></i> Setujui Otomatis (Terpilih)</button>
+            <div class='table-wrap'>
+                <table>
+                    <thead><tr><th style='width:30px; text-align:center;'><input id='chkAllWD' onchange='toggleAllWD(this)' style='cursor:pointer;' type='checkbox'></th><th class='col-no'>No</th><th>Tanggal Request &amp; User</th><th>Tujuan &amp; Nominal</th><th>Aksi Tolak</th></tr></thead>
+                    <tbody id='tblApproval'><tr><td colspan='5' style='text-align:center;'>Memuat antrean...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+        
         <div id='areaWdRiwayat' style='display:none;'><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Waktu Pengajuan</th><th>Pemohon &amp; Tujuan Token</th><th>Nominal &amp; Status</th></tr></thead><tbody id='tblApprovalRiwayat'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat...</td></tr></tbody></table></div></div>
       </div>
     </div>
