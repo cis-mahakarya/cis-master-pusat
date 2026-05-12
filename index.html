@@ -577,7 +577,13 @@
         </div>
         
         <div class='form-group'><label>Waktu Hitung Mundur Berakhir (Opsional)</label><input id='inpEventBatasWaktu' type='datetime-local' style='color:#fbbf24; font-weight:bold;'></div>
-        
+		<hr style='border:1px dashed #334155; margin:15px 0;'/>
+        <div class='switch-wrap'>
+          <div><b style='color:#4ade80;'><i class='fa-solid fa-message'></i> Status Teks Info Broadcast</b></div>
+          <label class='switch'><input id='toggleEventBroadcast' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        <div class='form-group'><label>Isi Teks Info Broadcast</label><textarea id='inpEventBroadcast' rows='3' placeholder='Ketik info tambahan atau pengumuman resmi di sini...'></textarea></div>
+		  
         <button class='btn-main' onclick='window.simpanEventBanner()' style='background:#38bdf8;'><i class='fa-solid fa-save'></i> Simpan & Update Banner</button>
       </div>
       <!-- END KOTAK BANNER EVENT KLAIM -->
@@ -1169,6 +1175,11 @@
                 document.getElementById('inpEventSpeed').value = d.reward_speed || 0;
                 document.getElementById('inpEventLimit').value = d.reward_limit || 0;
                 if(d.batas_waktu) document.getElementById('inpEventBatasWaktu').value = d.batas_waktu;
+                
+                // Load Broadcast
+                document.getElementById('toggleEventBroadcast').checked = d.is_broadcast_active || false;
+                document.getElementById('inpEventBroadcast').value = d.broadcast_text || "";
+                
                 window.ubahFormEvent();
             }
         } catch(e) {}
@@ -1187,15 +1198,17 @@
             reward_coin: getFloatVal('inpEventCoin'),
             reward_speed: getFloatVal('inpEventSpeed'),
             reward_limit: parseInt(document.getElementById('inpEventLimit').value) || 0,
-            batas_waktu: document.getElementById('inpEventBatasWaktu').value
+            batas_waktu: document.getElementById('inpEventBatasWaktu').value,
+            is_broadcast_active: document.getElementById('toggleEventBroadcast').checked,
+            broadcast_text: document.getElementById('inpEventBroadcast').value
         };
         
         try {
             const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PENGUMUMAN_KLAIM")));
             if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
             else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
-            showToast("Banner Event Berhasil Diupdate!");
-        } catch(e) { alert("Gagal menyimpan Banner Event."); }
+            showToast("Banner & Broadcast Berhasil Diupdate!");
+        } catch(e) { alert("Gagal menyimpan data."); }
         
         btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan & Update Banner"; btn.disabled = false;
     };
