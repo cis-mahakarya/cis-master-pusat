@@ -304,7 +304,11 @@
     <div class='screen-content'>
       <div class='card-panel' style='border-top: 2px solid #e67e22;'>
         <div style='display:flex; border-bottom:1px solid #334155; margin-bottom:15px;'><div id='tabWdPending' onclick='window.switchTabWd("pending")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#f59e0b; border-bottom:2px solid #f59e0b;'>Antrean (Pending)</div><div id='tabWdRiwayat' onclick='window.switchTabWd("riwayat")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'>Riwayat Selesai</div></div>
-        <div id='areaWdPending'><button class='btn-main' id='btnAccBatch' onclick='eksekusiWDBatch()' style='background:#10b981; margin-bottom:15px;'><i class='fa-solid fa-check-double'></i> Setujui Otomatis (Terpilih)</button><div class='table-wrap'><table><thead><tr><th style='width:30px; text-align:center;'><input id='chkAllWD' onchange='toggleAllWD(this)' style='cursor:pointer;' type='checkbox'></th><th class='col-no'>No</th><th>Tanggal Request &amp; User</th><th>Tujuan &amp; Nominal</th><th>Aksi Tolak</th></tr></thead><tbody id='tblApproval'><tr><td colspan='5' style='text-align:center;'>Memuat antrean...</td></tr></tbody></table></div></div>
+        <div id='areaWdPending'>
+            <div class='switch-wrap' style='margin-bottom:15px; border-color:#10b981; background:rgba(16, 185, 129, 0.1);'>
+                <div><b style='color:#10b981;'><i class='fa-solid fa-robot'></i> Mode WD Otomatis</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Jika ON, sistem akan otomatis mencetak token saat user WD tanpa perlu ACC manual.</span></div>
+                <label class='switch'><input id='toggleAutoWd' type='checkbox' onchange='window.simpanAutoWd()'><span class='slider-tg'></span></label>
+            </div>
         <div id='areaWdRiwayat' style='display:none;'><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Waktu Pengajuan</th><th>Pemohon &amp; Tujuan Token</th><th>Nominal &amp; Status</th></tr></thead><tbody id='tblApprovalRiwayat'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat...</td></tr></tbody></table></div></div>
       </div>
     </div>
@@ -774,19 +778,38 @@
     window.loadAntreanWD = async () => {
         const tbody = document.getElementById('tblApproval'); tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat antrean...</td></tr>";
         try {
-            const snap = await getDocs(query(collection(db, "Request_Withdraw"), where("status", "==", "PENDING"), orderBy("waktu_request", "asc"))); let html = ""; let no = 1;
-            snap.forEach(d => {
-                let x = d.data(); let waktu = formatTanggalJam(x.waktu_request);
+            // Fix Index Error: Menghilangkan orderBy dari Firebase, lalu disorting via JS
+            const snap = await getDocs(query(collection(db, "Request_Withdraw"), where("status", "==", "PENDING"))); 
+            let dataArr = []; snap.forEach(d => dataArr.push({ id: d.id, ...d.data() }));
+            dataArr.sort((a,b) => (a.waktu_request?.seconds || 0) - (b.waktu_request?.seconds || 0));
+
+            let html = ""; let no = 1;
+            dataArr.forEach(x => {
+                let waktu = formatTanggalJam(x.waktu_request);
                 html += `<tr>
-                    <td style='text-align:center;'><input type='checkbox' class='chk-wd-item' value='${d.id}' data-email='${x.email_pemohon}' data-user='${x.username_pemohon}' data-nom='${x.nominal_rupiah}' data-jenis='${x.distribusi_ke}' data-target='${x.target_username}'></td>
+                    <td style='text-align:center;'><input type='checkbox' class='chk-wd-item' value='${x.id}' data-email='${x.email_pemohon}' data-user='${x.username_pemohon}' data-nom='${x.nominal_rupiah}' data-jenis='${x.distribusi_ke}' data-target='${x.target_username}'></td>
                     <td style='text-align:center;'>${no++}</td>
                     <td><b style='color:#38bdf8;'>${x.username_pemohon}</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>${x.email_pemohon}</span><br/><span style='font-size:0.7rem;'>${waktu}</span></td>
                     <td><b style='color:#fbbf24;'>Rp ${x.nominal_rupiah.toLocaleString('id-ID')}</b><br/><span class='badge bg-dark'>Cetak: ${x.distribusi_ke}</span><br/><span style='font-size:0.75rem; color:#4ade80;'>Target: ${x.target_username}</span></td>
-                    <td><button class='action-btn bg-green' onclick='window.approveWD("${d.id}", "${x.email_pemohon}", "${x.username_pemohon}", ${x.nominal_rupiah}, "${x.distribusi_ke}", "${x.target_username}")' style='margin-bottom:5px;'><i class='fa-solid fa-check'></i> ACC</button><button class='action-btn btn-del' onclick='window.rejectWD("${d.id}", "${x.email_pemohon}", ${x.nominal_rupiah})'><i class='fa-solid fa-xmark'></i> TOLAK</button></td>
+                    <td><button class='action-btn bg-green' onclick='window.approveWD("${x.id}", "${x.email_pemohon}", "${x.username_pemohon}", ${x.nominal_rupiah}, "${x.distribusi_ke}", "${x.target_username}")' style='margin-bottom:5px;'><i class='fa-solid fa-check'></i> ACC</button><button class='action-btn btn-del' onclick='window.rejectWD("${x.id}", "${x.email_pemohon}", ${x.nominal_rupiah})'><i class='fa-solid fa-xmark'></i> TOLAK</button></td>
                 </tr>`;
             });
             tbody.innerHTML = html === "" ? "<tr><td colspan='5' style='text-align:center; color:#94a3b8;'>Hore! Antrean WD kosong.</td></tr>" : html;
+            
+            // Load status saklar Auto WD
+            const autoSnap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_WD")));
+            if(!autoSnap.empty) document.getElementById('toggleAutoWd').checked = autoSnap.docs[0].data().is_active;
         } catch(e) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal memuat antrean.</td></tr>"; }
+    };
+
+    window.simpanAutoWd = async () => {
+        let isAuto = document.getElementById('toggleAutoWd').checked;
+        try { 
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_WD"))); 
+            if(snap.empty) await addDoc(collection(db, "System_Config"), {tipe: "AUTO_WD", is_active: isAuto}); 
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), {is_active: isAuto}); 
+            showToast("Mode Auto WD Diperbarui!"); 
+        } catch(e) { alert("Gagal update setting."); }
     };
 
     window.loadRiwayatWD = async () => {
