@@ -533,7 +533,33 @@
         <button class='btn-main' onclick='simpanConfigPendaftaran()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Pengaturan</button>
       </div>
       <div class='card-panel' style='border-top: 2px solid #f59e0b;'><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-gamepad'></i> Setting Reward Klaim (1 Jam)</h4><div class='form-group'>
-    <label>Nominal Reward Dasar (VRSC)</label>
+    <label>Nominal Reward Dasar (VRSC) - Estimasi Klaim per 1 Jam</label>
+    <input id='inpRewardGame' type='text' value='0.001' oninput='window.hitungEstRewardGame()'>
+    <div style='background:#0b0f19; padding:12px; border-radius:8px; border:1px solid #334155; margin-top:10px;'>
+        <div style='display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;'>
+            <div style='text-align:center; border-right:1px dashed #334155;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 JAM</div>
+                <div id='estGameJamVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameJamRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+            </div>
+            <div style='text-align:center;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 HARI (24x)</div>
+                <div id='estGameHariVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameHariRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+            </div>
+            <div style='text-align:center; border-right:1px dashed #334155; border-top:1px dashed #334155; padding-top:8px;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 MINGGU</div>
+                <div id='estGameMingguVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameMingguRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+            </div>
+            <div style='text-align:center; border-top:1px dashed #334155; padding-top:8px;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 30 HARI</div>
+                <div id='estGameBulanVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameBulanRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+            </div>
+        </div>
+    </div>
+</div>
     <input id='inpRewardGame' type='text' value='50' oninput='window.hitungEstRewardGame()'>
     <div id='estRewardGameRp' style='font-size:0.75rem; color:#4ade80; margin-top:5px; font-weight:bold;'><i class='fa-solid fa-wallet'></i> Est. Nilai: Rp 0</div>
 </div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Bonus Reward (VRSC)</label><input id='inpBonusGame' type='number' value='0'></div><div class='form-group' style='flex:1;'><label>Jam Mulai</label><input id='inpJamMulai' type='time' value='00:00'></div><div class='form-group' style='flex:1;'><label>Jam Selesai</label><input id='inpJamSelesai' type='time' value='00:00'></div></div><button class='btn-main' onclick='simpanConfigGame()' style='background:#f59e0b;'><i class='fa-solid fa-save'></i> Simpan Reward Game</button></div>
@@ -742,10 +768,26 @@
     };
 
     window.hitungEstRewardGame = function() {
-        let vrsc = getFloatVal('inpRewardGame');
-        let estRp = Math.floor(vrsc * globalVrscPriceIdr);
-        document.getElementById('estRewardGameRp').innerHTML = "<i class='fa-solid fa-wallet'></i> Est. Nilai: Rp " + estRp.toLocaleString('id-ID');
-    };
+    // Ambil nilai input sebagai reward 1 Jam
+    let vrscJam = getFloatVal('inpRewardGame');
+    
+    // Kalkulasi proyeksi waktu
+    let vrscHari = vrscJam * 24;
+    let vrscMinggu = vrscHari * 7;
+    let vrscBulan = vrscHari * 30;
+
+    // Tampilkan nilai VRSC ke HTML
+    document.getElementById('estGameJamVrsc').innerText = vrscJam.toFixed(6) + " VRSC";
+    document.getElementById('estGameHariVrsc').innerText = vrscHari.toFixed(6) + " VRSC";
+    document.getElementById('estGameMingguVrsc').innerText = vrscMinggu.toFixed(6) + " VRSC";
+    document.getElementById('estGameBulanVrsc').innerText = vrscBulan.toFixed(6) + " VRSC";
+
+    // Tampilkan nilai IDR secara Realtime ke HTML
+    document.getElementById('estGameJamRp').innerText = "Rp " + Math.floor(vrscJam * globalVrscPriceIdr).toLocaleString('id-ID');
+    document.getElementById('estGameHariRp').innerText = "Rp " + Math.floor(vrscHari * globalVrscPriceIdr).toLocaleString('id-ID');
+    document.getElementById('estGameMingguRp').innerText = "Rp " + Math.floor(vrscMinggu * globalVrscPriceIdr).toLocaleString('id-ID');
+    document.getElementById('estGameBulanRp').innerText = "Rp " + Math.floor(vrscBulan * globalVrscPriceIdr).toLocaleString('id-ID');
+};
     }
 
     window.logoutAdmin = () => { localStorage.removeItem("cisAdminLog_v2"); window.location.reload(); };
