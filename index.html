@@ -990,7 +990,7 @@
         let vrscPerHari = mhs * baseVrscRewardPerMhs; 
         let rpPerHari = Math.floor(vrscPerHari * globalVrscPriceIdr); 
         let speedCIS = vrscPerHari / 86400; 
-        document.getElementById('valHashvrsc').innerText = vrscPerHari.toFixed(4) + " VRSC"; 
+        document.getElementById('valHashVrsc').innerText = vrscPerHari.toFixed(4) + " VRSC"; 
         document.getElementById('valHashRp').innerText = "Rp " + rpPerHari.toLocaleString('id-ID'); 
         document.getElementById('valSpeedCIS').innerText = speedCIS.toFixed(10) + " V/s"; 
     };
