@@ -671,7 +671,10 @@
   </div>
 
 <div class='modal-overlay' id='modalEditData' style='z-index:10000;'>
-    <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun Admin / User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input class='input-dark no-icon' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input class='input-dark no-icon' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input class='input-dark no-icon' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input class='input-dark no-icon' id='editInpUpline' type='text'></div></div><div class='form-group'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
+    <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun Admin / User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input class='input-dark no-icon' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input class='input-dark no-icon' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input class='input-dark no-icon' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input class='input-dark no-icon' id='editInpUpline' type='text'></div></div><div style='display:flex; gap:10px;'>
+    <div class='form-group' style='flex:1;'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div>
+    <div class='form-group' style='flex:1;'><label>PIN Transaksi</label><input class='input-dark no-icon' id='editInpPin' type='text' maxlength='6'></div>
+</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
   
 <script type='module'>
@@ -968,10 +971,14 @@
             document.getElementById('editInpEmail').value = user.email || ""; 
             document.getElementById('editInpWa').value = user.wa || ""; 
             document.getElementById('editInpPass').value = user.password || ""; 
+            document.getElementById('editInpPin').value = user.tx_pin || ""; // Memanggil data PIN
             document.getElementById('editInpUpline').value = user.referred_by || ""; 
-            document.getElementById('editInpSaldoVrsc').value = user.saldo_vrsc || 0; 
+            
+            // Memaksa format angka Kripto agar tidak menggunakan kode "e" (Scientific Notation)
+            document.getElementById('editInpSaldoVrsc').value = Number(user.saldo_vrsc || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
+            document.getElementById('editInpSpeed').value = Number(user.kecepatan_hash || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
+            
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
-            document.getElementById('editInpSpeed').value = user.kecepatan_hash || 0; 
             document.getElementById('editInpExp').value = user.expired_at || 0; 
             document.getElementById('modalEditData').style.display = 'flex'; 
         } 
@@ -983,6 +990,7 @@
         const uEmail = document.getElementById('editInpEmail').value.trim(); 
         const uWa = document.getElementById('editInpWa').value.trim(); 
         const uPass = document.getElementById('editInpPass').value.trim(); 
+        const uPin = document.getElementById('editInpPin').value.trim(); // Menangkap data PIN baru
         const uUpline = document.getElementById('editInpUpline').value.trim(); 
         const vrsc = getFloatVal('editInpSaldoVrsc'); 
         const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
@@ -991,7 +999,7 @@
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
         try { 
-            // LOGIKA GARASI MESIN: Saat Admin edit speed manual, kita buatkan 1 mesin khusus (Master Edit)
+            // LOGIKA GARASI MESIN: Saat Admin edit speed manual, buatkan 1 mesin khusus (Master Edit)
             let garasiBaru = [];
             if(spd > 0) {
                 garasiBaru.push({
@@ -1001,8 +1009,16 @@
                     expired_kontrak: exp
                 });
             }
-            await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp, daftar_mesin: garasiBaru }); 
-            window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
+            // Menyimpan semua pembaruan termasuk tx_pin
+            await updateDoc(doc(db, "Akun_Publik", id), { 
+                username: uUser, email: uEmail, wa: uWa, 
+                password: uPass, tx_pin: uPin, referred_by: uUpline, 
+                saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, 
+                expired_at: exp, daftar_mesin: garasiBaru 
+            }); 
+            window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); 
+            document.getElementById('modalEditData').style.display = 'none'; 
+            window.loadUser(); 
         } catch(e) { alert("Gagal menyimpan data."); } 
         btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
     };
