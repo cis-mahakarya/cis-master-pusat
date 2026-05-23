@@ -991,8 +991,18 @@
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
         try { 
-            await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp }); 
-            window.showToast("Data Berhasil Disimpan!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
+            // LOGIKA GARASI MESIN: Saat Admin edit speed manual, kita buatkan 1 mesin khusus (Master Edit)
+            let garasiBaru = [];
+            if(spd > 0) {
+                garasiBaru.push({
+                    id_mesin: "EDIT-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
+                    nominal_beli: 0,
+                    speed_bawaan: spd,
+                    expired_kontrak: exp
+                });
+            }
+            await updateDoc(doc(db, "Akun_Publik", id), { username: uUser, email: uEmail, wa: uWa, password: uPass, referred_by: uUpline, saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, expired_at: exp, daftar_mesin: garasiBaru }); 
+            window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); document.getElementById('modalEditData').style.display = 'none'; window.loadUser(); 
         } catch(e) { alert("Gagal menyimpan data."); } 
         btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
     };
@@ -1003,7 +1013,7 @@
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
-    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0 }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
+    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [] }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
 
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
     window.masterReset = async () => { 
@@ -1243,8 +1253,41 @@
             if(usersToUpdate.length === 0) { alert("Target tidak ditemukan!"); btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD"; btn.disabled = false; return; }
             let batchCount = 0;
             for (let u of usersToUpdate) {
-                let newSpeed = (parseFloat(u.kecepatan_hash) || 0) + addSpeed; let newExp = Math.max((parseInt(u.expired_at) || 0), Date.now()) + (addHari * 86400000);
-                await updateDoc(doc(db, "Akun_Publik", u.id), { kecepatan_hash: newSpeed, expired_at: newExp });
+                // LOGIKA GARASI MESIN: Injeksi Reward
+                let garasi = u.daftar_mesin || [];
+                let totalSpeedAktif = 0;
+                let waktuExpiredTerjauh = Date.now();
+                
+                // Jika reward berupa tambahan Speed, buat mesin baru "RWD-..."
+                if(addSpeed > 0) {
+                    let expReward = Date.now() + (addHari > 0 ? addHari : 30) * 86400000; // Default 30 hari
+                    garasi.push({
+                        id_mesin: "RWD-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
+                        nominal_beli: 0,
+                        speed_bawaan: addSpeed,
+                        expired_kontrak: expReward
+                    });
+                } 
+                // Jika reward HANYA tambahan hari (Speed 0), tambahkan masa aktif ke mesin yang masih hidup
+                else if (addHari > 0) {
+                    garasi.forEach(m => {
+                        if(m.expired_kontrak > Date.now()) {
+                            m.expired_kontrak += (addHari * 86400000);
+                        }
+                    });
+                }
+                
+                // Hitung ulang Speed & Exp dari Garasi
+                garasi.forEach(m => {
+                    if (m.expired_kontrak > Date.now()) {
+                        totalSpeedAktif += m.speed_bawaan;
+                        if (m.expired_kontrak > waktuExpiredTerjauh) waktuExpiredTerjauh = m.expired_kontrak;
+                    }
+                });
+
+                if (totalSpeedAktif === 0 && garasi.length > 0) waktuExpiredTerjauh = Math.max(...garasi.map(m => m.expired_kontrak));
+
+                await updateDoc(doc(db, "Akun_Publik", u.id), { kecepatan_hash: totalSpeedAktif, expired_at: waktuExpiredTerjauh, daftar_mesin: garasi });
                 let msgDeskripsi = `System Reward: `; if(addSpeed > 0) msgDeskripsi += `+${addSpeed} V/s `; if(addHari > 0) msgDeskripsi += `+${addHari} Hari`;
                 await addDoc(collection(db, "Mutasi_Mining"), { email: u.email, jenis: "IN", deskripsi: msgDeskripsi, nominal: 0, timestamp_local: Date.now() });
                 await addDoc(collection(db, "Notifikasi_Personal"), { email: u.email, pesan: `🎁 SELAMAT! Anda mendapat ${msgDeskripsi} dari Master Pusat.`, timestamp_local: Date.now() });
