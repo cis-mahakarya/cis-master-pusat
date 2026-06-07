@@ -240,6 +240,9 @@
       <div class='menu-box' id='menu-reward' onclick='openScreen("scr-reward")' style='border-top: 3px solid #34495e;'>
           <i class='fa-solid fa-gift' style='color:#cbd5e1;'></i><span>Injeksi Reward</span>
       </div>
+	  <div class='menu-box' id='menu-donasi-admin' onclick='openScreen("scr-donasi-admin")' style='border-top: 3px solid #1abc9c;'>
+    	  <i class='fa-solid fa-hand-holding-heart' style='color:#1abc9c;'></i><span>Verifikasi Donasi</span>
+	  </div>
       <div class='menu-box' id='menu-notif' onclick='openScreen("scr-notif")' style='border-top: 3px solid #f39c12;'>
           <i class='fa-solid fa-bullhorn' style='color:#f39c12;'></i><span>Pengumuman</span>
       </div>
@@ -708,7 +711,8 @@
     
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
-        if(id === 'scr-team') window.loadDataTim(); 
+        if(id === 'scr-donasi-admin') window.loadAdminDonasi();
+		if(id === 'scr-team') window.loadDataTim(); 
         if(id === 'scr-approval') window.switchTabWd('pending'); 
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
@@ -1536,7 +1540,69 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
 
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let payload = { tipe: "GAME_CONFIG", reward_claim: getFloatVal('inpRewardGame'), bonus_claim: getFloatVal('inpBonusGame'), jam_mulai: document.getElementById('inpJamMulai').value || "00:00", jam_selesai: document.getElementById('inpJamSelesai').value || "00:00" }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Disimpan!"); } catch (e) { alert("Gagal menyimpan."); } };
+<div class='admin-screen' id='scr-donasi-admin'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Verifikasi Donasi USDT</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #1abc9c;'>
+        <h4 style='margin-top:0; color:#1abc9c;'><i class='fa-solid fa-list-check'></i> Antrean Donasi (Pusat)</h4>
+        <div class='table-wrap'>
+          <table>
+            <thead>
+              <tr><th>Waktu</th><th>User (Kota)</th><th>Nominal</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id='tblAdminDonasiList'>
+              <tr><td colspan='5' style='text-align:center;'>Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
+	// --- MESIN ADMIN DONASI ---
+        window.loadAdminDonasi = () => {
+            const tbody = document.getElementById('tblAdminDonasiList');
+            if(!tbody) return;
+            
+            const q = query(collection(db, "Donasi_USDT"), orderBy("waktu_konfirmasi", "desc"));
+            
+            onSnapshot(q, (snap) => {
+                let html = "";
+                snap.forEach(d => {
+                    let x = d.data(); let id = d.id;
+                    let tgl = x.waktu_konfirmasi ? new Date(x.waktu_konfirmasi.seconds * 1000).toLocaleString('id-ID') : '-';
+                    
+                    let statusWarna = x.status === "DISETUJUI" ? "#2ecc71" : (x.status === "PENDING" ? "#f39c12" : "#ef4444");
+                    let btnAksi = x.status === "PENDING" ? 
+                        `<div style='display:flex; gap:5px; justify-content:center;'>
+                            <button onclick='window.prosesDonasi("${id}", "DISETUJUI")' style='background:#2ecc71; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;'>ACC</button>
+                            <button onclick='window.prosesDonasi("${id}", "DITOLAK")' style='background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;'>TOLAK</button>
+                        </div>` : 
+                        `<span style='color:${statusWarna}; font-weight:bold;'>${x.status}</span>`;
+
+                    html += `<tr>
+                        <td style='padding:12px; font-size:0.75rem; color:#94a3b8;'>${tgl}</td>
+                        <td style='padding:12px;'><b>${x.username}</b><br/><small>${x.kota}</small></td>
+                        <td style='padding:12px;'><b>${x.nominal_usdt} USDT</b><br/><small style='color:#64748b;'>TXID: ${x.txid}</small></td>
+                        <td style='padding:12px;'><b style='color:${statusWarna};'>${x.status}</b></td>
+                        <td style='padding:12px; text-align:center;'>${btnAksi}</td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html || "<tr><td colspan='5' style='text-align:center;'>Belum ada data donasi.</td></tr>";
+            });
+        };
+
+        window.prosesDonasi = async (docId, statusBaru) => {
+            if(!confirm(`Setujui/Tolak donasi ini menjadi: ${statusBaru}?`)) return;
+            try {
+                await updateDoc(doc(db, "Donasi_USDT", docId), { status: statusBaru });
+                window.showToast("Status donasi berhasil diupdate!");
+            } catch(e) {
+                alert("Gagal update status.");
+            }
+        };
+        // --------------------------
+	
 </script>
 </body>
 </html>
