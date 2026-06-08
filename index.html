@@ -1699,21 +1699,39 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             let msg = document.getElementById('adminReplyMsg').value.trim();
             let btn = document.getElementById('btnKirimBalasanAdmin');
             
+            if(!id) return alert("Error: ID Pesan tidak ditemukan!");
             if(!msg) return alert("Ketik balasan Anda terlebih dahulu!");
             
+            // Ekstrak email untuk dikirimi Notifikasi Personal ke Member
+            let emailText = document.getElementById('replyUserTitle').innerText;
+            let emailMatch = emailText.match(/\(([^)]+)\)/);
+            let emailTarget = emailMatch ? emailMatch[1] : "";
+
             btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i>";
             btn.disabled = true;
             
             try {
-                await updateDoc(doc(db, "Pesan_Bantuan"), {
+                // 1. Update status tiket dan isi balasan di database
+                await updateDoc(doc(db, "Pesan_Bantuan", id), {
                     balasan_admin: msg,
                     status: "CLOSED",
                     updated_at: serverTimestamp()
                 });
-                window.showToast("Balasan sukses dikirim!");
+
+                // 2. Tembakkan notifikasi pop-up langsung ke layar member yang bertanya
+                if(emailTarget) {
+                    await addDoc(collection(db, "Notifikasi_Personal"), {
+                        email: emailTarget,
+                        pesan: `🎧 BANTUAN PELANGGAN:\nAdmin telah membalas tiket Anda: "${msg}"`,
+                        timestamp_local: Date.now()
+                    });
+                }
+
+                window.showToast("Balasan sukses dikirim ke Member!");
                 document.getElementById('modalBalasPesan').style.display = 'none';
             } catch(e) {
-                alert("Gagal mengirim balasan ke server.");
+                console.error("ERROR BALAS PESAN:", e);
+                alert("GAGAL: " + e.message + "\n\nPastikan Rules Database Firestore Anda mengizinkan 'write/update' (allow read, write: if true;).");
             }
             
             btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i>";
