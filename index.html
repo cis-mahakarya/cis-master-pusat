@@ -246,12 +246,59 @@
       <div class='menu-box' id='menu-notif' onclick='openScreen("scr-notif")' style='border-top: 3px solid #f39c12;'>
           <i class='fa-solid fa-bullhorn' style='color:#f39c12;'></i><span>Pengumuman</span>
       </div>
+		<div class='menu-box' id='menu-bantuan' onclick='openScreen("scr-bantuan")' style='border-top: 3px solid #e84393;'>
+          <i class='fa-solid fa-headset' style='color:#e84393;'></i><span>Pesan Bantuan</span>
+      </div>
       <div class='menu-box' id='menu-cpanel' onclick='openScreen("scr-cpanel")' style='border-top: 3px solid #64748b;'>
           <i class='fa-solid fa-user-tie' style='color:#64748b;'></i><span>Manajemen C-Panel</span>
       </div>
     </div>
   </div>
 
+ <!-- LAYAR PESAN BANTUAN -->
+  <div class='admin-screen' id='scr-bantuan'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Layanan Bantuan (Help Center)</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #e84393;'>
+        <h4 style='margin-top:0; color:#e84393;'><i class='fa-solid fa-inbox'></i> Kotak Masuk Tiket Bantuan</h4>
+        <p style='font-size:0.75rem; color:#94a3b8; margin-top:-5px; margin-bottom:15px;'>Klik pada pesan untuk membaca detail, membalas, atau menghapus tiket.</p>
+        
+        <div class='inbox-list' id='inboxListAdmin'>
+            <div style='padding:20px; text-align:center; color:#94a3b8;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai server pesan...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL BALAS PESAN -->
+  <div class='modal-overlay' id='modalBalasPesan' style='z-index:10005;'>
+    <div class='modal-card' style='max-width: 500px; padding:0; overflow:hidden;'>
+        <div style='padding:20px; background:#1e293b; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;'>
+            <h3 style='color:#e84393; margin:0; font-family:Orbitron;'><i class='fa-solid fa-reply'></i> BALAS PESAN</h3>
+            <div style='display:flex; gap:15px;'>
+                <i class='fa-solid fa-trash' onclick='window.hapusPesanBantuan()' style='cursor:pointer; color:#ef4444; font-size:1.1rem;' title='Hapus Tiket'></i>
+                <i class='fa-solid fa-xmark' onclick='document.getElementById("modalBalasPesan").style.display="none"' style='cursor:pointer; color:#94a3b8; font-size:1.2rem;'></i>
+            </div>
+        </div>
+        <div style='padding:15px; background:#0f172a;'>
+            <div style='background:#0b0f19; padding:10px; border-radius:8px; margin-bottom:15px; border: 1px solid #334155;'>
+                <span style='font-size:0.7rem; color:#94a3b8;'>Pengirim:</span><br/>
+                <b id='replyUserTitle' style='color:#38bdf8; font-size:0.9rem;'>-</b>
+            </div>
+            
+            <div class='chat-body' id='adminChatBody' style='height:250px; margin-bottom:15px;'>
+                <!-- Isi Chat Bubble dari JS -->
+            </div>
+            
+            <div class='chat-footer' style='display:flex; gap:10px; align-items:center;'>
+                <input type='hidden' id='replyDocId'>
+                <input class='input-dark' id='adminReplyMsg' placeholder='Ketik balasan admin di sini...' style='flex:1; border-color:#e84393;'>
+                <button class='btn-main' id='btnKirimBalasanAdmin' onclick='window.kirimBalasanAdmin()' style='width:50px; height:45px; padding:0; background:linear-gradient(135deg, #e84393, #d63031); border-radius:8px;'><i class='fa-solid fa-paper-plane'></i></button>
+            </div>
+        </div>
+    </div>
+  </div>
+	
   <div class='admin-screen' id='scr-akuntansi'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Akuntansi &amp; Buku Kas Induk</div>
     <div class='screen-content'>
@@ -736,6 +783,7 @@
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
+		if(id === 'scr-bantuan') window.loadPesanBantuan();
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
 
@@ -1560,6 +1608,109 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let payload = { tipe: "GAME_CONFIG", reward_claim: getFloatVal('inpRewardGame'), bonus_claim: getFloatVal('inpBonusGame'), jam_mulai: document.getElementById('inpJamMulai').value || "00:00", jam_selesai: document.getElementById('inpJamSelesai').value || "00:00" }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Disimpan!"); } catch (e) { alert("Gagal menyimpan."); } };
 
+	// --- MESIN HELP CENTER / PESAN BANTUAN ---
+        window.loadPesanBantuan = () => {
+            const list = document.getElementById('inboxListAdmin');
+            if(!list) return;
+            
+            // Asumsi koleksi bernama "Pesan_Bantuan" (Sesuai list Master Reset)
+            const q = query(collection(db, "Pesan_Bantuan"), orderBy("created_at", "desc"));
+            
+            onSnapshot(q, (snap) => {
+                let html = "";
+                snap.forEach(d => {
+                    let x = d.data(); let id = d.id;
+                    let tgl = x.created_at ? new Date(x.created_at.seconds * 1000).toLocaleString('id-ID') : '-';
+                    let sttColor = x.status === 'CLOSED' ? '#10b981' : '#f59e0b';
+                    let sttText = x.status === 'CLOSED' ? 'Telah Dibalas' : 'Menunggu Balasan';
+                    
+                    // Mencegah error kutip pada string
+                    let safePesan = x.pesan ? x.pesan.replace(/`/g, "\\`") : "";
+                    let safeBalasan = x.balasan_admin ? x.balasan_admin.replace(/`/g, "\\`") : "";
+
+                    html += `
+                    <div class='inbox-item' onclick='window.bukaModalBalas("${id}", "${x.username || 'Member'}", "${x.email}", \`${safePesan}\`, \`${safeBalasan}\`)'>
+                        <div style='flex:1;'>
+                            <div style='display:flex; justify-content:space-between; margin-bottom:5px;'>
+                                <b style='color:#38bdf8;'><i class='fa-solid fa-user'></i> ${x.username || x.email}</b>
+                                <span style='font-size:0.7rem; color:#94a3b8;'>${tgl}</span>
+                            </div>
+                            <div style='font-size:0.8rem; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:250px;'>
+                                ${x.pesan}
+                            </div>
+                        </div>
+                        <div style='margin-left:15px;'>
+                            <span class='badge' style='background:rgba(0,0,0,0.3); border:1px solid ${sttColor}; color:${sttColor};'>${sttText}</span>
+                        </div>
+                    </div>`;
+                });
+                list.innerHTML = html || "<div style='padding:20px; text-align:center; color:#10b981;'><i class='fa-solid fa-check-circle'></i> Kotak masuk bersih! Tidak ada laporan.</div>";
+            });
+        };
+
+        window.bukaModalBalas = (id, user, email, pesan, balasan) => {
+            document.getElementById('replyDocId').value = id;
+            document.getElementById('replyUserTitle').innerText = user + " (" + email + ")";
+            
+            let chatHtml = `
+                <div style='display:flex; flex-direction:column; gap:10px;'>
+                    <div class='chat-bubble chat-user'>
+                        <div style='font-size:0.65rem; color:#38bdf8; margin-bottom:3px;'><i class='fa-solid fa-user'></i> Pesan Member</div>
+                        <div style='color:#e2e8f0;'>${pesan}</div>
+                    </div>`;
+            
+            if(balasan && balasan.trim() !== "") {
+                chatHtml += `
+                    <div class='chat-bubble chat-admin'>
+                        <div style='font-size:0.65rem; color:#10b981; margin-bottom:3px;'><i class='fa-solid fa-headset'></i> Balasan Admin Pusat</div>
+                        <div style='color:#fff;'>${balasan}</div>
+                    </div>`;
+            }
+            
+            chatHtml += `</div>`;
+            document.getElementById('adminChatBody').innerHTML = chatHtml;
+            document.getElementById('adminReplyMsg').value = "";
+            document.getElementById('modalBalasPesan').style.display = 'flex';
+        };
+
+        window.kirimBalasanAdmin = async () => {
+            let id = document.getElementById('replyDocId').value;
+            let msg = document.getElementById('adminReplyMsg').value.trim();
+            let btn = document.getElementById('btnKirimBalasanAdmin');
+            
+            if(!msg) return alert("Ketik balasan Anda terlebih dahulu!");
+            
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i>";
+            btn.disabled = true;
+            
+            try {
+                await updateDoc(doc(db, "Pesan_Bantuan"), {
+                    balasan_admin: msg,
+                    status: "CLOSED",
+                    updated_at: serverTimestamp()
+                });
+                window.showToast("Balasan sukses dikirim!");
+                document.getElementById('modalBalasPesan').style.display = 'none';
+            } catch(e) {
+                alert("Gagal mengirim balasan ke server.");
+            }
+            
+            btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i>";
+            btn.disabled = false;
+        };
+
+        window.hapusPesanBantuan = async () => {
+            let id = document.getElementById('replyDocId').value;
+            if(!confirm("Hapus tiket laporan ini selamanya dari database?")) return;
+            
+            try {
+                await deleteDoc(doc(db, "Pesan_Bantuan", id));
+                window.showToast("Tiket laporan dihapus!");
+                document.getElementById('modalBalasPesan').style.display = 'none';
+            } catch(e) {
+                alert("Gagal menghapus tiket.");
+            }
+        };
 
 	// --- MESIN ADMIN DONASI ---
         window.loadAdminDonasi = () => {
