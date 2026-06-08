@@ -1613,23 +1613,24 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             const list = document.getElementById('inboxListAdmin');
             if(!list) return;
             
-            // Asumsi koleksi bernama "Pesan_Bantuan" (Sesuai list Master Reset)
             const q = query(collection(db, "Pesan_Bantuan"), orderBy("created_at", "desc"));
             
             onSnapshot(q, (snap) => {
                 let html = "";
+                
+                // 1. LOOPING UNTUK MENAMPILKAN DAFTAR PESAN & LAMPIRAN
                 snap.forEach(d => {
                     let x = d.data(); let id = d.id;
                     let tgl = x.created_at ? new Date(x.created_at.seconds * 1000).toLocaleString('id-ID') : '-';
                     let sttColor = x.status === 'CLOSED' ? '#10b981' : '#f59e0b';
                     let sttText = x.status === 'CLOSED' ? 'Telah Dibalas' : 'Menunggu Balasan';
                     
-                    // Mencegah error kutip pada string
                     let safePesan = x.pesan ? x.pesan.replace(/`/g, "\\`") : "";
                     let safeBalasan = x.balasan_admin ? x.balasan_admin.replace(/`/g, "\\`") : "";
+                    let lampiranUrl = x.lampiran_url || ""; 
 
                     html += `
-                    <div class='inbox-item' onclick='window.bukaModalBalas("${id}", "${x.username || 'Member'}", "${x.email}", \`${safePesan}\`, \`${safeBalasan}\`)'>
+                    <div class='inbox-item' onclick='window.bukaModalBalas("${id}", "${x.username || 'Member'}", "${x.email}", \`${safePesan}\`, \`${safeBalasan}\`, "${lampiranUrl}")'>
                         <div style='flex:1;'>
                             <div style='display:flex; justify-content:space-between; margin-bottom:5px;'>
                                 <b style='color:#38bdf8;'><i class='fa-solid fa-user'></i> ${x.username || x.email}</b>
@@ -1644,7 +1645,27 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                         </div>
                     </div>`;
                 });
+                
                 list.innerHTML = html || "<div style='padding:20px; text-align:center; color:#10b981;'><i class='fa-solid fa-check-circle'></i> Kotak masuk bersih! Tidak ada laporan.</div>";
+
+                // 2. SISTEM NOTIFIKASI ADMIN KETIKA ADA PESAN BARU MASUK
+                snap.docChanges().forEach((change) => { 
+                    if (change.type === "added") { 
+                        let d = change.doc.data(); 
+                        // Munculkan notif hanya jika pesan baru saja dikirim (umur pesan kurang dari 8 detik)
+                        if(d.created_at && (Date.now() - (d.created_at.seconds * 1000) < 8000)) {
+                            let namaPengirim = d.username || d.email || "Member";
+                            let cuplikanPesan = d.pesan.length > 30 ? d.pesan.substring(0, 30) + "..." : d.pesan;
+                            
+                            // Gunakan fungsi pop-up Admin yang sudah ada
+                            if(typeof window.tampilkanPopUpAdmin === 'function') {
+                                window.tampilkanPopUpAdmin(`📨 TIKET BANTUAN BARU!\nDari: ${namaPengirim}\nKeluhan: "${cuplikanPesan}"`);
+                            } else {
+                                window.showToast(`📨 Pesan baru dari ${namaPengirim}`);
+                            }
+                        } 
+                    } 
+                });
             });
         };
 
