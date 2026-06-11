@@ -544,10 +544,18 @@
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
 
-	<div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.1); border: 1px dashed #a855f7;'>
-        <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-life-ring'></i> Disaster Recovery (Evakuasi Data)</h4>
-        <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Fungsi darurat untuk mengunduh seluruh data krusial (Akun Member, Stok Token, dan Pesanan P2P) ke memori lokal laptop/HP Anda. Lakukan ini secara rutin sebagai perlindungan anti-hacker/takedown.</p>
-        <button class='btn-main' id='btnBackupDb' onclick='window.evakuasiDatabase()' style='background:#a855f7; color:#fff;'><i class='fa-solid fa-cloud-arrow-down'></i> DOWNLOAD BACKUP DATABASE (.JSON)</button>
+	<div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.05); border: 1px dashed #a855f7;'>
+        <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-life-ring'></i> Disaster Recovery Center</h4>
+        <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Amankan urat nadi platform cisverus.com dari serangan fatal takedown atau hacker dengan fitur evakuasi otomatis.</p>
+        
+        <button class='btn-main' id='btnBackupDb' onclick='window.evakuasiDatabase()' style='background:#a855f7; color:#fff; margin-bottom:15px;'><i class='fa-solid fa-cloud-arrow-down'></i> 1. DOWNLOAD BACKUP DATABASE (.JSON)</button>
+        
+        <hr style='border:1px dashed rgba(168, 85, 247, 0.3); margin:15px 0;'/>
+        
+        <label style='color:#c084fc;'><i class='fa-solid fa-file-import'></i> 2. PENGEMBALIAN DATA (RESTORE ENGINE)</label>
+        <input type='file' id='inpRestoreDb' accept='.json' style='margin-top:5px; margin-bottom:10px; background:#0b0f19; border:1px solid #475569; padding:8px; border-radius:8px; color:#fff;'>
+        <button class='btn-main' id='btnRestoreDb' onclick='window.pulihkanDatabase()' style='background:linear-gradient(135deg, #a855f7, #6b21a8); color:#fff;'><i class='fa-solid fa-shield-heart'></i> EKSEKUSI PEMULIHAN DATA SYSTEM</button>
+        
         <div id='logBackup' style='margin-top:10px; font-size:0.75rem; color:#4ade80; text-align:center;'></div>
       </div>
 		
@@ -1572,6 +1580,78 @@
         });
     };
 
+	// --- MESIN PEMULIHAN DATA (RESTORE DATA ENGINE) ---
+    window.pulihkanDatabase = async () => {
+        const fileInput = document.getElementById('inpRestoreDb');
+        const btn = document.getElementById('btnRestoreDb');
+        const log = document.getElementById('logBackup');
+        
+        if(!fileInput.files || fileInput.files.length === 0) {
+            return alert("Silakan pilih file backup (.json) yang ingin Anda restore terlebih dahulu!");
+        }
+        
+        if(!confirm("PERINGATAN SANGAT KERAS!\n\nProses ini akan menimpa data di server saat ini dengan data dari file backup.\nPastikan Anda memilih file yang benar. Lanjutkan?")) return;
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MEMBACA FILE BACKUP...";
+        btn.disabled = true;
+        log.style.color = "#fbbf24";
+        
+        reader.onload = async (e) => {
+            try {
+                const dataObj = JSON.parse(e.target.result);
+                
+                // Impor koleksi Firebase Firestore secara paralel menggunakan setDoc (menjaga ID asli)
+                // Kita panggil setDoc dari firebase-firestore
+                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                
+                // 1. Restore Akun Publik
+                if(dataObj.Akun_Publik && dataObj.Akun_Publik.length > 0) {
+                    log.innerText = `Menyuntikkan balik data Akun Member (${dataObj.Akun_Publik.length} data)...`;
+                    for(let item of dataObj.Akun_Publik) {
+                        let id = item.id; delete item.id;
+                        await setDoc(doc(db, "Akun_Publik", id), item);
+                    }
+                }
+                
+                // 2. Restore Database Token
+                if(dataObj.Database_Token && dataObj.Database_Token.length > 0) {
+                    log.innerText = `Menyuntikkan balik data Stok Token (${dataObj.Database_Token.length} data)...`;
+                    for(let item of dataObj.Database_Token) {
+                        let id = item.id; delete item.id;
+                        await setDoc(doc(db, "Database_Token", id), item);
+                    }
+                }
+                
+                // 3. Restore P2P Order
+                if(dataObj.P2P_Order && dataObj.P2P_Order.length > 0) {
+                    log.innerText = `Menyuntikkan balik data Transaksi P2P (${dataObj.P2P_Order.length} data)...`;
+                    for(let item of dataObj.P2P_Order) {
+                        let id = item.id; delete item.id;
+                        await setDoc(doc(db, "P2P_Order", id), item);
+                    }
+                }
+                
+                log.innerText = "✅ RE-INJEKSI SUKSES! Seluruh sistem dipulihkan sempurna.";
+                log.style.color = "#4ade80";
+                alert("PEMULIHAN BERHASIL!\n\nSeluruh data member, saldo, dan token telah dikembalikan ke kondisi saat backup dibuat.");
+                window.location.reload();
+                
+            } catch(err) {
+                console.error("RESTORE ERROR:", err);
+                log.innerText = "❌ Gagal memulihkan database. File rusak atau format salah.";
+                log.style.color = "#ef4444";
+                btn.innerHTML = "<i class='fa-solid fa-shield-heart'></i> EKSEKUSI PEMULIHAN DATA SYSTEM";
+                btn.disabled = false;
+            }
+        };
+        
+        reader.readAsText(file);
+    };
+    // --------------------------------------------------
+	
 	// --- MESIN EVAKUASI DATABASE (DISASTER RECOVERY) ---
     window.evakuasiDatabase = async () => {
         if(!confirm("Mulai proses evakuasi seluruh database ke memori lokal? (Ini mungkin memakan waktu beberapa detik tergantung koneksi)")) return;
