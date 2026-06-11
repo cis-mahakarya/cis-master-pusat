@@ -543,7 +543,14 @@
   <div class='admin-screen' id='scr-sistem'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
-      
+
+	<div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.1); border: 1px dashed #a855f7;'>
+        <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-life-ring'></i> Disaster Recovery (Evakuasi Data)</h4>
+        <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Fungsi darurat untuk mengunduh seluruh data krusial (Akun Member, Stok Token, dan Pesanan P2P) ke memori lokal laptop/HP Anda. Lakukan ini secara rutin sebagai perlindungan anti-hacker/takedown.</p>
+        <button class='btn-main' id='btnBackupDb' onclick='window.evakuasiDatabase()' style='background:#a855f7; color:#fff;'><i class='fa-solid fa-cloud-arrow-down'></i> DOWNLOAD BACKUP DATABASE (.JSON)</button>
+        <div id='logBackup' style='margin-top:10px; font-size:0.75rem; color:#4ade80; text-align:center;'></div>
+      </div>
+		
       <!-- KOTAK KENDALI STATUS WEB (MAINTENANCE & LAUNCH) -->
       <div class='card-panel' style='border-top: 2px solid #ef4444; margin-bottom:20px;'>
         <h4 style='margin-top:0; color:#ef4444;'><i class='fa-solid fa-power-off'></i> Kontrol Status Web (Maintenance & Launch)</h4>
@@ -1565,6 +1572,66 @@
         });
     };
 
+	// --- MESIN EVAKUASI DATABASE (DISASTER RECOVERY) ---
+    window.evakuasiDatabase = async () => {
+        if(!confirm("Mulai proses evakuasi seluruh database ke memori lokal? (Ini mungkin memakan waktu beberapa detik tergantung koneksi)")) return;
+        
+        const btn = document.getElementById('btnBackupDb');
+        const log = document.getElementById('logBackup');
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYEDOT DATA DARI SERVER...";
+        btn.disabled = true;
+        log.innerText = "Memulai koneksi ke server...";
+        log.style.color = "#fbbf24";
+
+        try {
+            let backupData = {
+                timestamp_backup: new Date().toLocaleString('id-ID'),
+                Akun_Publik: [],
+                Database_Token: [],
+                P2P_Order: []
+            };
+
+            // 1. Sedot Data Akun Publik
+            log.innerText = "Menyedot data Akun Member (1/3)...";
+            const snapAkun = await getDocs(collection(db, "Akun_Publik"));
+            snapAkun.forEach(d => backupData.Akun_Publik.push({ id: d.id, ...d.data() }));
+
+            // 2. Sedot Data Token
+            log.innerText = "Menyedot data Gudang Token (2/3)...";
+            const snapToken = await getDocs(collection(db, "Database_Token"));
+            snapToken.forEach(d => backupData.Database_Token.push({ id: d.id, ...d.data() }));
+
+            // 3. Sedot Data P2P
+            log.innerText = "Menyedot data Riwayat P2P (3/3)...";
+            const snapP2p = await getDocs(collection(db, "P2P_Order"));
+            snapP2p.forEach(d => backupData.P2P_Order.push({ id: d.id, ...d.data() }));
+
+            log.innerText = "Merakit file JSON...";
+            
+            // Konversi JSON dan Trigger Download
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `CIS_Backup_${Date.now()}.json`);
+            document.body.appendChild(dlAnchorElem);
+            dlAnchorElem.click();
+            dlAnchorElem.remove();
+
+            log.innerText = "✅ Evakuasi Sukses! File Backup telah diunduh.";
+            log.style.color = "#4ade80";
+            window.showToast("Database Berhasil Dievakuasi!");
+
+        } catch(e) {
+            console.error("BACKUP ERROR:", e);
+            log.innerText = "❌ Gagal menyedot data. Cek koneksi Anda.";
+            log.style.color = "#ef4444";
+        }
+
+        btn.innerHTML = "<i class='fa-solid fa-cloud-arrow-down'></i> DOWNLOAD BACKUP DATABASE (.JSON)";
+        btn.disabled = false;
+    };
+    // --------------------------------------------------
+	
     window.simpanStatusWeb = async (isAuto = false) => {
         const btn = document.querySelector(`button[onclick='simpanStatusWeb()']`);
         if(!isAuto) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; }
