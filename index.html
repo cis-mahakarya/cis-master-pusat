@@ -680,16 +680,18 @@
         <div class='form-group' style='border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.1);'>
           <label style='color: #38bdf8;'>Pilih Tipe Reward</label>
           <select id='selEventTipe' onchange='window.ubahFormEvent()' style='border-color: #38bdf8;'>
-            <option value='COIN'>1. Tambahan Coin VRSC Saja</option>
-            <option value='COIN_SPEED'>2. Tambahan Coin VRSC & Speed Hash</option>
-            <option value='COIN_TIME'>3. Tambahan Coin VRSC & Limit Batas Waktu</option>
+            <option value='COIN'>1. Hanya Tambahan Coin VRSC</option>
+            <option value='SPEED'>2. Hanya Tambahan Speed Hash</option>
+            <option value='HARI'>3. Hanya Tambahan Hari (Masa Aktif)</option>
+            <option value='COIN_SPEED'>4. Coin VRSC + Speed Hash</option>
+            <option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari</option>
           </select>
         </div>
         
         <div style='display:flex; gap:10px;'>
-          <div class='form-group' style='flex:1;'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventCoin'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
           <div class='form-group' style='flex:1; display:none;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
-          <div class='form-group' style='flex:1; display:none;' id='wrapEventLimit'><label>Limit Klaim (x)</label><input id='inpEventLimit' type='number' value='0'></div>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventHari'><label>Tambahan Hari</label><input id='inpEventHari' type='number' value='0'></div>
         </div>
         
         <div class='form-group'><label>Waktu Hitung Mundur Berakhir (Opsional)</label><input id='inpEventBatasWaktu' type='datetime-local' style='color:#fbbf24; font-weight:bold;'></div>
@@ -1403,8 +1405,9 @@
 	// --- SISTEM BANNER EVENT (KLAIM) ---
     window.ubahFormEvent = () => {
         let tipe = document.getElementById('selEventTipe').value;
-        document.getElementById('wrapEventSpeed').style.display = (tipe === 'COIN_SPEED') ? 'block' : 'none';
-        document.getElementById('wrapEventLimit').style.display = (tipe === 'COIN_TIME') ? 'block' : 'none';
+        document.getElementById('wrapEventCoin').style.display = (tipe === 'COIN' || tipe === 'COIN_SPEED' || tipe === 'COIN_HARI') ? 'block' : 'none';
+        document.getElementById('wrapEventSpeed').style.display = (tipe === 'SPEED' || tipe === 'COIN_SPEED') ? 'block' : 'none';
+        document.getElementById('wrapEventHari').style.display = (tipe === 'HARI' || tipe === 'COIN_HARI') ? 'block' : 'none';
     };
 
     window.loadEventBanner = async () => {
@@ -1418,7 +1421,7 @@
                 document.getElementById('selEventTipe').value = d.reward_tipe || "COIN";
                 document.getElementById('inpEventCoin').value = d.reward_coin || 0;
                 document.getElementById('inpEventSpeed').value = d.reward_speed || 0;
-                document.getElementById('inpEventLimit').value = d.reward_limit || 0;
+                document.getElementById('inpEventHari').value = d.reward_hari || 0;
                 if(d.batas_waktu) document.getElementById('inpEventBatasWaktu').value = d.batas_waktu;
                 
                 // Load Broadcast
@@ -1442,7 +1445,7 @@
             reward_tipe: document.getElementById('selEventTipe').value,
             reward_coin: getFloatVal('inpEventCoin'),
             reward_speed: getFloatVal('inpEventSpeed'),
-            reward_limit: parseInt(document.getElementById('inpEventLimit').value) || 0,
+            reward_hari: parseInt(document.getElementById('inpEventHari').value) || 0,
             batas_waktu: document.getElementById('inpEventBatasWaktu').value,
             is_broadcast_active: document.getElementById('toggleEventBroadcast').checked,
             broadcast_text: document.getElementById('inpEventBroadcast').value
