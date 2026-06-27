@@ -573,6 +573,11 @@
           <label class='switch'><input id='toggleCountdown' type='checkbox'><span class='slider-tg'></span></label>
         </div>
         
+        <div class='switch-wrap'>
+          <div><b style='color:#ef4444;'><i class='fa-solid fa-shield-virus'></i> Mode Kawat Berduri (Anti F12 & Klik Kanan)</b></div>
+          <label class='switch'><input id='toggleAntiHack' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        
         <div class='form-group'>
           <label>Waktu Berakhir (Target Launch / Selesai Maintenance)</label>
           <input id='inpTargetLaunch' type='datetime-local' style='color:#fbbf24; font-weight:bold; background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%;'>
@@ -1557,6 +1562,7 @@
                 const data = snap.docs[0].data();
                 document.getElementById('toggleMaintenance').checked = data.is_maintenance === true;
                 document.getElementById('toggleCountdown').checked = data.is_countdown === true;
+                document.getElementById('toggleAntiHack').checked = data.is_antihack === true;
                 if(data.target_launch) document.getElementById('inpTargetLaunch').value = data.target_launch;
 
                 if(adminTimerInt) clearInterval(adminTimerInt);
@@ -1723,6 +1729,7 @@
             tipe: "APP_STATUS",
             is_maintenance: document.getElementById('toggleMaintenance').checked,
             is_countdown: document.getElementById('toggleCountdown').checked,
+            is_antihack: document.getElementById('toggleAntiHack').checked,
             target_launch: document.getElementById('inpTargetLaunch').value
         };
 
