@@ -687,16 +687,17 @@
           <select id='selEventTipe' onchange='window.ubahFormEvent()' style='border-color: #38bdf8;'>
             <option value='COIN'>1. Hanya Tambahan Coin VRSC</option>
             <option value='SPEED'>2. Hanya Tambahan Speed Hash</option>
-            <option value='HARI'>3. Hanya Tambahan Hari (Masa Aktif)</option>
+            <option value='HARI'>3. Hanya Tambahan Hari (Akun / Speed)</option>
             <option value='COIN_SPEED'>4. Coin VRSC + Speed Hash</option>
-            <option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari</option>
+            <option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari (Akun / Speed)</option>
           </select>
         </div>
         
-        <div style='display:flex; gap:10px;'>
-          <div class='form-group' style='flex:1; display:none;' id='wrapEventCoin'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
-          <div class='form-group' style='flex:1; display:none;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
-          <div class='form-group' style='flex:1; display:none;' id='wrapEventHari'><label>Tambahan Hari</label><input id='inpEventHari' type='number' value='0'></div>
+        <div style='display:flex; gap:10px; flex-wrap:wrap;'>
+          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventCoin'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
+          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
+          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventHariAktif'><label style='color:#fbbf24;'>+ Hari (Aktif Akun)</label><input id='inpEventHariAktif' type='number' value='0' style='border-color:#fbbf24;'></div>
+          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventHariSpeed'><label style='color:#a855f7;'>+ Hari (Durasi Speed)</label><input id='inpEventHariSpeed' type='number' value='0' style='border-color:#a855f7;'></div>
         </div>
         
         <div class='form-group'><label>Waktu Hitung Mundur Berakhir (Opsional)</label><input id='inpEventBatasWaktu' type='datetime-local' style='color:#fbbf24; font-weight:bold;'></div>
@@ -1412,7 +1413,10 @@
         let tipe = document.getElementById('selEventTipe').value;
         document.getElementById('wrapEventCoin').style.display = (tipe === 'COIN' || tipe === 'COIN_SPEED' || tipe === 'COIN_HARI') ? 'block' : 'none';
         document.getElementById('wrapEventSpeed').style.display = (tipe === 'SPEED' || tipe === 'COIN_SPEED') ? 'block' : 'none';
-        document.getElementById('wrapEventHari').style.display = (tipe === 'HARI' || tipe === 'COIN_HARI') ? 'block' : 'none';
+        // Input Hari otomatis muncul jika tipe reward melibatkan Hari ATAU Speed (karena Speed butuh durasi nyala)
+        let showHari = (tipe === 'HARI' || tipe === 'COIN_HARI' || tipe === 'SPEED' || tipe === 'COIN_SPEED') ? 'block' : 'none';
+        document.getElementById('wrapEventHariAktif').style.display = showHari;
+        document.getElementById('wrapEventHariSpeed').style.display = showHari;
     };
 
     window.loadEventBanner = async () => {
@@ -1426,7 +1430,8 @@
                 document.getElementById('selEventTipe').value = d.reward_tipe || "COIN";
                 document.getElementById('inpEventCoin').value = d.reward_coin || 0;
                 document.getElementById('inpEventSpeed').value = d.reward_speed || 0;
-                document.getElementById('inpEventHari').value = d.reward_hari || 0;
+                document.getElementById('inpEventHariAktif').value = d.reward_hari_aktif || d.reward_hari || 0; // Mengamankan data lama
+                document.getElementById('inpEventHariSpeed').value = d.reward_hari_speed || 0;
                 if(d.batas_waktu) document.getElementById('inpEventBatasWaktu').value = d.batas_waktu;
                 
                 // Load Broadcast
@@ -1450,7 +1455,8 @@
             reward_tipe: document.getElementById('selEventTipe').value,
             reward_coin: getFloatVal('inpEventCoin'),
             reward_speed: getFloatVal('inpEventSpeed'),
-            reward_hari: parseInt(document.getElementById('inpEventHari').value) || 0,
+            reward_hari_aktif: parseInt(document.getElementById('inpEventHariAktif').value) || 0,
+            reward_hari_speed: parseInt(document.getElementById('inpEventHariSpeed').value) || 0,
             batas_waktu: document.getElementById('inpEventBatasWaktu').value,
             is_broadcast_active: document.getElementById('toggleEventBroadcast').checked,
             broadcast_text: document.getElementById('inpEventBroadcast').value
