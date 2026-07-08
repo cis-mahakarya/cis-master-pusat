@@ -767,7 +767,43 @@
     <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun Admin / User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input class='input-dark no-icon' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input class='input-dark no-icon' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input class='input-dark no-icon' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input class='input-dark no-icon' id='editInpUpline' type='text'></div></div><div style='display:flex; gap:10px;'>
     <div class='form-group' style='flex:1;'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div>
     <div class='form-group' style='flex:1;'><label>PIN Transaksi</label><input class='input-dark no-icon' id='editInpPin' type='text' maxlength='6'></div>
-</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
+</div><hr style='border:1px dashed #334155; margin:15px 0;'/>
+        
+<!-- DATA REKENING & VERIFIKASI P2P -->
+<h4 style='margin-top:0; color:#1abc9c;'><i class='fa-solid fa-building-columns'></i> Data Rekening (P2P)</h4>
+<div style='background:rgba(26, 188, 156, 0.05); border:1px solid #1abc9c; padding:12px; border-radius:8px; margin-bottom:15px; font-size:0.75rem;'>
+    <div style='margin-bottom:5px;'><span style='color:#94a3b8;'>Bank:</span> <b id='editViewBank' style='color:#fff;'>-</b></div>
+    <div style='margin-bottom:5px;'><span style='color:#94a3b8;'>E-Wallet:</span> <b id='editViewEwallet' style='color:#fff;'>-</b></div>
+    <div style='margin-bottom:15px;'><span style='color:#94a3b8;'>Crypto:</span> <b id='editViewCrypto' style='color:#fff;'>-</b></div>
+    
+    <div class='switch-wrap' style='margin-bottom:0; padding:10px; border-color:#1abc9c; background:#0b0f19;'>
+        <div><b id='lblStatusRekening' style='color:#f39c12;'><i class='fa-solid fa-triangle-exclamation'></i> BELUM DIVERIFIKASI</b><br/><span style='font-size:0.65rem; color:#94a3b8;'>Setujui rekening ini agar valid untuk P2P.</span></div>
+        <label class='switch'><input id='editTogVerifRek' type='checkbox' onchange='window.ubahStatusVerifUI(this)'><span class='slider-tg'></span></label>
+    </div>
+</div>
+
+<h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4>
+<div style='display:flex; gap:10px;'>
+    <div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div>
+    <div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div>
+</div>
+
+<div class='form-group' style='margin-bottom:10px;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div>
+
+<!-- PEMISAHAN EXPIRED & PENGGUNAAN KALENDER -->
+<div style='display:flex; gap:10px; background:rgba(239, 68, 68, 0.05); padding:10px; border-radius:8px; border:1px dashed #ef4444; margin-bottom:15px;'>
+    <div class='form-group' style='flex:1; margin-bottom:0;'><label style='color:#ef4444;'><i class='fa-solid fa-calendar-xmark'></i> Expired Akun</label><input class='input-dark no-icon' id='editInpExpAkun' style='border-color:#ef4444; font-size:0.75rem; padding:10px !important;' type='datetime-local'></div>
+    <div class='form-group' style='flex:1; margin-bottom:0;'><label style='color:#f39c12;'><i class='fa-solid fa-calendar-xmark'></i> Expired Mesin</label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f39c12; font-size:0.75rem; padding:10px !important;' type='datetime-local'></div>
+</div>
+
+<!-- SAKLAR RESET INSTAN -->
+<div class='switch-wrap' style='border-color:#ef4444; background:rgba(239, 68, 68, 0.1); margin-bottom:15px; padding:10px;'>
+    <div><b style='color:#ef4444;'><i class='fa-solid fa-skull-crossbones'></i> Reset Instan (Nol-kan)</b><br/><span style='font-size:0.65rem; color:#94a3b8;'>Hapus Saldo, Speed, & Matikan Mesin!</span></div>
+    <label class='switch'><input id='editTogKiamat' type='checkbox' onchange='window.toggleKiamatUI(this)'><span class='slider-tg'></span></label>
+</div>
+
+<button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:5px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button>
+</div>
   </div>
   
 <script type='module'>
@@ -796,7 +832,34 @@
     function formatTanggalJam(ts) { if(!ts) return "<span style='color:#64748b'>-</span>"; let d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) + " WIB"; }
 
     window.togglePassMaster = (id, icon) => { const inp = document.getElementById(id); if (inp.type === 'password') { inp.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { inp.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } };
-    window.showToast = (msg) => { const box = document.getElementById('toastBox'); document.getElementById('toastMsg').innerText = msg; box.style.opacity = 1; box.style.visibility = 'visible'; box.style.top = '50px'; setTimeout(() => { box.style.opacity = 0; box.style.visibility = 'hidden'; box.style.top = '20px'; }, 3000); };
+    window.ubahStatusVerifUI = (el) => {
+        const lbl = document.getElementById('lblStatusRekening');
+        if(el.checked) {
+            lbl.innerHTML = "<i class='fa-solid fa-circle-check'></i> REKENING TERVERIFIKASI";
+            lbl.style.color = "#2ecc71";
+        } else {
+            lbl.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> BELUM DIVERIFIKASI";
+            lbl.style.color = "#f39c12";
+        }
+    };
+
+    window.toggleKiamatUI = (el) => {
+        if(el.checked) {
+            document.getElementById('editInpSaldoVrsc').value = "0";
+            document.getElementById('editInpSaldoRp').value = "0";
+            document.getElementById('editInpSpeed').value = "0";
+            // Set tanggal ke masa lalu agar langsung mati
+            document.getElementById('editInpExpAkun').value = "2020-01-01T00:00"; 
+            document.getElementById('editInpExpMesin').value = "2020-01-01T00:00";
+            document.getElementById('btnSimpanEditData').style.background = "#ef4444";
+            document.getElementById('btnSimpanEditData').innerHTML = "<i class='fa-solid fa-biohazard'></i> EKSEKUSI RESET AKUN";
+        } else {
+            document.getElementById('btnSimpanEditData').style.background = "#10b981";
+            document.getElementById('btnSimpanEditData').innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN";
+            window.showToast("Batal reset. Silakan tutup dan buka ulang Form Edit untuk mengembalikan angka asli.");
+        }
+    };
+	window.showToast = (msg) => { const box = document.getElementById('toastBox'); document.getElementById('toastMsg').innerText = msg; box.style.opacity = 1; box.style.visibility = 'visible'; box.style.top = '50px'; setTimeout(() => { box.style.opacity = 0; box.style.visibility = 'hidden'; box.style.top = '20px'; }, 3000); };
     
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
