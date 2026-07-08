@@ -1121,6 +1121,14 @@
 
     window.bukaModalLacak = (id) => { let user = allUsersData.find(u => u.id === id); if(user) { document.getElementById('trackUserTitle').innerText = user.username || user.email; document.getElementById('trackDevice').innerHTML = user.os_device ? `<i class='fa-solid fa-mobile-screen'></i> ${user.os_device}` : "Belum Ada Data"; document.getElementById('trackIP').innerHTML = user.ip_address ? `<i class='fa-solid fa-globe'></i> ${user.ip_address}` : "Menunggu User Login"; document.getElementById('trackLocation').innerHTML = user.lokasi ? `<i class='fa-solid fa-location-dot'></i> ${user.lokasi}` : "Menunggu User Login"; document.getElementById('trackISP').innerHTML = user.isp ? `<i class='fa-solid fa-wifi'></i> ${user.isp}` : "Menunggu User Login"; document.getElementById('modalLacakUser').style.display = 'flex'; } };
     
+    // Helper untuk mengubah Timestamp (Milidetik) menjadi Format Kalender HTML
+    function formatMsToDateTimeLocal(ms) {
+        if(!ms || ms <= 0) return "";
+        let tzoffset = (new Date()).getTimezoneOffset() * 60000; // Penyesuaian zona waktu lokal
+        let localISOTime = (new Date(ms - tzoffset)).toISOString().slice(0, 16);
+        return localISOTime;
+    }
+
     window.bukaModalEdit = (id) => { 
         let user = allUsersData.find(u => u.id === id); 
         if(user) { 
@@ -1129,15 +1137,37 @@
             document.getElementById('editInpEmail').value = user.email || ""; 
             document.getElementById('editInpWa').value = user.wa || ""; 
             document.getElementById('editInpPass').value = user.password || ""; 
-            document.getElementById('editInpPin').value = user.tx_pin || ""; // Memanggil data PIN
+            document.getElementById('editInpPin').value = user.tx_pin || "";
             document.getElementById('editInpUpline').value = user.referred_by || ""; 
             
-            // Memaksa format angka Kripto agar tidak menggunakan kode "e" (Scientific Notation)
             document.getElementById('editInpSaldoVrsc').value = Number(user.saldo_vrsc || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
             document.getElementById('editInpSpeed').value = Number(user.kecepatan_hash || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
-            
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
-            document.getElementById('editInpExp').value = user.expired_at || 0; 
+            
+            // MENGISI DATA FINANSIAL (P2P)
+            document.getElementById('editViewBank').innerText = user.bank || "Kosong";
+            document.getElementById('editViewEwallet').innerText = user.ewallet || "Kosong";
+            document.getElementById('editViewCrypto').innerText = user.crypto || "Kosong";
+            
+            let togVerif = document.getElementById('editTogVerifRek');
+            if(togVerif) {
+                togVerif.checked = user.rekening_valid === true;
+                window.ubahStatusVerifUI(togVerif); // Panggil visualnya
+            }
+
+            // MENGISI TANGGAL KALENDER
+            document.getElementById('editInpExpAkun').value = formatMsToDateTimeLocal(user.expired_at);
+            
+            let expMesinMax = 0;
+            if(user.daftar_mesin && user.daftar_mesin.length > 0) {
+                expMesinMax = Math.max(...user.daftar_mesin.map(m => m.expired_kontrak));
+            }
+            document.getElementById('editInpExpMesin').value = formatMsToDateTimeLocal(expMesinMax);
+            
+            // Reset tombol kiamat agar aman setiap buka
+            let togKiamat = document.getElementById('editTogKiamat');
+            if(togKiamat) { togKiamat.checked = false; window.toggleKiamatUI(togKiamat); }
+
             document.getElementById('modalEditData').style.display = 'flex'; 
         } 
     };
@@ -1148,37 +1178,71 @@
         const uEmail = document.getElementById('editInpEmail').value.trim(); 
         const uWa = document.getElementById('editInpWa').value.trim(); 
         const uPass = document.getElementById('editInpPass').value.trim(); 
-        const uPin = document.getElementById('editInpPin').value.trim(); // Menangkap data PIN baru
+        const uPin = document.getElementById('editInpPin').value.trim();
         const uUpline = document.getElementById('editInpUpline').value.trim(); 
+        
         const vrsc = getFloatVal('editInpSaldoVrsc'); 
         const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
         const spd = getFloatVal('editInpSpeed'); 
-        const exp = parseInt(document.getElementById('editInpExp').value) || 0; 
+        
+        // Mengubah Input Kalender menjadi Milidetik
+        const strExpAkun = document.getElementById('editInpExpAkun').value;
+        const expAkunMs = strExpAkun ? new Date(strExpAkun).getTime() : 0;
+        const strExpMesin = document.getElementById('editInpExpMesin').value;
+        const expMesinMs = strExpMesin ? new Date(strExpMesin).getTime() : 0;
+
+        const isKiamat = document.getElementById('editTogKiamat').checked;
+        const isRekeningValid = document.getElementById('editTogVerifRek').checked;
+
+        // Validasi Input Negatif (Keamanan Ekonomi P2P)
+        if(vrsc < 0 || rp < 0 || spd < 0) return alert("GAGAL: Saldo atau Speed tidak boleh minus!");
+
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
+        
         try { 
-            // LOGIKA GARASI MESIN: Saat Admin edit speed manual, buatkan 1 mesin khusus (Master Edit)
+            // LOGIKA GARASI MESIN
             let garasiBaru = [];
-            if(spd > 0) {
+            if(spd > 0 && !isKiamat) {
                 garasiBaru.push({
                     id_mesin: "EDIT-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
                     nominal_beli: 0,
                     speed_bawaan: spd,
-                    expired_kontrak: exp
+                    expired_kontrak: expMesinMs
                 });
             }
-            // Menyimpan semua pembaruan termasuk tx_pin
+
             await updateDoc(doc(db, "Akun_Publik", id), { 
                 username: uUser, email: uEmail, wa: uWa, 
                 password: uPass, tx_pin: uPin, referred_by: uUpline, 
-                saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, 
-                expired_at: exp, daftar_mesin: garasiBaru 
+                saldo_vrsc: isKiamat ? 0 : vrsc, 
+                saldo_rupiah: isKiamat ? 0 : rp, 
+                kecepatan_hash: isKiamat ? 0 : spd, 
+                expired_at: isKiamat ? 0 : expAkunMs, 
+                daftar_mesin: garasiBaru,
+                rekening_valid: isRekeningValid
             }); 
-            window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); 
+
+            // CATAT LOG ADMIN (AUDIT TRAIL)
+            let namaAdmin = "Master";
+            try { let adminLog = JSON.parse(localStorage.getItem("cisAdminLog_v2")); if(adminLog) namaAdmin = adminLog.nama; } catch(e){}
+            let deskripsiLog = isKiamat ? `🚨 MELAKUKAN RESET KIAMAT PADA AKUN.` : `📝 Edit Akun. VRSC: ${vrsc}, Rp: ${rp}, Speed: ${spd}, Rek_Valid: ${isRekeningValid}`;
+            
+            await addDoc(collection(db, "Mutasi_Pusat"), {
+                jenis: "EDIT",
+                nominal: rp,
+                deskripsi: `[${namaAdmin}] -> ${uUser}: ${deskripsiLog}`,
+                waktu: serverTimestamp()
+            });
+
+            window.showToast("Data Berhasil Disimpan & Log Admin Dicatat!"); 
             document.getElementById('modalEditData').style.display = 'none'; 
             window.loadUser(); 
         } catch(e) { alert("Gagal menyimpan data."); } 
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
+        
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; 
+        btn.style.background = "#10b981";
+        btn.disabled = false; 
     };
 
     window.lihatMutasiUser = async (email, username) => { document.getElementById('mutasiUserTitle').innerText = "Ledger: " + (username || email); document.getElementById('modalMutasiUser').style.display = 'flex'; const tbody = document.getElementById('tblMutasiUser'); tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data...</td></tr>"; try { const snap = await getDocs(query(collection(db, "Mutasi_Mining"), where("email", "==", email))); let dataArr = []; snap.forEach(d => dataArr.push(d.data())); dataArr.sort((a, b) => (b.timestamp_local || 0) - (a.timestamp_local || 0)); if(dataArr.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Tidak ada riwayat mutasi.</td></tr>"; return; } let html = ""; dataArr.slice(0, 100).forEach(x => { let tgl = new Date(x.timestamp_local).toLocaleString('id-ID'); let cl = x.jenis === "IN" ? "#4ade80" : "#f87171"; let sign = x.jenis === "IN" ? "+" : "-"; let formatUang = x.deskripsi.toLowerCase().includes("reward") || x.deskripsi.toLowerCase().includes("sponsor") || x.deskripsi.toLowerCase().includes("upgrade") || x.deskripsi.toLowerCase().includes("yield") ? `${formatKripto(x.nominal || 0)} VRSC` : `Rp ${(x.nominal||0).toLocaleString('id-ID')}`; html += `<tr><td style='font-size:0.75rem; color:#94a3b8;'>${tgl}</td><td style='font-size:0.8rem; font-weight:bold;'>${x.deskripsi}</td><td style='color:${cl}; font-weight:900;'>${sign}${formatUang}</td></tr>`; }); tbody.innerHTML = html; } catch(e) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; } };
