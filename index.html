@@ -1096,7 +1096,22 @@
     window.loadUser = async () => {
       const tbody = document.getElementById('tblUser'); tbody.innerHTML = ''; let rewardDropdownHtml = "<option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option>";
       const snap = await getDocs(collection(db, "Akun_Publik")); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Belum ada partisipan.</td></tr>"; return; }
-      allUsersData = []; snap.forEach(d => { allUsersData.push({ id: d.id, ...d.data() }); }); let downlineCount = {}; allUsersData.forEach(u => { if(u.referred_by && u.referred_by !== "") { downlineCount[u.referred_by] = (downlineCount[u.referred_by] || 0) + 1; } });
+      
+      allUsersData = []; 
+      snap.forEach(d => { allUsersData.push({ id: d.id, ...d.data() }); }); 
+      
+      let downlineCount = {}; 
+      allUsersData.forEach(u => { if(u.referred_by && u.referred_by !== "") { downlineCount[u.referred_by] = (downlineCount[u.referred_by] || 0) + 1; } });
+      
+      // =========================================================
+      // SISTEM SORTING (PENGURUTAN DATA) - TERBARU KE TERLAMA
+      // =========================================================
+      allUsersData.sort((a, b) => {
+          let timeA = a.created_at ? (a.created_at.seconds || 0) : 0;
+          let timeB = b.created_at ? (b.created_at.seconds || 0) : 0;
+          return timeB - timeA; // Angka terbesar (terbaru) ditarik ke atas
+      });
+
       let no = 1;
       
       allUsersData.forEach(u => {
@@ -1114,7 +1129,7 @@
         tbody.innerHTML += `<tr><td style='text-align:center;'>${no++}</td><td><b style='color:#38bdf8; font-size:1.1rem;'>${u.username || 'No-Name'}</b><br/><span style='font-size:0.8rem; color:#94a3b8;'><i class='fa-solid fa-envelope'></i> ${u.email}</span><br/><span style='font-size:0.7rem; color:#64748b;'><i class='fa-solid fa-clock'></i> Daftar: ${dateReg}</span><br/><b style='color:#4ade80; font-size:0.8rem;'><i class='fa-solid fa-users'></i> Downline: ${totalDownline} User</b></td><td><span style='font-size:0.8rem; color:#94a3b8;'>WA: <b style='color:#e2e8f0;'>${u.wa || '-'}</b></span><br/><span style='font-size:0.8rem; color:#94a3b8;'>Pass: <b style='color:#f87171; font-family:monospace;'>${u.password}</b></span><br/><span style='font-size:0.8rem; color:#94a3b8;'>Upline: <b style='color:#fbbf24;'>${u.referred_by || 'Tanpa Sponsor'}</b></span><br/><div style='margin-top:5px;'>${actEditData} ${actMutasiUser}</div></td><td><div style='margin-bottom:8px;'>${badgeS} ${pinStatus} ${lockStatus}</div><div style='display:flex; flex-wrap:wrap; gap:5px;'>${actJaringan} ${actLacak}</div><div style='display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;'>${actBlok} ${actReset} ${actHapus}</div></td></tr>`;
         rewardDropdownHtml += `<option value='${u.email}'>${u.username || 'No-Name'} (${u.email})</option>`;
       }); document.getElementById('rewardTarget').innerHTML = rewardDropdownHtml;
-    }
+    };
 
     window.eksekusiResetDevice = async () => { const inputTarget = document.getElementById('inpTargetDeviceReset').value.trim().toLowerCase(); if(!inputTarget) return alert("Masukkan Username atau Email user!"); const btn = document.getElementById('btnResetDevice'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MEMPROSES..."; btn.disabled = true; try { let targetUser = allUsersData.find(u => (u.username && u.username.toLowerCase() === inputTarget) || (u.email && u.email.toLowerCase() === inputTarget)); if (targetUser) { await updateDoc(doc(db, "Akun_Publik", targetUser.id), { device_id: "" }); alert(`SUKSES! Kunci perangkat [ ${targetUser.username} ] dihapus.`); document.getElementById('inpTargetDeviceReset').value = ""; loadUser(); } else { alert("GAGAL: Username atau Email tidak ditemukan."); } } catch (error) { alert("Terjadi kesalahan sistem."); } btn.innerHTML = "<i class='fa-solid fa-power-off'></i> RESET PERANGKAT"; btn.disabled = false; };
     window.forceUnlock = async (id, username) => { if(!confirm(`Buka kunci perangkat untuk user: ${username}?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { device_id: "" }); showToast(`Kunci perangkat ${username} dibuka!`); loadUser(); } catch(e) { alert("Gagal membuka kunci."); } };
