@@ -1116,7 +1116,7 @@
       
       allUsersData.forEach(u => {
         let stt = u.status_akun === "BLOKIR" ? "BLOKIR" : "AKTIF"; let badgeS = stt === "AKTIF" ? `<span class='badge bg-green'>Aktif</span>` : `<span class='badge bg-red'>Blokir</span>`; let pinStatus = (u.tx_pin && u.tx_pin !== "") ? `<span class='badge bg-green'>PIN OK</span>` : `<span class='badge bg-red'>No PIN</span>`;
-        let lockStatus = (u.device_id && u.device_id !== "") ? `<button class='action-btn bg-dark' onclick='window.forceUnlock("${u.id}", "${u.username}")' title='Reset Perangkat'><i class='fa-solid fa-lock'></i> Terkunci (Reset)</button>` : `<span class='badge bg-dark'><i class='fa-solid fa-lock-open'></i> Bebas</span>`;
+        let lockStatus = (u.device_id && u.device_id !== "" && window.CONFIG_DEVICE_LOCK !== false) ? `<button class='action-btn bg-dark' onclick='window.forceUnlock("${u.id}", "${u.username}")' title='Reset Perangkat'><i class='fa-solid fa-lock'></i> Terkunci (Reset)</button>` : `<span class='badge bg-dark'><i class='fa-solid fa-lock-open'></i> Bebas</span>`;
         let actBlok = stt === "AKTIF" ? `<button class='action-btn btn-del' onclick='window.togBlokir("${u.id}", "BLOKIR")' title='Blokir Akun'><i class='fa-solid fa-ban'></i></button>` : `<button class='action-btn bg-green' onclick='window.togBlokir("${u.id}", "AKTIF")' title='Buka Blokir'><i class='fa-solid fa-unlock'></i></button>`;
         let actReset = `<button class='action-btn btn-reset' onclick='window.resetUser("${u.id}", "${u.email}")' title='Reset Data Akun'><i class='fa-solid fa-rotate-left'></i></button>`;
         let actHapus = `<button class='action-btn btn-del' onclick='window.delUser("${u.id}")' title='Hapus Akun Permanen'><i class='fa-solid fa-trash'></i></button>`;
