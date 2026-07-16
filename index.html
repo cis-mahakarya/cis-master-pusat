@@ -1065,10 +1065,25 @@
         try {
             await updateDoc(doc(db, "Request_Withdraw", id), { status: "DISETUJUI" });
             let t = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for(let j = 0; j < 16; j++) t += chars.charAt(Math.floor(Math.random() * chars.length)); let tk = `${t.slice(0,4)}-${t.slice(4,8)}-${t.slice(8,12)}-${t.slice(12,16)}`;
-            let emailTarget = email; if (targetUser !== username) { const targetSnap = await getDocs(query(collection(db, "Akun_Publik"), where("username", "==", targetUser))); if (!targetSnap.empty) emailTarget = targetSnap.docs[0].data().email; }
+            
+            let emailTarget = email; 
+            if (targetUser !== username) { 
+                const targetSnap = await getDocs(query(collection(db, "Akun_Publik"), where("username", "==", targetUser))); 
+                if (!targetSnap.empty) emailTarget = targetSnap.docs[0].data().email; 
+            }
+            
             await addDoc(collection(db, "Database_Token"), { kode_token: tk, nominal_rupiah: nominal, durasi_hari: 30, status: "AKTIF", distribusi_ke: jenisToken, pemilik: emailTarget, pemilik_username: targetUser, pengirim: username, pembuat: "Pusat", dibuat_pada: serverTimestamp(), dipakai_oleh: null });
             await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `✅ Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda telah DISETUJUI! Token telah masuk ke stok ${targetUser}.`, timestamp_local: Date.now() });
             await addDoc(collection(db, "Mutasi_Pusat"), { jenis: "OUT", nominal: nominal, deskripsi: `Cairkan WD (Token ${jenisToken}) dari ${username}`, waktu: serverTimestamp() });
+            
+            // PENCATATAN MUTASI (AUDIT TRAIL) UNTUK PENERIMA TOKEN
+            await addDoc(collection(db, "Mutasi_Mining"), { email: emailTarget, jenis: "IN", deskripsi: `✅ Terima Swap Token ${jenisToken} dari ${username}`, nominal: nominal, timestamp_local: Date.now() });
+            
+            // NOTIFIKASI TAMBAHAN JIKA TARGET BUKAN DIRI SENDIRI
+            if (emailTarget !== email) {
+                await addDoc(collection(db, "Notifikasi_Personal"), { email: emailTarget, pesan: `🎁 Anda menerima Token ${jenisToken} senilai Rp ${nominal.toLocaleString('id-ID')} dari hasil pencairan WD ${username}. Cek stok token Anda!`, timestamp_local: Date.now() });
+            }
+
             showToast("WD Disetujui & Token Dicetak!"); window.loadAntreanWD();
         } catch(e) { alert("Terjadi kesalahan."); }
     };
