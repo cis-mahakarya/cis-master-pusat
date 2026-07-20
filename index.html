@@ -1281,7 +1281,33 @@
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
-    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [] }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
+    window.resetUser = async (id, email) => { 
+        if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, Mutasi, dan P2P milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; 
+        try { 
+            // 1. Nol-kan data dasar akun
+            await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [], rekening_valid: false }); 
+            
+            // 2. Hapus riwayat lama (Mutasi, Token, Withdraw)
+            const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; 
+            for(const kol of listKol) { 
+                const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); 
+                const snap = await getDocs(q); 
+                for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } 
+            } 
+            
+            // 3. TAMBAHAN BARU: Hapus riwayat P2P (Sebagai Pembeli maupun Penjual)
+            const qP2pBeli = query(collection(db, "P2P_Order"), where("pembeli", "==", email));
+            const snapBeli = await getDocs(qP2pBeli);
+            for (const d of snapBeli.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
+
+            const qP2pJual = query(collection(db, "P2P_Order"), where("penjual", "==", email));
+            const snapJual = await getDocs(qP2pJual);
+            for (const d of snapJual.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
+
+            showToast(`Data akun ${email} berhasil di-reset total!`); 
+            loadUser(); 
+        } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } 
+    };
 
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
     window.masterReset = async () => { 
@@ -1293,7 +1319,7 @@
         try { 
             const snapU = await getDocs(collection(db, "Akun_Publik")); for (const d of snapU.docs) { await deleteDoc(doc(db, "Akun_Publik", d.id)); } 
             await addDoc(collection(db, "Akun_Publik"), { username: "CIS01", email: "cis01@gmail.com", wa: "6281234567890", password: "admin", tx_pin: "123456", referred_by: "MASTER", saldo_vrsc: 0, kecepatan_hash: 0, expired_at: Date.now() + (365 * 86400000), status_akun: "AKTIF", created_at: serverTimestamp(), saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, device_id: "" });
-            const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config" ]; 
+            const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config", "P2P_Order", "Donasi_USDT" ]; 
             for (const kol of listKoleksi) { const snap = await getDocs(collection(db, kol)); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } 
             alert("✅ FACTORY RESET BERHASIL!\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan."); window.location.reload();
         } catch(e) { alert("Gagal total! Pastikan koneksi internet stabil."); btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; btn.disabled = false; } 
