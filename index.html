@@ -1287,15 +1287,22 @@
             // 1. Nol-kan data dasar akun
             await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [], rekening_valid: false }); 
             
-            // 2. Hapus riwayat lama (Mutasi, Token, Withdraw)
-            const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; 
+            // 2. Hapus riwayat Mutasi, Notif, dan Withdraw (Tanpa mengganggu Token)
+            const listKol = ["Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; 
             for(const kol of listKol) { 
-                const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); 
+                const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":"email", "==", email)); 
                 const snap = await getDocs(q); 
                 for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } 
             } 
             
-            // 3. TAMBAHAN BARU: Hapus riwayat P2P (Sebagai Pembeli maupun Penjual)
+            // 3. SAPU BERSIH STOK TOKEN (Ubah status agar langsung lenyap dari layar HP Member)
+            const qToken = query(collection(db, "Database_Token"), where("pemilik", "==", email));
+            const snapToken = await getDocs(qToken);
+            for (const d of snapToken.docs) {
+                await updateDoc(doc(db, "Database_Token", d.id), { status: "HANGUS_DIRESET" });
+            }
+            
+            // 4. Hapus riwayat P2P (Sebagai Pembeli maupun Penjual)
             const qP2pBeli = query(collection(db, "P2P_Order"), where("pembeli", "==", email));
             const snapBeli = await getDocs(qP2pBeli);
             for (const d of snapBeli.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
@@ -1304,7 +1311,7 @@
             const snapJual = await getDocs(qP2pJual);
             for (const d of snapJual.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
 
-            showToast(`Data akun ${email} berhasil di-reset total!`); 
+            showToast(`Data akun ${email} berhasil di-reset total dan token dihanguskan!`); 
             loadUser(); 
         } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } 
     };
