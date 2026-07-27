@@ -1785,6 +1785,60 @@
             });
         });
     };
+
+	// ---------------------------------------------------------
+        // 2. ROBOT EDUKASI & MOTIVASI (Gudang 3 Laci)
+        // ---------------------------------------------------------
+        // Waktu standar: 60 * 60 * 1000 (1 Jam). 
+        // Untuk uji coba, kita set 60000 (1 Menit). Nanti Master bisa ubah!
+        let intervalWaktu = 60000; 
+
+        if(window.intervalRobotPromo) clearInterval(window.intervalRobotPromo);
+
+        window.intervalRobotPromo = setInterval(async () => {
+            // Cek apakah Saklar Robot Edukasi & Motivasi sedang ON?
+            let togglePromo = document.getElementById('toggleBotPromo');
+            let isPromoOn = togglePromo ? togglePromo.checked : false;
+
+            if (!isPromoOn) return; // Jika saklar OFF, robot tidur.
+
+            // ==========================================
+            // GUDANG AMUNISI TEKS (3 LACI)
+            // Master bisa menambahkan kata-kata baru di sini sesuka hati!
+            // ==========================================
+            const gudangTeks = [
+                // LACI 1: FOMO & MOTIVASI
+                "🔥 Jangan cuma jadi penonton! Para Sultan sedang panen ratusan ribu tiap hari dari hasil P2P Cloud Mining. Upgrade mesinmu sekarang!",
+                "💎 Harga Kripto terus bergerak. Kumpulkan koin VRSC-mu selagi masih mudah didapatkan dari mesin mining!",
+                "🚀 Hasil tidak akan mengkhianati proses. Terus kembangkan jaringan referralmu dan nikmati passive income di CIS Protocol.",
+
+                // LACI 2: EDUKASI SISTEM
+                "💡 TAHUKAH ANDA? Kecepatan Hashrate (V/s) sangat menentukan seberapa cepat koin Anda tercetak. Tambah kecepatan Anda di menu P2P!",
+                "⚙️ TIPS SULTAN: Jangan lupa rajin melakukan KLAIM setiap jam agar koin VRSC Anda terus bertambah secara gratis.",
+                "🛡️ KEAMANAN: Bertransaksilah HANYA dengan penjual yang memiliki centang 'Rekening Valid' di P2P Marketplace agar 100% aman.",
+
+                // LACI 3: AJAKAN (CALL TO ACTION)
+                "🎁 Mau dapet tambahan Speed gratis? Sebarkan link referral Anda ke grup WA/Facebook. 1 orang aktif = Speed tambahan masuk otomatis!",
+                "🤝 Punya stok token berlebih? Jual segera di P2P Marketplace dan jadikan saldo Rupiah tunai langsung ke rekeningmu!",
+                "🌐 CIS Protocol bukan sekadar aplikasi, ini adalah ekosistem Cloud Mining & Charity terintegrasi. Bangga jadi bagian dari CIS!"
+            ];
+
+            // Acak dan pilih 1 peluru dari gudang
+            let randomIndex = Math.floor(Math.random() * gudangTeks.length);
+            let pesanAcak = gudangTeks[randomIndex];
+
+            try {
+                // Tembakkan ke Layar Seluruh Miner (Notifikasi Global)
+                await addDoc(collection(db, "Notifikasi_Global"), {
+                    pesan: "🤖 TIPS CIS: " + pesanAcak,
+                    pengirim: "Auto-Pilot Robot",
+                    timestamp_local: Date.now()
+                });
+                console.log("🤖 Robot Promo sukses menembakkan amunisi edukasi.");
+            } catch(e) {
+                console.error("Gagal menembakkan robot promo", e);
+            }
+        }, intervalWaktu);
 	
     window.cariLiveUser = () => { cariUserLiveInput = document.getElementById('searchLiveUser').value.toLowerCase(); window.renderLiveDashboard(); };
     window.renderLiveDashboard = () => {
