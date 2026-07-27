@@ -670,6 +670,39 @@
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
+        
+        <!-- ========================================== -->
+        <!-- PANEL KENDALI ROBOT AUTO-POSTING (MISI 3)  -->
+        <!-- ========================================== -->
+        <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom: 20px; background: rgba(168, 85, 247, 0.05);'>
+            <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-robot'></i> Kendali Mesin Viralitas (Auto-Posting)</h4>
+            <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan robot promosi yang bekerja di latar belakang.</p>
+
+            <!-- SAKLAR 1: ROBOT PROMOSI (3 LACI) -->
+            <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
+                <div>
+                    <b style='color: #00f2fe;'><i class='fa-solid fa-bullhorn'></i> Robot Edukasi & Motivasi</b><br/>
+                    <span style='font-size: 0.65rem; color: #94a3b8;'>Posting materi acak otomatis ke media sosial.</span>
+                </div>
+                <label class='switch'>
+                    <input id='toggleBotPromo' type='checkbox' onchange='window.simpanStatusRobot()'>
+                    <span class='slider-tg'></span>
+                </label>
+            </div>
+
+            <!-- SAKLAR 2: RADAR BUKTI CAIR P2P -->
+            <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
+                <div>
+                    <b style='color: #2ecc71;'><i class='fa-solid fa-money-bill-wave'></i> Radar Struk P2P (Social Proof)</b><br/>
+                    <span style='font-size: 0.65rem; color: #94a3b8;'>Otomatis siarkan bukti transaksi P2P yang sukses.</span>
+                </div>
+                <label class='switch'>
+                    <input id='toggleBotP2P' type='checkbox' onchange='window.simpanStatusRobot()'>
+                    <span class='slider-tg'></span>
+                </label>
+            </div>
+        </div>
+
       	<!-- KOTAK BANNER EVENT KLAIM -->
       <div class='card-panel' style='border-top: 2px solid #38bdf8; margin-bottom: 20px;'>
         <h4 style='margin-top:0; color:#38bdf8;'><i class='fa-solid fa-gift'></i> Pengaturan Banner Event (Area Claim)</h4>
@@ -918,7 +951,7 @@
         });
         
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
-        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); showToast("Access Granted: Welcome Commander.");
+        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.muatStatusRobot(); showToast("Access Granted: Welcome Commander.");
 
 		// --- Kalkulator Realtime Est Rupiah ---
     window.hitungEstRegBonus = function() {
@@ -1944,6 +1977,47 @@
         }
         
         if(!isAuto) { btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Web"; btn.disabled = false; }
+    };
+
+	// ==========================================
+    // FUNGSI KENDALI ROBOT VIRALITAS (MISI 3)
+    // ==========================================
+    window.muatStatusRobot = async () => {
+        try {
+            const qConfig = query(collection(db, "System_Config"), where("tipe", "==", "AUTO_POSTING"));
+            const snap = await getDocs(qConfig);
+            if (!snap.empty) {
+                let data = snap.docs[0].data();
+                document.getElementById('toggleBotPromo').checked = data.robot_promo_aktif === true;
+                document.getElementById('toggleBotP2P').checked = data.robot_p2p_aktif === true;
+            }
+        } catch(e) { console.error("Gagal memuat status robot."); }
+    };
+
+    window.simpanStatusRobot = async () => {
+        let statusBotPromo = document.getElementById('toggleBotPromo').checked;
+        let statusBotP2P = document.getElementById('toggleBotP2P').checked;
+
+        let payload = {
+            tipe: "AUTO_POSTING",
+            robot_promo_aktif: statusBotPromo,
+            robot_p2p_aktif: statusBotP2P,
+            waktu_update: serverTimestamp()
+        };
+
+        try {
+            const qConfig = query(collection(db, "System_Config"), where("tipe", "==", "AUTO_POSTING"));
+            const snap = await getDocs(qConfig);
+            
+            if (snap.empty) {
+                await addDoc(collection(db, "System_Config"), payload);
+            } else {
+                await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+            }
+            window.showToast("✅ Status Robot berhasil diperbarui ke Pusat!");
+        } catch(e) {
+            window.showToast("❌ Gagal menyimpan status robot ke Firebase.");
+        }
     };
 
     async function loadGlobalStats() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('statInpOnline').value = data.online || 1204; document.getElementById('statInpReg').value = data.registered || 8450; document.getElementById('statInpWd').value = data.withdrawn || 452890;
