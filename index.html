@@ -951,7 +951,7 @@
         });
         
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
-        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.muatStatusRobot(); showToast("Access Granted: Welcome Commander.");
+        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.muatStatusRobot(); window.initRobotViralitas(); showToast("Access Granted: Welcome Commander.");
 
 		// --- Kalkulator Realtime Est Rupiah ---
     window.hitungEstRegBonus = function() {
@@ -1735,6 +1735,57 @@
         });
         if(omsetUpdateInterval) clearInterval(omsetUpdateInterval); omsetUpdateInterval = setInterval(window.renderLiveDashboard, 1000);
     };
+
+	// ==========================================
+    // OTAK ROBOT VIRALITAS & FOMO (MISI 3)
+    // ==========================================
+    let unsubRobotP2P = null;
+
+    window.initRobotViralitas = () => {
+        // Hentikan radar lama jika ada agar tidak ganda
+        if (unsubRobotP2P) unsubRobotP2P();
+
+        // 1. RADAR P2P (Memantau order yang berstatus SELESAI)
+        const qP2P = query(collection(db, "P2P_Order"), where("status", "==", "SELESAI"));
+
+        unsubRobotP2P = onSnapshot(qP2P, async (snap) => {
+            // Cek apakah Saklar Radar P2P di layar Master sedang menyala (ON)?
+            let toggleP2P = document.getElementById('toggleBotP2P');
+            let isRobotOn = toggleP2P ? toggleP2P.checked : false;
+            
+            if (!isRobotOn) return; // Jika saklar mati, robot tidur.
+
+            snap.docChanges().forEach(async (change) => {
+                // Hanya bereaksi ketika ada perubahan data (Order baru saja diklik SELESAI oleh pembeli)
+                if (change.type === "modified" || change.type === "added") { 
+                    let d = change.doc.data();
+                    
+                    // Pastikan transaksi ini baru saja selesai (dalam 2 menit terakhir) agar tidak men-spam data lama
+                    let waktuUpdate = d.waktu_update ? (d.waktu_update.seconds * 1000) : Date.now();
+                    if (Date.now() - waktuUpdate < 120000) { 
+                        
+                        // Siapkan kalimat FOMO untuk disiarkan
+                        let nominalRp = (d.total_harga || 0).toLocaleString('id-ID');
+                        let pesanFomo = `🔥 P2P SUKSES! [${d.pembeli_user}] baru saja berhasil mengamankan ${d.qty}x Token ${d.jenis_token} dari [${d.penjual_user}] senilai Rp ${nominalRp}. Ekosistem berjalan ngebut! 🚀`;
+                        
+                        // Cek ke database Notifikasi Global agar robot tidak memposting hal yang sama dua kali
+                        const cekNotif = await getDocs(query(collection(db, "Notifikasi_Global"), where("pesan", "==", pesanFomo)));
+                        
+                        if (cekNotif.empty) {
+                            // Tembakkan ke Notifikasi Global!
+                            await addDoc(collection(db, "Notifikasi_Global"), { 
+                                pesan: pesanFomo, 
+                                pengirim: "Sistem Radar P2P", 
+                                timestamp_local: Date.now() 
+                            });
+                            console.log("🤖 Robot P2P menyiarkan: " + pesanFomo);
+                        }
+                    }
+                }
+            });
+        });
+    };
+	
     window.cariLiveUser = () => { cariUserLiveInput = document.getElementById('searchLiveUser').value.toLowerCase(); window.renderLiveDashboard(); };
     window.renderLiveDashboard = () => {
         let totalSpeedSistem = 0; let onlineCount = 0; let offlineCount = 0; let now = Date.now(); let tbodyHtml = ""; let no = 1;
