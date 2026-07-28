@@ -1791,7 +1791,7 @@
         // ---------------------------------------------------------
         // Waktu standar: 60 * 60 * 1000 (1 Jam). 
         // Untuk uji coba, kita set 60000 (1 Menit). Nanti Master bisa ubah!
-        let intervalWaktu = 10800000; 
+        let intervalWaktu = 60000; 
 
         if(window.intervalRobotPromo) clearInterval(window.intervalRobotPromo);
 
@@ -1828,15 +1828,41 @@
             let pesanAcak = gudangTeks[randomIndex];
 
             try {
-                // Tembakkan ke Layar Seluruh Miner (Notifikasi Global)
+                let pesanLengkap = "🤖 TIPS CIS: " + pesanAcak;
+
+                // 1. Tembakkan ke Layar Seluruh Miner (Internal Notifikasi Global)
                 await addDoc(collection(db, "Notifikasi_Global"), {
-                    pesan: "🤖 TIPS CIS: " + pesanAcak,
+                    pesan: pesanLengkap,
                     pengirim: "Auto-Pilot Robot",
                     timestamp_local: Date.now()
                 });
-                console.log("🤖 Robot Promo sukses menembakkan amunisi edukasi.");
+                console.log("🤖 Robot Promo sukses menembakkan ke internal aplikasi.");
+
+                // ==========================================
+                // 2. JEMBATAN OTOMATIS KE FANS-PAGE FACEBOOK
+                // ==========================================
+                const FB_PAGE_ID = "1226935663827737"; 
+                const FB_ACCESS_TOKEN = "EAAWCaZCbyoGgBSIOowAVihZA9ls4wYCZB6JuYbeck3RCIz7b887nPnRyeqIeI65SeAmX3lxrcZBKXJVeZAynRQG2fJOHOFtQHxCqytVcDlwRIhWCccRC3q47RknWqoYqUe2npkCERvaQLj4E6ZCWJHhtjKIeT5Ui7NZBUMNlcvn8z0dAZB21VmcUUTXrb6SUrsxu6dfgEgiZCZAVQtInEbMcqJM13Or6tZA2Yss0ZAZAqo7U2jWn2"; // <-- PASTE TOKEN ANDA DI SINI
+
+                let fbUrl = `https://graph.facebook.com/v25.0/${FB_PAGE_ID}/feed`;
+                let fbResponse = await fetch(fbUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: pesanLengkap,
+                        access_token: FB_ACCESS_TOKEN
+                    })
+                });
+                
+                let fbResult = await fbResponse.json();
+                if(fbResult.id) {
+                    console.log("✅ Sukses Posting ke Facebook Cisverus! ID FB: " + fbResult.id);
+                } else {
+                    console.error("❌ Robot Gagal Menembus Facebook:", fbResult);
+                }
+
             } catch(e) {
-                console.error("Gagal menembakkan robot promo", e);
+                console.error("Mesin Robot Promo Mengalami Kendala:", e);
             }
         }, intervalWaktu);
 	
