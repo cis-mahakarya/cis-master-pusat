@@ -762,6 +762,33 @@
         <button class='btn-main' id='btnBuatAdmin' onclick='eksekusiBuatAdmin()' style='margin-top:15px; background:#64748b;'><i class='fa-solid fa-save'></i> Simpan Akun Asisten</button>
       </div>
       <div class='card-panel'><h4>Daftar Admin Terdaftar</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Username &amp; Pass</th><th>Role Akses</th><th>Aksi</th></tr></thead><tbody id='tblAdminList'><tr><td colspan='4' style='text-align:center;'>Memuat...</td></tr></tbody></table></div></div>
+      
+      <!-- ========================================== -->
+      <!-- KOTAK CCTV AUDIT LOG MULAI DARI SINI       -->
+      <!-- ========================================== -->
+      <div class='card-panel' style='border-top: 2px solid #ef4444; margin-top: 20px;'>
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
+          <h4 style='margin:0; color:#ef4444;'><i class='fa-solid fa-video'></i> CCTV & Audit Log System</h4>
+          <button class='action-btn bg-dark' onclick='window.loadCctvLog()'><i class='fa-solid fa-rotate'></i> Refresh CCTV</button>
+        </div>
+        <p style='font-size:0.75rem; color:#94a3b8; margin-top:-5px;'>Merekam jejak digital perombakan saldo, edit data miner, dan aktivitas sensitif admin.</p>
+        <div class='table-wrap' style='max-height:400px; overflow-y:auto; border: 1px solid #334155; border-radius: 8px;'>
+          <table>
+            <thead>
+              <tr>
+                <th style='background:#0f172a;'>Waktu (WIB)</th>
+                <th style='background:#0f172a;'>Tipe Aksi</th>
+                <th style='background:#0f172a;'>Jejak Digital (Deskripsi)</th>
+              </tr>
+            </thead>
+            <tbody id='tblCctvLog'>
+              <tr><td colspan='3' style='text-align:center;'>Menghubungkan ke server CCTV...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- END KOTAK CCTV -->
+
     </div>
   </div>
 
@@ -899,7 +926,7 @@
         if(id === 'scr-donasi-admin') window.loadAdminDonasi();
 		if(id === 'scr-team') window.loadDataTim(); 
         if(id === 'scr-approval') window.switchTabWd('pending'); 
-        if(id === 'scr-cpanel') window.loadDaftarAdmin();
+        if(id === 'scr-cpanel') { window.loadDaftarAdmin(); window.loadCctvLog(); }
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
@@ -1727,6 +1754,44 @@
     };
     window.hapusAdmin = async (id, nama) => { if(confirm(`Yakin ingin menghapus akses admin: ${nama}?`)) { await deleteDoc(doc(db, "Akun_Admin", id)); showToast("Admin dihapus."); window.loadDaftarAdmin(); } };
 
+	// ==========================================
+    // MESIN CCTV & AUDIT LOG SYSTEM
+    // ==========================================
+    window.loadCctvLog = async () => {
+        const tbody = document.getElementById('tblCctvLog');
+        if(!tbody) return;
+        tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai Jejak Digital...</td></tr>";
+        try {
+            // Ambil dari Mutasi_Pusat (Tempat kita menyimpan log edit & transaksi)
+            const snap = await getDocs(query(collection(db, "Mutasi_Pusat"), orderBy("waktu", "desc")));
+            let html = "";
+            let dataArr = [];
+            snap.forEach(d => dataArr.push(d.data()));
+            
+            dataArr.slice(0, 150).forEach(x => {
+                let wkt = formatTanggalJam(x.waktu);
+                let badgeColor = "#334155";
+                
+                // Klasifikasi Warna Aksi
+                if(x.jenis === "EDIT") badgeColor = "#f59e0b"; // Kuning Warning (Edit Data)
+                else if(x.jenis === "OUT") badgeColor = "#ef4444"; // Merah (Pusat Cairkan WD)
+                else if(x.jenis === "IN") badgeColor = "#10b981"; // Hijau (Cetak Token)
+                
+                // Menyorot nama admin dengan warna biru terang (Pola: [NamaAdmin] -> Target)
+                let deskripsiHtml = x.deskripsi.replace(/\[(.*?)\]/g, "<b style='color:#38bdf8;'>[$1]</b>");
+                
+                html += `<tr>
+                    <td style='font-size:0.75rem; color:#cbd5e1; white-space:nowrap;'>${wkt}</td>
+                    <td><span class='badge' style='background:${badgeColor}; color:#fff;'>${x.jenis}</span></td>
+                    <td style='font-size:0.8rem; color:#e2e8f0;'>${deskripsiHtml}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Rekaman CCTV kosong. Belum ada aktivitas.</td></tr>";
+        } catch(e) {
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#ef4444;'>❌ Gagal memuat data CCTV.</td></tr>";
+        }
+    };
+	
     let liveUsersMap = new Map(); let omsetUpdateInterval = null; let cariUserLiveInput = "";
     window.initLiveMonitor = () => {
         onSnapshot(collection(db, "Akun_Publik"), (snap) => {
