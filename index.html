@@ -663,6 +663,16 @@
           <label class='switch'><input id='toggleStakingActive' type='checkbox'><span class='slider-tg'></span></label>
         </div>
         <button class='btn-main' onclick='window.simpanStatusStaking()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Status Staking</button>
+		<!-- TUAS KENDALI PERSENTASE STAKING -->
+        <div style='margin-top:15px; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid #334155;'>
+            <label style='color:#4ade80; font-size:0.85rem; font-weight:bold;'><i class='fa-solid fa-chart-line'></i> Persentase Profit / Loss Staking (APY)</label>
+            <p style='font-size:0.7rem; color:#94a3b8; margin:5px 0 10px 0;'>Atur keuntungan/kerugian *member* secara *real-time*. Angka (+) untuk Profit, Angka (-) untuk Minus. (Contoh: 1.5 atau -0.5)</p>
+            <div style='display:flex; gap:10px; align-items:center;'>
+                <input type='number' id='inpStakingYield' step='0.1' class='input-dark' style='border-color:#4ade80; color:#fff; width:120px; text-align:center; font-size:1.2rem; font-weight:bold;' value='0'>
+                <span style='color:#4ade80; font-size:1.2rem; font-weight:bold;'>%</span>
+                <button class='btn-main' onclick='window.simpanYieldStaking()' style='background:#2ecc71; margin-bottom:0;'><i class='fa-solid fa-save'></i> Update Pasar Global</button>
+            </div>
+        </div>
       </div>
       <!-- --- END --- -->
     </div>
@@ -1655,11 +1665,19 @@
     // --- END ---
 
 	// --- START: SAKLAR STAKING (JS) ---
+    // --- START: SAKLAR STAKING (JS) ---
     window.loadStatusStaking = async () => {
         try {
+            // 1. Menarik memori status ON/OFF Saklar
             const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
             if(!snap.empty) document.getElementById('toggleStakingActive').checked = snap.docs[0].data().is_active === true;
             else document.getElementById('toggleStakingActive').checked = false;
+
+            // 2. Menarik memori angka Persentase (TAMBAHAN BARU)
+            const snapY = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_YIELD")));
+            if(!snapY.empty) {
+                document.getElementById('inpStakingYield').value = snapY.docs[0].data().persentase || 0;
+            }
         } catch(e) {}
     };
 
@@ -1677,6 +1695,19 @@
         btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Staking"; btn.disabled = false;
     };
     // Panggil fungsi load di init (Tambahkan ke window.prosesSuksesLogin)
+	window.simpanYieldStaking = async () => {
+        let val = parseFloat(document.getElementById('inpStakingYield').value) || 0;
+        const btn = document.querySelector(`button[onclick='window.simpanYieldStaking()']`);
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i>"; btn.disabled = true;
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_YIELD")));
+            let payload = { tipe: "STAKING_YIELD", persentase: val };
+            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+            window.showToast("BUM! Jaringan Global Diupdate ke " + val + "%");
+        } catch(e) { alert("Gagal menyimpan persentase."); }
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> Update Pasar Global"; btn.disabled = false;
+    };
     // --- END ---
 	
 	// --- SISTEM BANNER EVENT (KLAIM) ---
