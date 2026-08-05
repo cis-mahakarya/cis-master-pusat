@@ -329,7 +329,15 @@
     <div class='screen-content'>
       <div class='card-panel'>
         <h3 style="color:#38bdf8; margin-top:0;"><i class="fa-solid fa-industry"></i> Cetak Token Aktivasi & Speed</h3>
-        
+
+		// --- START: MODE MAINTENANCE KHUSUS IT (HTML) ---
+        <div class='form-group'>
+          <label>IP Address Tim IT (Akses Bypass Maintenance)</label>
+          <input id='inpIpBypass' type='text' placeholder='Contoh: 114.125.10.55' style='background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%; color:#00f2fe; font-weight:bold;'>
+          <div style='font-size:0.65rem; color:#94a3b8; margin-top:5px;'>*Kosongkan jika tidak ada. Buka tab baru di browser dan ketik "My IP" di Google untuk mengetahui IP Anda.</div>
+        </div>
+        // --- END ---
+		  
         <div class='form-group'>
           <label>Target Distribusi:</label>
           <select id='distTim' onchange='if(this.value==="USER"){document.getElementById("inpTargetUserPabrik").style.display="block";}else{document.getElementById("inpTargetUserPabrik").style.display="none";}'>
@@ -1989,7 +1997,12 @@
                 document.getElementById('toggleCountdown').checked = data.is_countdown === true;
                 document.getElementById('toggleAntiHack').checked = data.is_antihack === true;
                 if(data.target_launch) document.getElementById('inpTargetLaunch').value = data.target_launch;
-
+				
+				// --- START: MODE MAINTENANCE KHUSUS IT (LOAD DATA) ---
+                if(data.ip_it_bypass) document.getElementById('inpIpBypass').value = data.ip_it_bypass;
+                else document.getElementById('inpIpBypass').value = "";
+                // --- END ---
+				
                 if(adminTimerInt) clearInterval(adminTimerInt);
                 
                 if((data.is_maintenance || data.is_countdown) && data.target_launch) {
@@ -2150,13 +2163,16 @@
         const btn = document.querySelector(`button[onclick='simpanStatusWeb()']`);
         if(!isAuto) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; }
 
+        // --- START: MODE MAINTENANCE KHUSUS IT (SAVE DATA) ---
         let payload = {
             tipe: "APP_STATUS",
             is_maintenance: document.getElementById('toggleMaintenance').checked,
             is_countdown: document.getElementById('toggleCountdown').checked,
             is_antihack: document.getElementById('toggleAntiHack').checked,
-            target_launch: document.getElementById('inpTargetLaunch').value
+            target_launch: document.getElementById('inpTargetLaunch').value,
+            ip_it_bypass: document.getElementById('inpIpBypass').value.trim()
         };
+        // --- END ---
 
         try {
             const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "APP_STATUS")));
