@@ -654,6 +654,17 @@
         <button class='btn-main' onclick='window.simpanStatusPpob()' style='background:#2ecc71;'><i class='fa-solid fa-save'></i> Simpan Status PPOB</button>
       </div>
 
+		<!-- --- START: SAKLAR STAKING --- -->
+      <div class='card-panel' style='border-top: 2px solid #8b5cf6; margin-top: 20px;'>
+        <h4 style='margin-top:0; color:#8b5cf6;'><i class='fa-solid fa-piggy-bank'></i> Integrasi Staking (Penahan Likuiditas)</h4>
+        <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan menu Staking 30 Hari di web publik untuk mengamankan kas Pusat.</p>
+        <div class='switch-wrap' style='border-color:#8b5cf6; background:#0b0f19;'>
+          <div><b style='color:#8b5cf6;'><i class='fa-solid fa-power-off'></i> Status Layanan Staking</b></div>
+          <label class='switch'><input id='toggleStakingActive' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        <button class='btn-main' onclick='window.simpanStatusStaking()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Status Staking</button>
+      </div>
+      <!-- --- END --- -->
     </div>
   </div>
 
@@ -1641,6 +1652,31 @@
         } catch(e) { alert("Gagal menyimpan status PPOB."); }
         btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status PPOB"; btn.disabled = false;
     };
+    // --- END ---
+
+	// --- START: SAKLAR STAKING (JS) ---
+    window.loadStatusStaking = async () => {
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
+            if(!snap.empty) document.getElementById('toggleStakingActive').checked = snap.docs[0].data().is_active === true;
+            else document.getElementById('toggleStakingActive').checked = false;
+        } catch(e) {}
+    };
+
+    window.simpanStatusStaking = async () => {
+        const btn = document.querySelector(`button[onclick='window.simpanStatusStaking()']`);
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
+        let isActive = document.getElementById('toggleStakingActive').checked;
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
+            let payload = { tipe: "STAKING_STATUS", is_active: isActive };
+            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+            window.showToast("Status Staking Berhasil Diupdate!");
+        } catch(e) { alert("Gagal menyimpan status Staking."); }
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Staking"; btn.disabled = false;
+    };
+    // Panggil fungsi load di init (Tambahkan ke window.prosesSuksesLogin)
     // --- END ---
 	
 	// --- SISTEM BANNER EVENT (KLAIM) ---
