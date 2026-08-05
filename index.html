@@ -540,246 +540,129 @@
     </div>
   </div>
 
+  <!-- ================================================== -->
+  <!-- START REPLACE BLOCK -->
   <div class='admin-screen' id='scr-sistem'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
-
-	<div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.05); border: 1px dashed #a855f7;'>
+      
+      <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.05); border: 1px dashed #a855f7;'>
         <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-life-ring'></i> Disaster Recovery Center</h4>
         <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Amankan urat nadi platform cisverus.com dari serangan fatal takedown atau hacker dengan fitur evakuasi otomatis.</p>
-        
         <button class='btn-main' id='btnBackupDb' onclick='window.evakuasiDatabase()' style='background:#a855f7; color:#fff; margin-bottom:15px;'><i class='fa-solid fa-cloud-arrow-down'></i> 1. DOWNLOAD BACKUP DATABASE (.JSON)</button>
-        
         <hr style='border:1px dashed rgba(168, 85, 247, 0.3); margin:15px 0;'/>
-        
         <label style='color:#c084fc;'><i class='fa-solid fa-file-import'></i> 2. PENGEMBALIAN DATA (RESTORE ENGINE)</label>
         <input type='file' id='inpRestoreDb' accept='.json' style='margin-top:5px; margin-bottom:10px; background:#0b0f19; border:1px solid #475569; padding:8px; border-radius:8px; color:#fff;'>
         <button class='btn-main' id='btnRestoreDb' onclick='window.pulihkanDatabase()' style='background:linear-gradient(135deg, #a855f7, #6b21a8); color:#fff;'><i class='fa-solid fa-shield-heart'></i> EKSEKUSI PEMULIHAN DATA SYSTEM</button>
-        
         <div id='logBackup' style='margin-top:10px; font-size:0.75rem; color:#4ade80; text-align:center;'></div>
       </div>
-		
-      <!-- KOTAK KENDALI STATUS WEB (MAINTENANCE & LAUNCH) -->
+      
       <div class='card-panel' style='border-top: 2px solid #ef4444; margin-bottom:20px;'>
         <h4 style='margin-top:0; color:#ef4444;'><i class='fa-solid fa-power-off'></i> Kontrol Status Web (Maintenance & Launch)</h4>
-        
-        <div class='switch-wrap'>
-          <div><b style='color:#ef4444;'><i class='fa-solid fa-gear'></i> Mode Maintenance (Perbaikan)</b></div>
-          <label class='switch'><input id='toggleMaintenance' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
-        
-        <div class='switch-wrap'>
-          <div><b style='color:#f59e0b;'><i class='fa-solid fa-rocket'></i> Mode Countdown (Hitung Mundur)</b></div>
-          <label class='switch'><input id='toggleCountdown' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
-        
-        <div class='switch-wrap'>
-          <div><b style='color:#ef4444;'><i class='fa-solid fa-shield-virus'></i> Mode Kawat Berduri (Anti F12 & Klik Kanan)</b></div>
-          <label class='switch'><input id='toggleAntiHack' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
-        
-        <div class='form-group'>
-          <label>IP Address Tim IT (Akses Bypass Maintenance)</label>
-          <input id='inpIpBypass' type='text' placeholder='Contoh: 114.125.10.55' style='background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%; color:#00f2fe; font-weight:bold;'>
-          <div style='font-size:0.65rem; color:#94a3b8; margin-top:5px;'>*Kosongkan jika tidak ada. Buka tab baru di browser dan ketik "My IP" di Google untuk mengetahui IP Anda.</div>
-        </div>
-       
-        <div class='form-group'>
-          <label>Waktu Berakhir (Target Launch / Selesai Maintenance)</label>
-          <input id='inpTargetLaunch' type='datetime-local' style='color:#fbbf24; font-weight:bold; background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%;'>
-        </div>
-        
+        <div class='switch-wrap'><div><b style='color:#ef4444;'><i class='fa-solid fa-gear'></i> Mode Maintenance (Perbaikan)</b></div><label class='switch'><input id='toggleMaintenance' type='checkbox'><span class='slider-tg'></span></label></div>
+        <div class='switch-wrap'><div><b style='color:#f59e0b;'><i class='fa-solid fa-rocket'></i> Mode Countdown (Hitung Mundur)</b></div><label class='switch'><input id='toggleCountdown' type='checkbox'><span class='slider-tg'></span></label></div>
+        <div class='switch-wrap'><div><b style='color:#ef4444;'><i class='fa-solid fa-shield-virus'></i> Mode Kawat Berduri (Anti F12 & Klik Kanan)</b></div><label class='switch'><input id='toggleAntiHack' type='checkbox'><span class='slider-tg'></span></label></div>
+        <div class='form-group'><label>IP Address Tim IT (Akses Bypass Maintenance)</label><input id='inpIpBypass' type='text' placeholder='Contoh: 114.125.10.55' style='background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%; color:#00f2fe; font-weight:bold;'><div style='font-size:0.65rem; color:#94a3b8; margin-top:5px;'>*Kosongkan jika tidak ada. Buka tab baru di browser dan ketik "My IP" di Google untuk mengetahui IP Anda.</div></div>
+        <div class='form-group'><label>Waktu Berakhir (Target Launch / Selesai Maintenance)</label><input id='inpTargetLaunch' type='datetime-local' style='color:#fbbf24; font-weight:bold; background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%;'></div>
         <button class='btn-main' onclick='simpanStatusWeb()' style='background:#ef4444;'><i class='fa-solid fa-save'></i> Simpan Status Web</button>
       </div>
 
       <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom:20px;'><h4 style='margin-top:0; color:#10b981;'><i class='fa-brands fa-android'></i> Kendali Versi &amp; Aplikasi (APK)</h4><div class='form-group'><label>Target Versi Aplikasi (Contoh: 1.0.0)</label><input id='inpAppVersion' type='text' value='1.0.0'></div><div class='form-group'><label>Link Download Aplikasi</label><input id='inpAppUrl' type='url'></div><div class='switch-wrap'><div><b style='color:#10b981;'><i class='fa-solid fa-shield-cat'></i> Wajib Update Aplikasi / Lock Browser</b></div><label class='switch'><input id='toggleForceUpdate' type='checkbox'><span class='slider-tg'></span></label></div><button class='btn-main' onclick='simpanConfigApk()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Konfigurasi APK</button></div>
+      
       <div class='card-panel'>
         <div class='switch-wrap'><div><b style='color:#38bdf8;'><i class='fa-solid fa-key'></i> Wajib Aktivasi Pendaftaran</b></div><label class='switch'><input id='toggleAktivasiReg' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='switch-wrap'><div><b style='color:#a855f7;'><i class='fa-solid fa-gift'></i> Mode Freemium (Mining Gratis)</b></div><label class='switch'><input id='toggleFreemium' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='form-group'><label>Masa Aktif Gratis Pendaftaran Jika OFF (Hari)</label><input id='inpHariGratis' type='number' value='30'></div>
         <div class='switch-wrap'><div><b style='color:#f59e0b;'><i class='fa-solid fa-stopwatch'></i> Wajib Perpanjang Mesin</b></div><label class='switch'><input checked='checked' id='togglePerpanjang' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='switch-wrap'><div><b style='color:#ef4444;'><i class='fa-solid fa-mobile-screen'></i> 1 Akun 1 Perangkat (Device Lock)</b></div><label class='switch'><input checked='checked' id='toggleDeviceLock' type='checkbox'><span class='slider-tg'></span></label></div>
-        <div class='form-group'>
-    <label>Bonus Speed Pendaftaran (V/s)</label>
-    <input id='regBonusSpeed' type='text' value='0' oninput='window.hitungEstRegBonus()'>
-    <div id='estRegBonusRp' style='font-size:0.75rem; color:#4ade80; margin-top:5px; font-weight:bold;'><i class='fa-solid fa-coins'></i> Est. Panen: Rp 0 / Hari</div>
-</div>
+        <div class='form-group'><label>Bonus Speed Pendaftaran (V/s)</label><input id='regBonusSpeed' type='text' value='0' oninput='window.hitungEstRegBonus()'><div id='estRegBonusRp' style='font-size:0.75rem; color:#4ade80; margin-top:5px; font-weight:bold;'><i class='fa-solid fa-coins'></i> Est. Panen: Rp 0 / Hari</div></div>
         <div class='form-group'><label>Dari Hasil Claim 1 Jam Downline (%)</label><input id='inpSponsorClaim' type='text' value='0'></div>
         <div class='form-group'><label>Dari Pembelian Mesin / Top Up Downline (%)</label><input id='inpSponsorTopup' type='text' value='0'></div>
         <button class='btn-main' onclick='simpanConfigPendaftaran()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Pengaturan</button>
       </div>
-      <div class='card-panel' style='border-top: 2px solid #f59e0b;'><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-gamepad'></i> Setting Reward Klaim (1 Jam)</h4><div class='form-group'>
-    <label>Nominal Reward Dasar (VRSC) - Estimasi Klaim per 1 Jam</label>
-    <input id='inpRewardGame' type='text' value='0.001' oninput='window.hitungEstRewardGame()'>
-    <div style='background:#0b0f19; padding:12px; border-radius:8px; border:1px solid #334155; margin-top:10px;'>
-        <div style='display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;'>
-            <div style='text-align:center; border-right:1px dashed #334155;'>
-                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 JAM</div>
-                <div id='estGameJamVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
-                <div id='estGameJamRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+      
+      <div class='card-panel' style='border-top: 2px solid #f59e0b;'>
+        <h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-gamepad'></i> Setting Reward Klaim (1 Jam)</h4>
+        <div class='form-group'>
+          <label>Nominal Reward Dasar (VRSC) - Estimasi Klaim per 1 Jam</label>
+          <input id='inpRewardGame' type='text' value='0.001' oninput='window.hitungEstRewardGame()'>
+          <div style='background:#0b0f19; padding:12px; border-radius:8px; border:1px solid #334155; margin-top:10px;'>
+            <div style='display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;'>
+              <div style='text-align:center; border-right:1px dashed #334155;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 JAM</div><div id='estGameJamVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameJamRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
+              <div style='text-align:center;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 HARI (24x)</div><div id='estGameHariVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameHariRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
+              <div style='text-align:center; border-right:1px dashed #334155; border-top:1px dashed #334155; padding-top:8px;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 MINGGU</div><div id='estGameMingguVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameMingguRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
+              <div style='text-align:center; border-top:1px dashed #334155; padding-top:8px;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 30 HARI</div><div id='estGameBulanVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameBulanRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
             </div>
-            <div style='text-align:center;'>
-                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 HARI (24x)</div>
-                <div id='estGameHariVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
-                <div id='estGameHariRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
-            </div>
-            <div style='text-align:center; border-right:1px dashed #334155; border-top:1px dashed #334155; padding-top:8px;'>
-                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 MINGGU</div>
-                <div id='estGameMingguVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
-                <div id='estGameMingguRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
-            </div>
-            <div style='text-align:center; border-top:1px dashed #334155; padding-top:8px;'>
-                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 30 HARI</div>
-                <div id='estGameBulanVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
-                <div id='estGameBulanRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
-            </div>
-        </div>
-    </div>
-</div>
-    
-</div>
-            <div style='display:flex; gap:10px;'>
-              <div class='form-group' style='flex:1;'><label>Bonus Reward (VRSC)</label><input id='inpBonusGame' type='number' value='0'></div>
-              <div class='form-group' style='flex:1;'><label>Jam Mulai</label><input id='inpJamMulai' type='time' value='00:00'></div>
-              <div class='form-group' style='flex:1;'><label>Jam Selesai</label><input id='inpJamSelesai' type='time' value='00:00'></div>
-            </div>
-            <button class='btn-main' onclick='simpanConfigGame()' style='background:#f59e0b;'><i class='fa-solid fa-save'></i> Simpan Reward Game</button>
           </div>
-
-          <!-- --- START: PENGATURAN PPOB (HTML) --- -->
-          <div class='card-panel' style='border-top: 2px solid #2ecc71; margin-top: 20px;'>
-            <h4 style='margin-top:0; color:#2ecc71;'><i class='fa-solid fa-bolt'></i> Integrasi PPOB (Pulsa & Tagihan)</h4>
-            <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan menu PPOB di web publik (cisverus.com) untuk semua user secara global.</p>
-            <div class='switch-wrap' style='border-color:#2ecc71; background:#0b0f19;'>
-              <div><b style='color:#2ecc71;'><i class='fa-solid fa-power-off'></i> Status Layanan PPOB</b></div>
-              <label class='switch'>
-                <input id='togglePpobActive' type='checkbox'>
-                <span class='slider-tg'></span>
-              </label>
-            </div>
-            <button class='btn-main' onclick='window.simpanStatusPpob()' style='background:#2ecc71;'><i class='fa-solid fa-save'></i> Simpan Status PPOB</button>
-          </div>
-          <!-- --- END --- -->
-
         </div>
+        <div style='display:flex; gap:10px;'>
+          <div class='form-group' style='flex:1;'><label>Bonus Reward (VRSC)</label><input id='inpBonusGame' type='number' value='0'></div>
+          <div class='form-group' style='flex:1;'><label>Jam Mulai</label><input id='inpJamMulai' type='time' value='00:00'></div>
+          <div class='form-group' style='flex:1;'><label>Jam Selesai</label><input id='inpJamSelesai' type='time' value='00:00'></div>
+        </div>
+        <button class='btn-main' onclick='simpanConfigGame()' style='background:#f59e0b;'><i class='fa-solid fa-save'></i> Simpan Reward Game</button>
       </div>
 
-  <div class='admin-screen' id='scr-stats'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #8b5cf6;'><div class='form-group'><label>Miners Online (Angka Dasar)</label><input id='statInpOnline' type='number'></div><div class='form-group'><label>Registered Users</label><input id='statInpReg' type='number'></div><div class='form-group'><label>Total Withdrawn (VRSC)</label><input id='statInpWd' type='number'></div>
-<div class='form-group'><label style='color:#38bdf8;'><i class='fa-solid fa-scale-unbalanced'></i> Min. Exchange VRSC ke IDR (Rp)</label><input id='statInpMinExchange' type='number' placeholder='Contoh: 1000' style='border-color:#38bdf8;'></div>
-<div class='form-group' style='border:1px dashed #f59e0b; padding:10px; border-radius:8px;'><label style='color:#f1c40f;'><i class='fa-solid fa-crown'></i> Syarat Min. Saldo Top Sultan (Rp)</label><input id='statInpMinSultan' type='number' placeholder='Contoh: 1000000' style='border-color:#f1c40f;'></div><button class='btn-main' onclick='simpanGlobalStats()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Statistik</button></div>
-    </div>
-  </div>
-
-  <div class='admin-screen' id='scr-team'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
-    <div class='screen-content'>
-      <div class='card-panel'>
-        <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
-        <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
-          <h4 style='margin:0 0 15px 0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ringkasan Tim</h4>
-          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Stok Token (Aktif):</span><span id='timStokAktif' style='color:#10b981; font-weight:900;'>0 Lbr (Rp 0)</span></div>
-          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Token Terjual:</span><span id='timStokTerpakai' style='color:#ef4444; font-weight:900;'>0 Lbr (Rp 0)</span></div>
-          <div style='display:flex; justify-content:space-between; align-items:center;'><span style='color:#94a3b8; font-size:0.85rem;'>Total Pendapatan:</span><span id='timPendapatan' style='color:#fbbf24; font-family:Orbitron; font-size:1.2rem; font-weight:900;'>Rp 0</span></div>
+      <!-- --- KOTAK PPOB YANG BENAR --- -->
+      <div class='card-panel' style='border-top: 2px solid #2ecc71; margin-top: 20px;'>
+        <h4 style='margin-top:0; color:#2ecc71;'><i class='fa-solid fa-bolt'></i> Integrasi PPOB (Pulsa & Tagihan)</h4>
+        <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan menu PPOB di web publik (cisverus.com) untuk semua user secara global.</p>
+        <div class='switch-wrap' style='border-color:#2ecc71; background:#0b0f19;'>
+          <div><b style='color:#2ecc71;'><i class='fa-solid fa-power-off'></i> Status Layanan PPOB</b></div>
+          <label class='switch'><input id='togglePpobActive' type='checkbox'><span class='slider-tg'></span></label>
         </div>
-        <h4 style='color:#e2e8f0;'><i class='fa-solid fa-list'></i> Rincian Token Tim</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Kode Token &amp; Modal</th><th>Status &amp; Pemakai</th></tr></thead><tbody id='tblTimDetail'><tr><td colspan='4' style='text-align:center;'>Pilih tim untuk memuat data.</td></tr></tbody></table></div>
+        <button class='btn-main' onclick='window.simpanStatusPpob()' style='background:#2ecc71;'><i class='fa-solid fa-save'></i> Simpan Status PPOB</button>
       </div>
-    </div>
-  </div>
 
-  <div class='admin-screen' id='scr-reward'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #3498db;'><div class='form-group'><label>Target Penerima:</label><select id='rewardTarget'><option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option></select></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Tambahan Speed (V/s)</label><input id='rewardSpeed' type='number'></div><div class='form-group' style='flex:1;'><label>Tambahan Durasi (Hari)</label><input id='rewardHari' type='number'></div></div><button class='btn-main' id='btnKirimReward' onclick='kirimReward()'><i class='fa-solid fa-paper-plane'></i> KIRIM REWARD</button></div>
     </div>
   </div>
 
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
-        
-        <!-- ========================================== -->
-        <!-- PANEL KENDALI ROBOT AUTO-POSTING (MISI 3)  -->
-        <!-- ========================================== -->
-        <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom: 20px; background: rgba(168, 85, 247, 0.05);'>
-            <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-robot'></i> Kendali Mesin Viralitas (Auto-Posting)</h4>
-            <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan robot promosi yang bekerja di latar belakang.</p>
-
-            <!-- SAKLAR 1: ROBOT PROMOSI (3 LACI) -->
-            <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
-                <div>
-                    <b style='color: #00f2fe;'><i class='fa-solid fa-bullhorn'></i> Robot Edukasi & Motivasi</b><br/>
-                    <span style='font-size: 0.65rem; color: #94a3b8;'>Posting materi acak otomatis ke media sosial.</span>
-                </div>
-                <label class='switch'>
-                    <input id='toggleBotPromo' type='checkbox' onchange='window.simpanStatusRobot()'>
-                    <span class='slider-tg'></span>
-                </label>
-            </div>
-
-            <!-- SAKLAR 2: RADAR BUKTI CAIR P2P -->
-            <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
-                <div>
-                    <b style='color: #2ecc71;'><i class='fa-solid fa-money-bill-wave'></i> Radar Struk P2P (Social Proof)</b><br/>
-                    <span style='font-size: 0.65rem; color: #94a3b8;'>Otomatis siarkan bukti transaksi P2P yang sukses.</span>
-                </div>
-                <label class='switch'>
-                    <input id='toggleBotP2P' type='checkbox' onchange='window.simpanStatusRobot()'>
-                    <span class='slider-tg'></span>
-                </label>
-            </div>
+      
+      <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom: 20px; background: rgba(168, 85, 247, 0.05);'>
+        <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-robot'></i> Kendali Mesin Viralitas (Auto-Posting)</h4>
+        <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan robot promosi yang bekerja di latar belakang.</p>
+        <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
+          <div><b style='color: #00f2fe;'><i class='fa-solid fa-bullhorn'></i> Robot Edukasi & Motivasi</b><br/><span style='font-size: 0.65rem; color: #94a3b8;'>Posting materi acak otomatis ke media sosial.</span></div>
+          <label class='switch'><input id='toggleBotPromo' type='checkbox' onchange='window.simpanStatusRobot()'><span class='slider-tg'></span></label>
         </div>
+        <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
+          <div><b style='color: #2ecc71;'><i class='fa-solid fa-money-bill-wave'></i> Radar Struk P2P (Social Proof)</b><br/><span style='font-size: 0.65rem; color: #94a3b8;'>Otomatis siarkan bukti transaksi P2P yang sukses.</span></div>
+          <label class='switch'><input id='toggleBotP2P' type='checkbox' onchange='window.simpanStatusRobot()'><span class='slider-tg'></span></label>
+        </div>
+      </div>
 
-      	<!-- KOTAK BANNER EVENT KLAIM -->
       <div class='card-panel' style='border-top: 2px solid #38bdf8; margin-bottom: 20px;'>
         <h4 style='margin-top:0; color:#38bdf8;'><i class='fa-solid fa-gift'></i> Pengaturan Banner Event (Area Claim)</h4>
-        
-        <div class='switch-wrap'>
-          <div><b style='color:#38bdf8;'><i class='fa-solid fa-power-off'></i> Status Banner Event</b></div>
-          <label class='switch'><input id='toggleEventBanner' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
-        
+        <div class='switch-wrap'><div><b style='color:#38bdf8;'><i class='fa-solid fa-power-off'></i> Status Banner Event</b></div><label class='switch'><input id='toggleEventBanner' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='form-group'><label>Judul Event</label><input id='inpEventJudul' type='text' placeholder='Contoh: PROMO WEEKEND!'></div>
         <div class='form-group'><label>Pesan Singkat</label><textarea id='inpEventPesan' rows='2' placeholder='Dapatkan extra reward khusus hari ini...'></textarea></div>
-        
         <div class='form-group' style='border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.1);'>
           <label style='color: #38bdf8;'>Pilih Tipe Reward</label>
           <select id='selEventTipe' onchange='window.ubahFormEvent()' style='border-color: #38bdf8;'>
-            <option value='COIN'>1. Hanya Tambahan Coin VRSC</option>
-            <option value='SPEED'>2. Hanya Tambahan Speed Hash</option>
-            <option value='HARI'>3. Hanya Tambahan Hari (Akun / Speed)</option>
-            <option value='COIN_SPEED'>4. Coin VRSC + Speed Hash</option>
-            <option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari (Akun / Speed)</option>
+            <option value='COIN'>1. Hanya Tambahan Coin VRSC</option><option value='SPEED'>2. Hanya Tambahan Speed Hash</option><option value='HARI'>3. Hanya Tambahan Hari (Akun / Speed)</option><option value='COIN_SPEED'>4. Coin VRSC + Speed Hash</option><option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari (Akun / Speed)</option>
           </select>
         </div>
-        
         <div style='display:flex; gap:10px; flex-wrap:wrap;'>
           <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventCoin'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
           <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
           <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventHariAktif'><label style='color:#fbbf24;'>+ Hari (Aktif Akun)</label><input id='inpEventHariAktif' type='number' value='0' style='border-color:#fbbf24;'></div>
           <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventHariSpeed'><label style='color:#a855f7;'>+ Hari (Durasi Speed)</label><input id='inpEventHariSpeed' type='number' value='0' style='border-color:#a855f7;'></div>
         </div>
-        
         <div class='form-group'><label>Waktu Hitung Mundur Berakhir (Opsional)</label><input id='inpEventBatasWaktu' type='datetime-local' style='color:#fbbf24; font-weight:bold;'></div>
-		<hr style='border:1px dashed #334155; margin:15px 0;'/>
-        <div class='switch-wrap'>
-          <div><b style='color:#4ade80;'><i class='fa-solid fa-message'></i> Status Teks Info Broadcast</b></div>
-          <label class='switch'><input id='toggleEventBroadcast' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
+        <hr style='border:1px dashed #334155; margin:15px 0;'/>
+        <div class='switch-wrap'><div><b style='color:#4ade80;'><i class='fa-solid fa-message'></i> Status Teks Info Broadcast</b></div><label class='switch'><input id='toggleEventBroadcast' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='form-group'><label>Isi Teks Info Broadcast</label><textarea id='inpEventBroadcast' rows='3' placeholder='Ketik info tambahan atau pengumuman resmi di sini...'></textarea></div>
-		  
         <button class='btn-main' onclick='window.simpanEventBanner()' style='background:#38bdf8;'><i class='fa-solid fa-save'></i> Simpan & Update Banner</button>
       </div>
-      <!-- END KOTAK BANNER EVENT KLAIM -->
-      <div class='card-panel' style='border-top: 2px solid #f59e0b;'>
-        <textarea id='inputPengumuman' placeholder='Ketik pengumuman penting (Maintenance, Promo, dll) di sini...' rows='4'></textarea>
-        <button class='btn-main' id='btnKirimPengumuman' onclick='kirimPengumuman()' style='background:#f59e0b; margin-top:15px;'><i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User</button>
-        <div id='logPengumuman' style='margin-top:10px; font-size:0.85rem; color:#10b981; font-weight:bold; text-align:center;'></div>
-      </div>
+
+      <div class='card-panel' style='border-top: 2px solid #f59e0b;'><textarea id='inputPengumuman' placeholder='Ketik pengumuman penting (Maintenance, Promo, dll) di sini...' rows='4'></textarea><button class='btn-main' id='btnKirimPengumuman' onclick='kirimPengumuman()' style='background:#f59e0b; margin-top:15px;'><i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User</button><div id='logPengumuman' style='margin-top:10px; font-size:0.85rem; color:#10b981; font-weight:bold; text-align:center;'></div></div>
     </div>
   </div>
+  <!-- END REPLACE BLOCK -->
+  <!-- ================================================== -->
 
   <div class='admin-screen' id='scr-cpanel'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Akses C-Panel</div>
