@@ -2172,8 +2172,7 @@
             target_launch: document.getElementById('inpTargetLaunch').value,
             ip_it_bypass: document.getElementById('inpIpBypass').value.trim()
         };
-        // --- END ---
-
+      
         try {
             const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "APP_STATUS")));
             if(snap.empty) {
