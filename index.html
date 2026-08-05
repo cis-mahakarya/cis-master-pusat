@@ -255,6 +255,48 @@
     </div>
   </div>
 
+		<!-- --- START: MENU PPOB MASTER --- -->
+      <div class='menu-box' id='menu-ppob' onclick='openScreen("scr-ppob")' style='border-top: 3px solid #2ecc71;'>
+          <i class='fa-solid fa-mobile-screen-button' style='color:#2ecc71;'></i><span>Antrean PPOB</span>
+      </div>
+      <!-- --- END --- -->
+
+		<!-- ========================================== -->
+  <!-- START: LAYAR ANTREAN PPOB -->
+  <!-- ========================================== -->
+  <div class='admin-screen' id='scr-ppob'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Transaksi PPOB</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #2ecc71;'>
+        
+        <div style='display:flex; border-bottom:1px solid #334155; margin-bottom:15px;'>
+            <div id='tabPpobPending' onclick='window.switchTabPPOB("pending")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#2ecc71; border-bottom:2px solid #2ecc71;'><i class='fa-solid fa-hourglass-half'></i> Antrean (Pending)</div>
+            <div id='tabPpobRiwayat' onclick='window.switchTabPPOB("riwayat")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'><i class='fa-solid fa-clock-rotate-left'></i> Riwayat Selesai</div>
+        </div>
+        
+        <div id='areaPpobPending'>
+            <div class='table-wrap'>
+                <table>
+                    <thead><tr><th class='col-no'>No</th><th>Waktu &amp; User</th><th>Target &amp; Jenis</th><th>Nominal &amp; Bayar</th><th>Aksi Eksekusi</th></tr></thead>
+                    <tbody id='tblPpobPending'><tr><td colspan='5' style='text-align:center;'>Memuat antrean PPOB...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id='areaPpobRiwayat' style='display:none;'>
+            <div class='table-wrap'>
+                <table>
+                    <thead><tr><th class='col-no'>No</th><th>Waktu &amp; User</th><th>Detail Pembelian</th><th>Status &amp; SN / Token</th></tr></thead>
+                    <tbody id='tblPpobRiwayat'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat PPOB...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- END: LAYAR ANTREAN PPOB -->
+	
  <!-- LAYAR PESAN BANTUAN -->
   <div class='admin-screen' id='scr-bantuan'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Layanan Bantuan (Help Center)</div>
@@ -844,6 +886,7 @@
         if(id === 'scr-cpanel') { window.loadDaftarAdmin(); window.loadCctvLog(); }
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
+		if(id === 'scr-ppob') window.switchTabPPOB('pending');
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
@@ -2181,6 +2224,135 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
     async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim ? Number(d.reward_claim).toFixed(10).replace(/\.?0+$/, "") : 50; document.getElementById('inpBonusGame').value = d.bonus_claim ? Number(d.bonus_claim).toFixed(10).replace(/\.?0+$/, "") : 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let payload = { tipe: "GAME_CONFIG", reward_claim: getFloatVal('inpRewardGame'), bonus_claim: getFloatVal('inpBonusGame'), jam_mulai: document.getElementById('inpJamMulai').value || "00:00", jam_selesai: document.getElementById('inpJamSelesai').value || "00:00" }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Disimpan!"); } catch (e) { alert("Gagal menyimpan."); } };
 
+	// ==========================================
+    // MESIN ANTREAN PPOB (BACKLOG 3)
+    // ==========================================
+    window.switchTabPPOB = (tab) => {
+        if(tab === 'pending') {
+            document.getElementById('areaPpobPending').style.display = 'block'; document.getElementById('areaPpobRiwayat').style.display = 'none';
+            document.getElementById('tabPpobPending').style.color = '#2ecc71'; document.getElementById('tabPpobPending').style.borderBottom = '2px solid #2ecc71';
+            document.getElementById('tabPpobRiwayat').style.color = '#94a3b8'; document.getElementById('tabPpobRiwayat').style.borderBottom = 'none';
+            window.loadAntreanPPOB();
+        } else {
+            document.getElementById('areaPpobPending').style.display = 'none'; document.getElementById('areaPpobRiwayat').style.display = 'block';
+            document.getElementById('tabPpobRiwayat').style.color = '#2ecc71'; document.getElementById('tabPpobRiwayat').style.borderBottom = '2px solid #2ecc71';
+            document.getElementById('tabPpobPending').style.color = '#94a3b8'; document.getElementById('tabPpobPending').style.borderBottom = 'none';
+            window.loadRiwayatPPOB();
+        }
+    };
+
+    window.loadAntreanPPOB = async () => {
+        const tbody = document.getElementById('tblPpobPending'); tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat antrean PPOB...</td></tr>";
+        try {
+            const snap = await getDocs(query(collection(db, "Transaksi_PPOB"), where("status", "==", "PENDING")));
+            let dataArr = []; snap.forEach(d => dataArr.push({ id: d.id, ...d.data() }));
+            dataArr.sort((a,b) => (a.waktu?.seconds || 0) - (b.waktu?.seconds || 0)); // Terlama di atas
+
+            let html = ""; let no = 1;
+            dataArr.forEach(x => {
+                let wkt = formatTanggalJam(x.waktu);
+                html += `<tr>
+                    <td style='text-align:center;'>${no++}</td>
+                    <td><b style='color:#38bdf8;'>${x.username}</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>${x.email}</span><br/><span style='font-size:0.7rem;'>${wkt}</span></td>
+                    <td><b style='color:#fbbf24; font-size:1.1rem;'>${x.target}</b><br/><span class='badge bg-dark'>${x.jenis}</span></td>
+                    <td><b style='color:#4ade80;'>Rp ${x.harga_bayar.toLocaleString('id-ID')}</b><br/><span style='font-size:0.7rem;'>Nominal: ${x.nominal.toLocaleString('id-ID')}</span></td>
+                    <td>
+                        <button class='action-btn bg-green' onclick='window.accPPOB("${x.id}", "${x.email}", "${x.username}", "${x.jenis}", "${x.target}", ${x.nominal})' style='margin-bottom:5px; width:100%;'><i class='fa-solid fa-check'></i> ACC & INPUT SN</button>
+                        <button class='action-btn btn-del' onclick='window.tolakPPOB("${x.id}", "${x.email}", "${x.username}", "${x.jenis}", ${x.harga_bayar})' style='width:100%;'><i class='fa-solid fa-xmark'></i> TOLAK & REFUND</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html === "" ? "<tr><td colspan='5' style='text-align:center; color:#94a3b8;'><i class='fa-solid fa-mug-hot'></i> Antrean PPOB Kosong.</td></tr>" : html;
+        } catch(e) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal memuat antrean PPOB.</td></tr>"; }
+    };
+
+    window.loadRiwayatPPOB = async () => {
+        const tbody = document.getElementById('tblPpobRiwayat'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat riwayat...</td></tr>";
+        try {
+            const snap = await getDocs(query(collection(db, "Transaksi_PPOB"), where("status", "!=", "PENDING"), limit(50)));
+            let dataArr = []; snap.forEach(d => dataArr.push({ id: d.id, ...d.data() }));
+            dataArr.sort((a,b) => (b.waktu?.seconds || 0) - (a.waktu?.seconds || 0)); // Terbaru di atas
+
+            let html = ""; let no = 1;
+            dataArr.forEach(x => {
+                let wkt = formatTanggalJam(x.waktu);
+                let sttBadge = x.status === "SUKSES" ? "<span class='badge bg-green'>SUKSES</span>" : "<span class='badge bg-red'>DITOLAK / REFUND</span>";
+                let snWarna = x.status === "SUKSES" ? "#2ecc71" : "#ef4444";
+                html += `<tr>
+                    <td style='text-align:center;'>${no++}</td>
+                    <td><b style='color:#38bdf8;'>${x.username}</b><br/><span style='font-size:0.7rem;'>${wkt}</span></td>
+                    <td><b>${x.jenis} - ${x.nominal.toLocaleString('id-ID')}</b><br/><span style='font-size:0.75rem; color:#fbbf24;'>Tujuan: ${x.target}</span></td>
+                    <td>${sttBadge}<br/><span style='font-size:0.8rem; font-weight:bold; color:${snWarna};'>${x.sn || '-'}</span></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html === "" ? "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada riwayat PPOB.</td></tr>" : html;
+        } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat riwayat.</td></tr>"; }
+    };
+
+    window.accPPOB = async (id, email, username, jenis, target, nominal) => {
+        let sn = prompt(`Masukkan Serial Number (SN) / Token Listrik 20-Digit untuk pesanan:\n\n${jenis} ${nominal}\nNo Tujuan: ${target}\n\nCatatan: Token akan dikirim ke notifikasi user.`);
+        if(sn === null || sn.trim() === "") return;
+
+        try {
+            // 1. Update Transaksi
+            await updateDoc(doc(db, "Transaksi_PPOB", id), { status: "SUKSES", sn: sn.trim() });
+            
+            // 2. Kirim Notif ke Layar HP User
+            await addDoc(collection(db, "Notifikasi_Personal"), { 
+                email: email, 
+                pesan: `✅ Transaksi ${jenis} ${nominal} ke nomor ${target} BERHASIL!\nSN/Token: ${sn.trim()}`, 
+                timestamp_local: Date.now() 
+            });
+
+            showToast("Pesanan Disetujui & SN Dikirim!");
+            window.loadAntreanPPOB();
+        } catch(e) { alert("Gagal menyetujui PPOB. Cek koneksi."); }
+    };
+
+    window.tolakPPOB = async (id, email, username, jenis, hargaBayar) => {
+        let alasan = prompt("Masukkan alasan penolakan (misal: Gangguan / Nomor Salah):", "Nomor Tidak Valid / Gangguan Provider");
+        if(alasan === null) return;
+
+        try {
+            // 1. Update Status
+            await updateDoc(doc(db, "Transaksi_PPOB", id), { status: "DITOLAK", sn: `Gagal: ${alasan}` });
+
+            // 2. Kembalikan Saldo IDR (Refund)
+            const userDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", email)));
+            if(!userDoc.empty) {
+                let currentSaldoRp = userDoc.docs[0].data().saldo_rupiah || 0;
+                await updateDoc(doc(db, "Akun_Publik", userDoc.docs[0].id), { saldo_rupiah: currentSaldoRp + hargaBayar });
+            }
+
+            // 3. Catat Mutasi User (Uang Masuk)
+            await addDoc(collection(db, "Mutasi_Mining"), { 
+                email: email, jenis: "IN", 
+                deskripsi: `REFUND: Gagal Beli ${jenis} (Alasan: ${alasan})`, 
+                nominal: hargaBayar, timestamp_local: Date.now() 
+            });
+
+            // 4. Catat Pengembalian Buku Kas Pusat
+            let namaAdmin = "Master";
+            try { let adminLog = JSON.parse(localStorage.getItem("cisAdminLog_v2")); if(adminLog) namaAdmin = adminLog.nama; } catch(e){}
+            await addDoc(collection(db, "Mutasi_Pusat"), { 
+                jenis: "PPOB_OUT", nominal: hargaBayar, 
+                deskripsi: `REFUND PPOB: ${username} Beli ${jenis} [Oleh: ${namaAdmin}]`, 
+                waktu: serverTimestamp() 
+            });
+
+            // 5. Kirim Notif Kegagalan ke User
+            await addDoc(collection(db, "Notifikasi_Personal"), { 
+                email: email, 
+                pesan: `❌ Transaksi ${jenis} DITOLAK (${alasan}). Saldo Rp ${hargaBayar.toLocaleString('id-ID')} telah dikembalikan ke dompet.`, 
+                timestamp_local: Date.now() 
+            });
+
+            showToast("Pesanan Ditolak & Saldo Otomatis Direfund!");
+            window.loadAntreanPPOB();
+        } catch(e) { alert("Gagal menolak PPOB."); }
+    };
+    // ==========================================
+	
 	// --- MESIN HELP CENTER / PESAN BANTUAN ---
         window.loadPesanBantuan = () => {
             const list = document.getElementById('inboxListAdmin');
