@@ -709,6 +709,42 @@
       <div class='card-panel' style='border-top: 2px solid #3498db;'><div class='form-group'><label>Target Penerima:</label><select id='rewardTarget'><option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option></select></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Tambahan Speed (V/s)</label><input id='rewardSpeed' type='number'></div><div class='form-group' style='flex:1;'><label>Tambahan Durasi (Hari)</label><input id='rewardHari' type='number'></div></div><button class='btn-main' id='btnKirimReward' onclick='kirimReward()'><i class='fa-solid fa-paper-plane'></i> KIRIM REWARD</button></div>
     </div>
   </div>
+
+	<!-- ========================================== -->
+  <!-- START: LAYAR GLOBAL STATS, TIM & REWARD -->
+  <!-- ========================================== -->
+  <div class='admin-screen' id='scr-stats'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #8b5cf6;'><div class='form-group'><label>Miners Online (Angka Dasar)</label><input id='statInpOnline' type='number'></div><div class='form-group'><label>Registered Users</label><input id='statInpReg' type='number'></div><div class='form-group'><label>Total Withdrawn (VRSC)</label><input id='statInpWd' type='number'></div>
+<div class='form-group'><label style='color:#38bdf8;'><i class='fa-solid fa-scale-unbalanced'></i> Min. Exchange VRSC ke IDR (Rp)</label><input id='statInpMinExchange' type='number' placeholder='Contoh: 1000' style='border-color:#38bdf8;'></div>
+<div class='form-group' style='border:1px dashed #f59e0b; padding:10px; border-radius:8px;'><label style='color:#f1c40f;'><i class='fa-solid fa-crown'></i> Syarat Min. Saldo Top Sultan (Rp)</label><input id='statInpMinSultan' type='number' placeholder='Contoh: 1000000' style='border-color:#f1c40f;'></div><button class='btn-main' onclick='simpanGlobalStats()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Statistik</button></div>
+    </div>
+  </div>
+
+  <div class='admin-screen' id='scr-team'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
+    <div class='screen-content'>
+      <div class='card-panel'>
+        <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
+        <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
+          <h4 style='margin:0 0 15px 0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ringkasan Tim</h4>
+          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Stok Token (Aktif):</span><span id='timStokAktif' style='color:#10b981; font-weight:900;'>0 Lbr (Rp 0)</span></div>
+          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Token Terjual:</span><span id='timStokTerpakai' style='color:#ef4444; font-weight:900;'>0 Lbr (Rp 0)</span></div>
+          <div style='display:flex; justify-content:space-between; align-items:center;'><span style='color:#94a3b8; font-size:0.85rem;'>Total Pendapatan:</span><span id='timPendapatan' style='color:#fbbf24; font-family:Orbitron; font-size:1.2rem; font-weight:900;'>Rp 0</span></div>
+        </div>
+        <h4 style='color:#e2e8f0;'><i class='fa-solid fa-list'></i> Rincian Token Tim</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Kode Token &amp; Modal</th><th>Status &amp; Pemakai</th></tr></thead><tbody id='tblTimDetail'><tr><td colspan='4' style='text-align:center;'>Pilih tim untuk memuat data.</td></tr></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class='admin-screen' id='scr-reward'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #3498db;'><div class='form-group'><label>Target Penerima:</label><select id='rewardTarget'><option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option></select></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Tambahan Speed (V/s)</label><input id='rewardSpeed' type='number'></div><div class='form-group' style='flex:1;'><label>Tambahan Durasi (Hari)</label><input id='rewardHari' type='number'></div></div><button class='btn-main' id='btnKirimReward' onclick='kirimReward()'><i class='fa-solid fa-paper-plane'></i> KIRIM REWARD</button></div>
+    </div>
+  </div>
+  <!-- ========================================== -->
 	
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
