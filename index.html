@@ -374,7 +374,7 @@
         <div class='form-group'>
           <label>Target Distribusi:</label>
           <select id='distTim' onchange='if(this.value==="USER"){document.getElementById("inpTargetUserPabrik").style.display="block";}else{document.getElementById("inpTargetUserPabrik").style.display="none";}'>
-            <option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option><option value='USER'>🚀 KIRIM LANGSUNG KE PEMAIN</option>
+            <option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option><option value='USER'>?? KIRIM LANGSUNG KE PEMAIN</option>
           </select>
           <input class='login-input' id='inpTargetUserPabrik' placeholder='Ketik Username atau Email Pemain' style='display:none; margin-top:10px;' type='text'>
         </div>
@@ -678,74 +678,6 @@
     </div>
   </div>
 
-	<div class='admin-screen' id='scr-stats'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #8b5cf6;'><div class='form-group'><label>Miners Online (Angka Dasar)</label><input id='statInpOnline' type='number'></div><div class='form-group'><label>Registered Users</label><input id='statInpReg' type='number'></div><div class='form-group'><label>Total Withdrawn (VRSC)</label><input id='statInpWd' type='number'></div>
-<div class='form-group'><label style='color:#38bdf8;'><i class='fa-solid fa-scale-unbalanced'></i> Min. Exchange VRSC ke IDR (Rp)</label><input id='statInpMinExchange' type='number' placeholder='Contoh: 1000' style='border-color:#38bdf8;'></div>
-<div class='form-group' style='border:1px dashed #f59e0b; padding:10px; border-radius:8px;'><label style='color:#f1c40f;'><i class='fa-solid fa-crown'></i> Syarat Min. Saldo Top Sultan (Rp)</label><input id='statInpMinSultan' type='number' placeholder='Contoh: 1000000' style='border-color:#f1c40f;'></div><button class='btn-main' onclick='simpanGlobalStats()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Statistik</button></div>
-    </div>
-  </div>
-
-  <div class='admin-screen' id='scr-team'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
-    <div class='screen-content'>
-      <div class='card-panel'>
-        <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
-        <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
-          <h4 style='margin:0 0 15px 0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ringkasan Tim</h4>
-          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Stok Token (Aktif):</span><span id='timStokAktif' style='color:#10b981; font-weight:900;'>0 Lbr (Rp 0)</span></div>
-          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Token Terjual:</span><span id='timStokTerpakai' style='color:#ef4444; font-weight:900;'>0 Lbr (Rp 0)</span></div>
-          <div style='display:flex; justify-content:space-between; align-items:center;'><span style='color:#94a3b8; font-size:0.85rem;'>Total Pendapatan:</span><span id='timPendapatan' style='color:#fbbf24; font-family:Orbitron; font-size:1.2rem; font-weight:900;'>Rp 0</span></div>
-        </div>
-        <h4 style='color:#e2e8f0;'><i class='fa-solid fa-list'></i> Rincian Token Tim</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Kode Token &amp; Modal</th><th>Status &amp; Pemakai</th></tr></thead><tbody id='tblTimDetail'><tr><td colspan='4' style='text-align:center;'>Pilih tim untuk memuat data.</td></tr></tbody></table></div>
-      </div>
-    </div>
-  </div>
-
-  <div class='admin-screen' id='scr-reward'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #3498db;'><div class='form-group'><label>Target Penerima:</label><select id='rewardTarget'><option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option></select></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Tambahan Speed (V/s)</label><input id='rewardSpeed' type='number'></div><div class='form-group' style='flex:1;'><label>Tambahan Durasi (Hari)</label><input id='rewardHari' type='number'></div></div><button class='btn-main' id='btnKirimReward' onclick='kirimReward()'><i class='fa-solid fa-paper-plane'></i> KIRIM REWARD</button></div>
-    </div>
-  </div>
-
-	<!-- ========================================== -->
-  <!-- START: LAYAR GLOBAL STATS, TIM & REWARD -->
-  <!-- ========================================== -->
-  <div class='admin-screen' id='scr-stats'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #8b5cf6;'><div class='form-group'><label>Miners Online (Angka Dasar)</label><input id='statInpOnline' type='number'></div><div class='form-group'><label>Registered Users</label><input id='statInpReg' type='number'></div><div class='form-group'><label>Total Withdrawn (VRSC)</label><input id='statInpWd' type='number'></div>
-<div class='form-group'><label style='color:#38bdf8;'><i class='fa-solid fa-scale-unbalanced'></i> Min. Exchange VRSC ke IDR (Rp)</label><input id='statInpMinExchange' type='number' placeholder='Contoh: 1000' style='border-color:#38bdf8;'></div>
-<div class='form-group' style='border:1px dashed #f59e0b; padding:10px; border-radius:8px;'><label style='color:#f1c40f;'><i class='fa-solid fa-crown'></i> Syarat Min. Saldo Top Sultan (Rp)</label><input id='statInpMinSultan' type='number' placeholder='Contoh: 1000000' style='border-color:#f1c40f;'></div><button class='btn-main' onclick='simpanGlobalStats()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Statistik</button></div>
-    </div>
-  </div>
-
-  <div class='admin-screen' id='scr-team'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
-    <div class='screen-content'>
-      <div class='card-panel'>
-        <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
-        <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
-          <h4 style='margin:0 0 15px 0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ringkasan Tim</h4>
-          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Stok Token (Aktif):</span><span id='timStokAktif' style='color:#10b981; font-weight:900;'>0 Lbr (Rp 0)</span></div>
-          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Token Terjual:</span><span id='timStokTerpakai' style='color:#ef4444; font-weight:900;'>0 Lbr (Rp 0)</span></div>
-          <div style='display:flex; justify-content:space-between; align-items:center;'><span style='color:#94a3b8; font-size:0.85rem;'>Total Pendapatan:</span><span id='timPendapatan' style='color:#fbbf24; font-family:Orbitron; font-size:1.2rem; font-weight:900;'>Rp 0</span></div>
-        </div>
-        <h4 style='color:#e2e8f0;'><i class='fa-solid fa-list'></i> Rincian Token Tim</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Kode Token &amp; Modal</th><th>Status &amp; Pemakai</th></tr></thead><tbody id='tblTimDetail'><tr><td colspan='4' style='text-align:center;'>Pilih tim untuk memuat data.</td></tr></tbody></table></div>
-      </div>
-    </div>
-  </div>
-
-  <div class='admin-screen' id='scr-reward'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #3498db;'><div class='form-group'><label>Target Penerima:</label><select id='rewardTarget'><option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option></select></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Tambahan Speed (V/s)</label><input id='rewardSpeed' type='number'></div><div class='form-group' style='flex:1;'><label>Tambahan Durasi (Hari)</label><input id='rewardHari' type='number'></div></div><button class='btn-main' id='btnKirimReward' onclick='kirimReward()'><i class='fa-solid fa-paper-plane'></i> KIRIM REWARD</button></div>
-    </div>
-  </div>
-  <!-- ========================================== -->
-	
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
@@ -1097,12 +1029,12 @@
         await addDoc(collection(db, "Database_Token"), { kode_token: tk, nominal_rupiah: nom, durasi_hari: durasiHari, status: "AKTIF", distribusi_ke: jenisTkn, pemilik: finalPemilik, pemilik_username: targetUsernameFinal, pengirim: "Pusat (Master)", pembuat: "Master Admin", dibuat_pada: serverTimestamp(), dipakai_oleh: null });
         
         if(tim === 'USER') { 
-            await addDoc(collection(db, "Notifikasi_Personal"), { email: targetUserEmail, pesan: `🎁 PUSAT mengirimkan Token ${jenisTkn} senilai Rp ${nom.toLocaleString('id-ID')}! Kode: ${tk}`, timestamp_local: Date.now() }); 
-            await addDoc(collection(db, "Mutasi_Mining"), { email: targetUserEmail, jenis: "IN", deskripsi: `🎁 Terima Token ${jenisTkn} dari Pusat`, nominal: nom, timestamp_local: Date.now() });
+            await addDoc(collection(db, "Notifikasi_Personal"), { email: targetUserEmail, pesan: `?? PUSAT mengirimkan Token ${jenisTkn} senilai Rp ${nom.toLocaleString('id-ID')}! Kode: ${tk}`, timestamp_local: Date.now() }); 
+            await addDoc(collection(db, "Mutasi_Mining"), { email: targetUserEmail, jenis: "IN", deskripsi: `?? Terima Token ${jenisTkn} dari Pusat`, nominal: nom, timestamp_local: Date.now() });
         }
       }
       await addDoc(collection(db, "Mutasi_Pusat"), { jenis: "IN", nominal: (nom * jml), deskripsi: `Cetak ${jml} Lembar Token ${jenisTkn} untuk ${tim === 'USER' ? targetUsernameFinal : tim}`, waktu: serverTimestamp() });
-      log.innerText = tim === 'USER' ? `✅ Sukses mengirim ${jml} Token ${jenisTkn} ke ${targetUsernameFinal}!` : `✅ Sukses mencetak ${jml} Token ${jenisTkn} untuk ${tim}!`; document.getElementById('btnCetakToken').disabled = false;
+      log.innerText = tim === 'USER' ? `? Sukses mengirim ${jml} Token ${jenisTkn} ke ${targetUsernameFinal}!` : `? Sukses mencetak ${jml} Token ${jenisTkn} untuk ${tim}!`; document.getElementById('btnCetakToken').disabled = false;
     });
 
     window.switchTabWd = (tab) => {
@@ -1180,15 +1112,15 @@
             }
             
             await addDoc(collection(db, "Database_Token"), { kode_token: tk, nominal_rupiah: nominal, durasi_hari: 30, status: "AKTIF", distribusi_ke: jenisToken, pemilik: emailTarget, pemilik_username: targetUser, pengirim: username, pembuat: "Pusat", dibuat_pada: serverTimestamp(), dipakai_oleh: null });
-            await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `✅ Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda telah DISETUJUI! Token telah masuk ke stok ${targetUser}.`, timestamp_local: Date.now() });
+            await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `? Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda telah DISETUJUI! Token telah masuk ke stok ${targetUser}.`, timestamp_local: Date.now() });
             await addDoc(collection(db, "Mutasi_Pusat"), { jenis: "OUT", nominal: nominal, deskripsi: `Cairkan WD (Token ${jenisToken}) dari ${username}`, waktu: serverTimestamp() });
             
             // PENCATATAN MUTASI (AUDIT TRAIL) UNTUK PENERIMA TOKEN
-            await addDoc(collection(db, "Mutasi_Mining"), { email: emailTarget, jenis: "IN", deskripsi: `✅ Terima Swap Token ${jenisToken} dari ${username}`, nominal: nominal, timestamp_local: Date.now() });
+            await addDoc(collection(db, "Mutasi_Mining"), { email: emailTarget, jenis: "IN", deskripsi: `? Terima Swap Token ${jenisToken} dari ${username}`, nominal: nominal, timestamp_local: Date.now() });
             
             // NOTIFIKASI TAMBAHAN JIKA TARGET BUKAN DIRI SENDIRI
             if (emailTarget !== email) {
-                await addDoc(collection(db, "Notifikasi_Personal"), { email: emailTarget, pesan: `🎁 Anda menerima Token ${jenisToken} senilai Rp ${nominal.toLocaleString('id-ID')} dari hasil pencairan WD ${username}. Cek stok token Anda!`, timestamp_local: Date.now() });
+                await addDoc(collection(db, "Notifikasi_Personal"), { email: emailTarget, pesan: `?? Anda menerima Token ${jenisToken} senilai Rp ${nominal.toLocaleString('id-ID')} dari hasil pencairan WD ${username}. Cek stok token Anda!`, timestamp_local: Date.now() });
             }
 
             showToast("WD Disetujui & Token Dicetak!"); window.loadAntreanWD();
@@ -1200,7 +1132,7 @@
         try {
             await updateDoc(doc(db, "Request_Withdraw", id), { status: "DITOLAK", alasan_tolak: alasan });
             const userDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", email))); if(!userDoc.empty) { let currentSaldoRp = userDoc.docs[0].data().saldo_rupiah || 0; await updateDoc(doc(db, "Akun_Publik", userDoc.docs[0].id), { saldo_rupiah: currentSaldoRp + nominal }); }
-            await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `❌ Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda DITOLAK. Alasan: ${alasan}. Saldo Rupiah telah dikembalikan ke dompet.`, timestamp_local: Date.now() });
+            await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `? Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda DITOLAK. Alasan: ${alasan}. Saldo Rupiah telah dikembalikan ke dompet.`, timestamp_local: Date.now() });
             showToast("WD Ditolak & Saldo Direfund!"); window.loadAntreanWD();
         } catch(e) { alert("Terjadi kesalahan."); }
     };
@@ -1363,7 +1295,7 @@
             // CATAT LOG ADMIN (AUDIT TRAIL)
             let namaAdmin = "Master";
             try { let adminLog = JSON.parse(localStorage.getItem("cisAdminLog_v2")); if(adminLog) namaAdmin = adminLog.nama; } catch(e){}
-            let deskripsiLog = isKiamat ? `🚨 MELAKUKAN RESET KIAMAT PADA AKUN.` : `📝 Edit Akun. VRSC: ${vrsc}, Rp: ${rp}, Speed: ${spd}, Rek_Valid: ${isRekeningValid}`;
+            let deskripsiLog = isKiamat ? `?? MELAKUKAN RESET KIAMAT PADA AKUN.` : `?? Edit Akun. VRSC: ${vrsc}, Rp: ${rp}, Speed: ${spd}, Rek_Valid: ${isRekeningValid}`;
             
             await addDoc(collection(db, "Mutasi_Pusat"), {
                 jenis: "EDIT",
@@ -1435,7 +1367,7 @@
             await addDoc(collection(db, "Akun_Publik"), { username: "CIS01", email: "cis01@gmail.com", wa: "6281234567890", password: "admin", tx_pin: "123456", referred_by: "MASTER", saldo_vrsc: 0, kecepatan_hash: 0, expired_at: Date.now() + (365 * 86400000), status_akun: "AKTIF", created_at: serverTimestamp(), saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, device_id: "" });
             const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config", "P2P_Order", "Donasi_USDT" ]; 
             for (const kol of listKoleksi) { const snap = await getDocs(collection(db, kol)); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } 
-            alert("✅ FACTORY RESET BERHASIL!\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan."); window.location.reload();
+            alert("? FACTORY RESET BERHASIL!\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan."); window.location.reload();
         } catch(e) { alert("Gagal total! Pastikan koneksi internet stabil."); btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; btn.disabled = false; } 
     };
 
@@ -1615,7 +1547,7 @@
     });
 
     window.delPaket = async (id) => { 
-        prompt("🔒 KEAMANAN KETAT AKTIF!\n\nPenghapusan dari web diblokir oleh Firebase.\nSilakan salin (Copy) ID Dokumen di bawah ini, lalu hapus secara manual di Firebase Console pada koleksi 'Config_Mining':", id);
+        prompt("?? KEAMANAN KETAT AKTIF!\n\nPenghapusan dari web diblokir oleh Firebase.\nSilakan salin (Copy) ID Dokumen di bawah ini, lalu hapus secara manual di Firebase Console pada koleksi 'Config_Mining':", id);
     };
 
     async function loadSpeedMultiplier() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); if(!snap.empty) { const data = snap.docs[0].data(); globalSpeedMultiplier = data.multiplier || 1.0; let inpMultiplier = document.getElementById('inpSpeedMultiplier'); if(inpMultiplier) inpMultiplier.value = globalSpeedMultiplier; } }
@@ -1698,7 +1630,7 @@
                 await updateDoc(doc(db, "Akun_Publik", u.id), { kecepatan_hash: totalSpeedAktif, expired_at: waktuExpiredTerjauh, daftar_mesin: garasi });
                 let msgDeskripsi = `System Reward: `; if(addSpeed > 0) msgDeskripsi += `+${addSpeed} V/s `; if(addHari > 0) msgDeskripsi += `+${addHari} Hari`;
                 await addDoc(collection(db, "Mutasi_Mining"), { email: u.email, jenis: "IN", deskripsi: msgDeskripsi, nominal: 0, timestamp_local: Date.now() });
-                await addDoc(collection(db, "Notifikasi_Personal"), { email: u.email, pesan: `🎁 SELAMAT! Anda mendapat ${msgDeskripsi} dari Master Pusat.`, timestamp_local: Date.now() });
+                await addDoc(collection(db, "Notifikasi_Personal"), { email: u.email, pesan: `?? SELAMAT! Anda mendapat ${msgDeskripsi} dari Master Pusat.`, timestamp_local: Date.now() });
                 batchCount++;
             }
             showToast(`Sukses kirim reward ke ${batchCount} user!`); document.getElementById('rewardSpeed').value = ""; document.getElementById('rewardHari').value = "";
@@ -1848,8 +1780,8 @@
         if(!pesan) return alert("Isi pesan pengumuman!"); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGIRIM BROADCAST..."; btn.disabled = true;
         try {
             await addDoc(collection(db, "Notifikasi_Global"), { pesan: pesan, pengirim: "Master Pusat", timestamp_local: Date.now() });
-            log.innerText = "✅ Broadcast berhasil dikirim!"; document.getElementById('inputPengumuman').value = ""; showToast("Pengumuman Terkirim!"); setTimeout(() => { log.innerText = ""; }, 4000);
-        } catch (error) { log.innerHTML = "<span style='color:#ef4444;'>❌ Gagal mengirim. Cek koneksi.</span>"; } btn.innerHTML = "<i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User"; btn.disabled = false;
+            log.innerText = "? Broadcast berhasil dikirim!"; document.getElementById('inputPengumuman').value = ""; showToast("Pengumuman Terkirim!"); setTimeout(() => { log.innerText = ""; }, 4000);
+        } catch (error) { log.innerHTML = "<span style='color:#ef4444;'>? Gagal mengirim. Cek koneksi.</span>"; } btn.innerHTML = "<i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User"; btn.disabled = false;
     };
 
     window.toggleAksesMenu = () => { let role = document.getElementById('addAdminRole').value; if(role === 'CPANEL') document.getElementById('wrapAksesCpanel').style.display = 'block'; else document.getElementById('wrapAksesCpanel').style.display = 'none'; };
@@ -1908,7 +1840,7 @@
             });
             tbody.innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Rekaman CCTV kosong. Belum ada aktivitas.</td></tr>";
         } catch(e) {
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#ef4444;'>❌ Gagal memuat data CCTV.</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#ef4444;'>? Gagal memuat data CCTV.</td></tr>";
         }
     };
 	
@@ -1951,7 +1883,7 @@
                         
                         // Siapkan kalimat FOMO untuk disiarkan
                         let nominalRp = (d.total_harga || 0).toLocaleString('id-ID');
-                        let pesanFomo = `🔥 P2P SUKSES! [${d.pembeli_user}] baru saja berhasil mengamankan ${d.qty}x Token ${d.jenis_token} dari [${d.penjual_user}] senilai Rp ${nominalRp}. Ekosistem berjalan ngebut! 🚀`;
+                        let pesanFomo = `?? P2P SUKSES! [${d.pembeli_user}] baru saja berhasil mengamankan ${d.qty}x Token ${d.jenis_token} dari [${d.penjual_user}] senilai Rp ${nominalRp}. Ekosistem berjalan ngebut! ??`;
                         
                         // Cek ke database Notifikasi Global agar robot tidak memposting hal yang sama dua kali
                         const cekNotif = await getDocs(query(collection(db, "Notifikasi_Global"), where("pesan", "==", pesanFomo)));
@@ -1963,7 +1895,7 @@
                                 pengirim: "Sistem Radar P2P", 
                                 timestamp_local: Date.now() 
                             });
-                            console.log("🤖 Robot P2P menyiarkan: " + pesanFomo);
+                            console.log("?? Robot P2P menyiarkan: " + pesanFomo);
                         }
                     }
                 }
@@ -1993,19 +1925,19 @@
             // ==========================================
             const gudangTeks = [
                 // LACI 1: FOMO & MOTIVASI
-                "🔥 Jangan cuma jadi penonton! Para Sultan sedang panen ratusan ribu tiap hari dari hasil P2P Cloud Mining. Upgrade mesinmu sekarang!",
-                "💎 Harga Kripto terus bergerak. Kumpulkan koin VRSC-mu selagi masih mudah didapatkan dari mesin mining!",
-                "🚀 Hasil tidak akan mengkhianati proses. Terus kembangkan jaringan referralmu dan nikmati passive income di CIS Protocol.",
+                "?? Jangan cuma jadi penonton! Para Sultan sedang panen ratusan ribu tiap hari dari hasil P2P Cloud Mining. Upgrade mesinmu sekarang!",
+                "?? Harga Kripto terus bergerak. Kumpulkan koin VRSC-mu selagi masih mudah didapatkan dari mesin mining!",
+                "?? Hasil tidak akan mengkhianati proses. Terus kembangkan jaringan referralmu dan nikmati passive income di CIS Protocol.",
 
                 // LACI 2: EDUKASI SISTEM
-                "💡 TAHUKAH ANDA? Kecepatan Hashrate (V/s) sangat menentukan seberapa cepat koin Anda tercetak. Tambah kecepatan Anda di menu P2P!",
-                "⚙️ TIPS SULTAN: Jangan lupa rajin melakukan KLAIM setiap jam agar koin VRSC Anda terus bertambah secara gratis.",
-                "🛡️ KEAMANAN: Bertransaksilah HANYA dengan penjual yang memiliki centang 'Rekening Valid' di P2P Marketplace agar 100% aman.",
+                "?? TAHUKAH ANDA? Kecepatan Hashrate (V/s) sangat menentukan seberapa cepat koin Anda tercetak. Tambah kecepatan Anda di menu P2P!",
+                "?? TIPS SULTAN: Jangan lupa rajin melakukan KLAIM setiap jam agar koin VRSC Anda terus bertambah secara gratis.",
+                "??? KEAMANAN: Bertransaksilah HANYA dengan penjual yang memiliki centang 'Rekening Valid' di P2P Marketplace agar 100% aman.",
 
                 // LACI 3: AJAKAN (CALL TO ACTION)
-                "🎁 Mau dapet tambahan Speed gratis? Sebarkan link referral Anda ke grup WA/Facebook. 1 orang aktif = Speed tambahan masuk otomatis!",
-                "🤝 Punya stok token berlebih? Jual segera di P2P Marketplace dan jadikan saldo Rupiah tunai langsung ke rekeningmu!",
-                "🌐 CIS Protocol bukan sekadar aplikasi, ini adalah ekosistem Cloud Mining & Charity terintegrasi. Bangga jadi bagian dari CIS!"
+                "?? Mau dapet tambahan Speed gratis? Sebarkan link referral Anda ke grup WA/Facebook. 1 orang aktif = Speed tambahan masuk otomatis!",
+                "?? Punya stok token berlebih? Jual segera di P2P Marketplace dan jadikan saldo Rupiah tunai langsung ke rekeningmu!",
+                "?? CIS Protocol bukan sekadar aplikasi, ini adalah ekosistem Cloud Mining & Charity terintegrasi. Bangga jadi bagian dari CIS!"
             ];
 
             // Acak dan pilih 1 peluru dari gudang
@@ -2013,7 +1945,7 @@
             let pesanAcak = gudangTeks[randomIndex];
 
             try {
-                let pesanLengkap = "🤖 TIPS CIS: " + pesanAcak;
+                let pesanLengkap = "?? TIPS CIS: " + pesanAcak;
 
                 // 1. Tembakkan ke Layar Seluruh Miner (Internal Notifikasi Global)
                 await addDoc(collection(db, "Notifikasi_Global"), {
@@ -2021,7 +1953,7 @@
                     pengirim: "Auto-Pilot Robot",
                     timestamp_local: Date.now()
                 });
-                console.log("🤖 Robot Promo sukses menembakkan ke internal aplikasi.");
+                console.log("?? Robot Promo sukses menembakkan ke internal aplikasi.");
 
                 // ==========================================
                 // 2. JEMBATAN OTOMATIS KE FANS-PAGE FACEBOOK
@@ -2041,9 +1973,9 @@
                 
                 let fbResult = await fbResponse.json();
                 if(fbResult.id) {
-                    console.log("✅ Sukses Posting ke Facebook Cisverus! ID FB: " + fbResult.id);
+                    console.log("? Sukses Posting ke Facebook Cisverus! ID FB: " + fbResult.id);
                 } else {
-                    console.error("❌ Robot Gagal Menembus Facebook:", fbResult);
+                    console.error("? Robot Gagal Menembus Facebook:", fbResult);
                 }
 
             } catch(e) {
@@ -2193,14 +2125,14 @@
                     }
                 }
                 
-                log.innerText = "✅ RE-INJEKSI SUKSES! Seluruh sistem dipulihkan sempurna.";
+                log.innerText = "? RE-INJEKSI SUKSES! Seluruh sistem dipulihkan sempurna.";
                 log.style.color = "#4ade80";
                 alert("PEMULIHAN BERHASIL!\n\nSeluruh data member, saldo, dan token telah dikembalikan ke kondisi saat backup dibuat.");
                 window.location.reload();
                 
             } catch(err) {
                 console.error("RESTORE ERROR:", err);
-                log.innerText = "❌ Gagal memulihkan database. File rusak atau format salah.";
+                log.innerText = "? Gagal memulihkan database. File rusak atau format salah.";
                 log.style.color = "#ef4444";
                 btn.innerHTML = "<i class='fa-solid fa-shield-heart'></i> EKSEKUSI PEMULIHAN DATA SYSTEM";
                 btn.disabled = false;
@@ -2256,13 +2188,13 @@
             dlAnchorElem.click();
             dlAnchorElem.remove();
 
-            log.innerText = "✅ Evakuasi Sukses! File Backup telah diunduh.";
+            log.innerText = "? Evakuasi Sukses! File Backup telah diunduh.";
             log.style.color = "#4ade80";
             window.showToast("Database Berhasil Dievakuasi!");
 
         } catch(e) {
             console.error("BACKUP ERROR:", e);
-            log.innerText = "❌ Gagal menyedot data. Cek koneksi Anda.";
+            log.innerText = "? Gagal menyedot data. Cek koneksi Anda.";
             log.style.color = "#ef4444";
         }
 
@@ -2294,7 +2226,7 @@
             }
             
             if(!isAuto) showToast("Status Web Berhasil Disimpan!");
-            else showToast("🔔 WAKTU HABIS! Saklar otomatis dimatikan oleh sistem.");
+            else showToast("?? WAKTU HABIS! Saklar otomatis dimatikan oleh sistem.");
         } catch(e) {
             if(!isAuto) alert("Gagal menyimpan status web.");
         }
@@ -2337,9 +2269,9 @@
             } else {
                 await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
             }
-            window.showToast("✅ Status Robot berhasil diperbarui ke Pusat!");
+            window.showToast("? Status Robot berhasil diperbarui ke Pusat!");
         } catch(e) {
-            window.showToast("❌ Gagal menyimpan status robot ke Firebase.");
+            window.showToast("? Gagal menyimpan status robot ke Firebase.");
         }
     };
 
@@ -2434,7 +2366,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             // 2. Kirim Notif ke Layar HP User
             await addDoc(collection(db, "Notifikasi_Personal"), { 
                 email: email, 
-                pesan: `✅ Transaksi ${jenis} ${nominal} ke nomor ${target} BERHASIL!\nSN/Token: ${sn.trim()}`, 
+                pesan: `? Transaksi ${jenis} ${nominal} ke nomor ${target} BERHASIL!\nSN/Token: ${sn.trim()}`, 
                 timestamp_local: Date.now() 
             });
 
@@ -2477,7 +2409,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             // 5. Kirim Notif Kegagalan ke User
             await addDoc(collection(db, "Notifikasi_Personal"), { 
                 email: email, 
-                pesan: `❌ Transaksi ${jenis} DITOLAK (${alasan}). Saldo Rp ${hargaBayar.toLocaleString('id-ID')} telah dikembalikan ke dompet.`, 
+                pesan: `? Transaksi ${jenis} DITOLAK (${alasan}). Saldo Rp ${hargaBayar.toLocaleString('id-ID')} telah dikembalikan ke dompet.`, 
                 timestamp_local: Date.now() 
             });
 
@@ -2538,9 +2470,9 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                             
                             // Gunakan fungsi pop-up Admin yang sudah ada
                             if(typeof window.tampilkanPopUpAdmin === 'function') {
-                                window.tampilkanPopUpAdmin(`📨 TIKET BANTUAN BARU!\nDari: ${namaPengirim}\nKeluhan: "${cuplikanPesan}"`);
+                                window.tampilkanPopUpAdmin(`?? TIKET BANTUAN BARU!\nDari: ${namaPengirim}\nKeluhan: "${cuplikanPesan}"`);
                             } else {
-                                window.showToast(`📨 Pesan baru dari ${namaPengirim}`);
+                                window.showToast(`?? Pesan baru dari ${namaPengirim}`);
                             }
                         } 
                     } 
@@ -2601,7 +2533,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                 if(emailTarget) {
                     await addDoc(collection(db, "Notifikasi_Personal"), {
                         email: emailTarget,
-                        pesan: `🎧 BANTUAN PELANGGAN:\nAdmin telah membalas tiket Anda: "${msg}"`,
+                        pesan: `?? BANTUAN PELANGGAN:\nAdmin telah membalas tiket Anda: "${msg}"`,
                         timestamp_local: Date.now()
                     });
                 }
@@ -2685,7 +2617,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                 alert("Gagal menghapus data.");
             }
         };
-        
+        // --------------------------
 </script>
 </body>
 </html>
