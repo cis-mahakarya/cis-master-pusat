@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <script>
@@ -652,49 +652,6 @@
           <label class='switch'><input id='togglePpobActive' type='checkbox'><span class='slider-tg'></span></label>
         </div>
         <button class='btn-main' onclick='window.simpanStatusPpob()' style='background:#2ecc71;'><i class='fa-solid fa-save'></i> Simpan Status PPOB</button>
-
-        <!-- PELATUK CEK SALDO PUSAT DIGIFLAZZ -->
-        <div style='margin-top:15px; padding:15px; border-radius:8px; border:1px dashed #2ecc71; background:rgba(46, 204, 113, 0.05); text-align:center;'>
-            <label style='color:#2ecc71; font-size:0.85rem; font-weight:bold;'><i class='fa-solid fa-wallet'></i> CEK SALDO PUSAT (API DIGIFLAZZ)</label>
-            <p style='font-size:0.7rem; color:#94a3b8; margin:5px 0 10px 0;'>Uji tembak ke satelit Cloud Functions untuk memastikan brankas API aman dan aktif.</p>
-            <div id='layarHasilSaldo' style='margin-bottom:10px; font-weight:900; color:#cbd5e1; font-family:Orbitron; font-size:1.4rem;'>-</div>
-            <button class='btn-main' id='btnCekSaldo' onclick='window.eksekusiCekSaldo()' style='background:linear-gradient(135deg, #2ecc71, #27ae60);'><i class='fa-solid fa-satellite-dish'></i> TEMBAK SERVER API</button>
-        </div>
-        
-        <script>
-            // Logika Tembak Sensor API PPOB
-            window.eksekusiCekSaldo = async () => {
-                const btn = document.getElementById('btnCekSaldo');
-                const layar = document.getElementById('layarHasilSaldo');
-                
-                btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MEMBIDIK SERVER...";
-                btn.disabled = true;
-                layar.innerHTML = "Menunggu balasan satelit... ⏳";
-                layar.style.color = "#38bdf8";
-
-                try {
-                    const tembakDigiflazz = window.httpsCallable(window.functions, "cekSaldoDigiflazz");
-                    const response = await tembakDigiflazz();
-                    
-                    if (response.data.status === "success") {
-                        const saldo = response.data.data.deposit;
-                        layar.innerHTML = `✅ Rp ${saldo.toLocaleString('id-ID')}`;
-                        layar.style.color = "#4ade80";
-                        window.showToast("Radar API Sukses Terhubung!");
-                    } else {
-                        layar.innerHTML = `⚠️ ${response.data.message}`;
-                        layar.style.color = "#f87171";
-                    }
-                } catch (error) {
-                    layar.innerHTML = `❌ Gagal Menembak API`;
-                    layar.style.color = "#ef4444";
-                    console.error("Laporan Error:", error);
-                } finally {
-                    btn.innerHTML = "<i class='fa-solid fa-satellite-dish'></i> TEMBAK SERVER API";
-                    btn.disabled = false;
-                }
-            };
-        </script>
       </div>
 
 		<!-- --- START: SAKLAR STAKING --- -->
@@ -889,7 +846,6 @@
 <script type='module'>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
 
     // KAPTEN, KUNCI API EMAS ADA DI SINI
     const firebaseConfig = {
@@ -904,10 +860,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const functions = getFunctions(app, "us-central1"); // Inisialisasi Akses Cloud Functions
-	window.httpsCallable = httpsCallable;
-	window.functions = functions;
-	
+
     let globalVrscPriceIdr = 0; let globalVrscPriceUsdt = 0; let globalSpeedMultiplier = 1.0; 
     let currentAdminRole = ""; let currentAdminAkses = []; let allUsersData = [];
 
