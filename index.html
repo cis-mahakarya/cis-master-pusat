@@ -252,50 +252,9 @@
       <div class='menu-box' id='menu-cpanel' onclick='openScreen("scr-cpanel")' style='border-top: 3px solid #64748b;'>
           <i class='fa-solid fa-user-tie' style='color:#64748b;'></i><span>Manajemen C-Panel</span>
       </div>
-      <!-- --- START: MENU PPOB MASTER --- -->
-      <div class='menu-box' id='menu-ppob' onclick='openScreen("scr-ppob")' style='border-top: 3px solid #2ecc71;'>
-          <i class='fa-solid fa-mobile-screen-button' style='color:#2ecc71;'></i><span>Antrean PPOB</span>
-      </div>
-		</div>
-	  </div>
-      <!-- --- END --- -->
-
-		<!-- ========================================== -->
-  <!-- START: LAYAR ANTREAN PPOB -->
-  <!-- ========================================== -->
-  <div class='admin-screen' id='scr-ppob'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Transaksi PPOB</div>
-    <div class='screen-content'>
-      <div class='card-panel' style='border-top: 2px solid #2ecc71;'>
-        
-        <div style='display:flex; border-bottom:1px solid #334155; margin-bottom:15px;'>
-            <div id='tabPpobPending' onclick='window.switchTabPPOB("pending")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#2ecc71; border-bottom:2px solid #2ecc71;'><i class='fa-solid fa-hourglass-half'></i> Antrean (Pending)</div>
-            <div id='tabPpobRiwayat' onclick='window.switchTabPPOB("riwayat")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'><i class='fa-solid fa-clock-rotate-left'></i> Riwayat Selesai</div>
-        </div>
-        
-        <div id='areaPpobPending'>
-            <div class='table-wrap'>
-                <table>
-                    <thead><tr><th class='col-no'>No</th><th>Waktu &amp; User</th><th>Target &amp; Jenis</th><th>Nominal &amp; Bayar</th><th>Aksi Eksekusi</th></tr></thead>
-                    <tbody id='tblPpobPending'><tr><td colspan='5' style='text-align:center;'>Memuat antrean PPOB...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div id='areaPpobRiwayat' style='display:none;'>
-            <div class='table-wrap'>
-                <table>
-                    <thead><tr><th class='col-no'>No</th><th>Waktu &amp; User</th><th>Detail Pembelian</th><th>Status &amp; SN / Token</th></tr></thead>
-                    <tbody id='tblPpobRiwayat'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat PPOB...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-      </div>
     </div>
   </div>
-  <!-- END: LAYAR ANTREAN PPOB -->
-	
+
  <!-- LAYAR PESAN BANTUAN -->
   <div class='admin-screen' id='scr-bantuan'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Layanan Bantuan (Help Center)</div>
@@ -370,7 +329,7 @@
     <div class='screen-content'>
       <div class='card-panel'>
         <h3 style="color:#38bdf8; margin-top:0;"><i class="fa-solid fa-industry"></i> Cetak Token Aktivasi & Speed</h3>
-		  
+        
         <div class='form-group'>
           <label>Target Distribusi:</label>
           <select id='distTim' onchange='if(this.value==="USER"){document.getElementById("inpTargetUserPabrik").style.display="block";}else{document.getElementById("inpTargetUserPabrik").style.display="none";}'>
@@ -581,149 +540,174 @@
     </div>
   </div>
 
-  <!-- START REPLACE BLOCK -->
   <div class='admin-screen' id='scr-sistem'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
-      
-      <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.05); border: 1px dashed #a855f7;'>
+
+	<div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.05); border: 1px dashed #a855f7;'>
         <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-life-ring'></i> Disaster Recovery Center</h4>
         <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Amankan urat nadi platform cisverus.com dari serangan fatal takedown atau hacker dengan fitur evakuasi otomatis.</p>
+        
         <button class='btn-main' id='btnBackupDb' onclick='window.evakuasiDatabase()' style='background:#a855f7; color:#fff; margin-bottom:15px;'><i class='fa-solid fa-cloud-arrow-down'></i> 1. DOWNLOAD BACKUP DATABASE (.JSON)</button>
+        
         <hr style='border:1px dashed rgba(168, 85, 247, 0.3); margin:15px 0;'/>
+        
         <label style='color:#c084fc;'><i class='fa-solid fa-file-import'></i> 2. PENGEMBALIAN DATA (RESTORE ENGINE)</label>
         <input type='file' id='inpRestoreDb' accept='.json' style='margin-top:5px; margin-bottom:10px; background:#0b0f19; border:1px solid #475569; padding:8px; border-radius:8px; color:#fff;'>
         <button class='btn-main' id='btnRestoreDb' onclick='window.pulihkanDatabase()' style='background:linear-gradient(135deg, #a855f7, #6b21a8); color:#fff;'><i class='fa-solid fa-shield-heart'></i> EKSEKUSI PEMULIHAN DATA SYSTEM</button>
+        
         <div id='logBackup' style='margin-top:10px; font-size:0.75rem; color:#4ade80; text-align:center;'></div>
       </div>
-      
+		
+      <!-- KOTAK KENDALI STATUS WEB (MAINTENANCE & LAUNCH) -->
       <div class='card-panel' style='border-top: 2px solid #ef4444; margin-bottom:20px;'>
         <h4 style='margin-top:0; color:#ef4444;'><i class='fa-solid fa-power-off'></i> Kontrol Status Web (Maintenance & Launch)</h4>
-        <div class='switch-wrap'><div><b style='color:#ef4444;'><i class='fa-solid fa-gear'></i> Mode Maintenance (Perbaikan)</b></div><label class='switch'><input id='toggleMaintenance' type='checkbox'><span class='slider-tg'></span></label></div>
-        <div class='switch-wrap'><div><b style='color:#f59e0b;'><i class='fa-solid fa-rocket'></i> Mode Countdown (Hitung Mundur)</b></div><label class='switch'><input id='toggleCountdown' type='checkbox'><span class='slider-tg'></span></label></div>
-        <div class='switch-wrap'><div><b style='color:#ef4444;'><i class='fa-solid fa-shield-virus'></i> Mode Kawat Berduri (Anti F12 & Klik Kanan)</b></div><label class='switch'><input id='toggleAntiHack' type='checkbox'><span class='slider-tg'></span></label></div>
-        <div class='form-group'><label>IP Address Tim IT (Akses Bypass Maintenance)</label><input id='inpIpBypass' type='text' placeholder='Contoh: 114.125.10.55' style='background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%; color:#00f2fe; font-weight:bold;'><div style='font-size:0.65rem; color:#94a3b8; margin-top:5px;'>*Kosongkan jika tidak ada. Buka tab baru di browser dan ketik "My IP" di Google untuk mengetahui IP Anda.</div></div>
-        <div class='form-group'><label>Waktu Berakhir (Target Launch / Selesai Maintenance)</label><input id='inpTargetLaunch' type='datetime-local' style='color:#fbbf24; font-weight:bold; background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%;'></div>
+        
+        <div class='switch-wrap'>
+          <div><b style='color:#ef4444;'><i class='fa-solid fa-gear'></i> Mode Maintenance (Perbaikan)</b></div>
+          <label class='switch'><input id='toggleMaintenance' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        
+        <div class='switch-wrap'>
+          <div><b style='color:#f59e0b;'><i class='fa-solid fa-rocket'></i> Mode Countdown (Hitung Mundur)</b></div>
+          <label class='switch'><input id='toggleCountdown' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        
+        <div class='form-group'>
+          <label>Waktu Berakhir (Target Launch / Selesai Maintenance)</label>
+          <input id='inpTargetLaunch' type='datetime-local' style='color:#fbbf24; font-weight:bold; background:#0b0f19; border:1px solid #475569; border-radius:8px; padding:12px; width:100%;'>
+        </div>
+        
         <button class='btn-main' onclick='simpanStatusWeb()' style='background:#ef4444;'><i class='fa-solid fa-save'></i> Simpan Status Web</button>
       </div>
 
       <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom:20px;'><h4 style='margin-top:0; color:#10b981;'><i class='fa-brands fa-android'></i> Kendali Versi &amp; Aplikasi (APK)</h4><div class='form-group'><label>Target Versi Aplikasi (Contoh: 1.0.0)</label><input id='inpAppVersion' type='text' value='1.0.0'></div><div class='form-group'><label>Link Download Aplikasi</label><input id='inpAppUrl' type='url'></div><div class='switch-wrap'><div><b style='color:#10b981;'><i class='fa-solid fa-shield-cat'></i> Wajib Update Aplikasi / Lock Browser</b></div><label class='switch'><input id='toggleForceUpdate' type='checkbox'><span class='slider-tg'></span></label></div><button class='btn-main' onclick='simpanConfigApk()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Konfigurasi APK</button></div>
-      
       <div class='card-panel'>
         <div class='switch-wrap'><div><b style='color:#38bdf8;'><i class='fa-solid fa-key'></i> Wajib Aktivasi Pendaftaran</b></div><label class='switch'><input id='toggleAktivasiReg' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='switch-wrap'><div><b style='color:#a855f7;'><i class='fa-solid fa-gift'></i> Mode Freemium (Mining Gratis)</b></div><label class='switch'><input id='toggleFreemium' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='form-group'><label>Masa Aktif Gratis Pendaftaran Jika OFF (Hari)</label><input id='inpHariGratis' type='number' value='30'></div>
         <div class='switch-wrap'><div><b style='color:#f59e0b;'><i class='fa-solid fa-stopwatch'></i> Wajib Perpanjang Mesin</b></div><label class='switch'><input checked='checked' id='togglePerpanjang' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='switch-wrap'><div><b style='color:#ef4444;'><i class='fa-solid fa-mobile-screen'></i> 1 Akun 1 Perangkat (Device Lock)</b></div><label class='switch'><input checked='checked' id='toggleDeviceLock' type='checkbox'><span class='slider-tg'></span></label></div>
-        <div class='form-group'><label>Bonus Speed Pendaftaran (V/s)</label><input id='regBonusSpeed' type='text' value='0' oninput='window.hitungEstRegBonus()'><div id='estRegBonusRp' style='font-size:0.75rem; color:#4ade80; margin-top:5px; font-weight:bold;'><i class='fa-solid fa-coins'></i> Est. Panen: Rp 0 / Hari</div></div>
+        <div class='form-group'>
+    <label>Bonus Speed Pendaftaran (V/s)</label>
+    <input id='regBonusSpeed' type='text' value='0' oninput='window.hitungEstRegBonus()'>
+    <div id='estRegBonusRp' style='font-size:0.75rem; color:#4ade80; margin-top:5px; font-weight:bold;'><i class='fa-solid fa-coins'></i> Est. Panen: Rp 0 / Hari</div>
+</div>
         <div class='form-group'><label>Dari Hasil Claim 1 Jam Downline (%)</label><input id='inpSponsorClaim' type='text' value='0'></div>
         <div class='form-group'><label>Dari Pembelian Mesin / Top Up Downline (%)</label><input id='inpSponsorTopup' type='text' value='0'></div>
         <button class='btn-main' onclick='simpanConfigPendaftaran()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Pengaturan</button>
       </div>
-      
-      <div class='card-panel' style='border-top: 2px solid #f59e0b;'>
-        <h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-gamepad'></i> Setting Reward Klaim (1 Jam)</h4>
-        <div class='form-group'>
-          <label>Nominal Reward Dasar (VRSC) - Estimasi Klaim per 1 Jam</label>
-          <input id='inpRewardGame' type='text' value='0.001' oninput='window.hitungEstRewardGame()'>
-          <div style='background:#0b0f19; padding:12px; border-radius:8px; border:1px solid #334155; margin-top:10px;'>
-            <div style='display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;'>
-              <div style='text-align:center; border-right:1px dashed #334155;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 JAM</div><div id='estGameJamVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameJamRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
-              <div style='text-align:center;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 HARI (24x)</div><div id='estGameHariVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameHariRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
-              <div style='text-align:center; border-right:1px dashed #334155; border-top:1px dashed #334155; padding-top:8px;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 MINGGU</div><div id='estGameMingguVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameMingguRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
-              <div style='text-align:center; border-top:1px dashed #334155; padding-top:8px;'><div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 30 HARI</div><div id='estGameBulanVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div><div id='estGameBulanRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div></div>
+      <div class='card-panel' style='border-top: 2px solid #f59e0b;'><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-gamepad'></i> Setting Reward Klaim (1 Jam)</h4><div class='form-group'>
+    <label>Nominal Reward Dasar (VRSC) - Estimasi Klaim per 1 Jam</label>
+    <input id='inpRewardGame' type='text' value='0.001' oninput='window.hitungEstRewardGame()'>
+    <div style='background:#0b0f19; padding:12px; border-radius:8px; border:1px solid #334155; margin-top:10px;'>
+        <div style='display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;'>
+            <div style='text-align:center; border-right:1px dashed #334155;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 JAM</div>
+                <div id='estGameJamVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameJamRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
             </div>
-          </div>
-        </div>
-        <div style='display:flex; gap:10px;'>
-          <div class='form-group' style='flex:1;'><label>Bonus Reward (VRSC)</label><input id='inpBonusGame' type='number' value='0'></div>
-          <div class='form-group' style='flex:1;'><label>Jam Mulai</label><input id='inpJamMulai' type='time' value='00:00'></div>
-          <div class='form-group' style='flex:1;'><label>Jam Selesai</label><input id='inpJamSelesai' type='time' value='00:00'></div>
-        </div>
-        <button class='btn-main' onclick='simpanConfigGame()' style='background:#f59e0b;'><i class='fa-solid fa-save'></i> Simpan Reward Game</button>
-      </div>
-
-      <!-- --- KOTAK PPOB YANG BENAR --- -->
-      <div class='card-panel' style='border-top: 2px solid #2ecc71; margin-top: 20px;'>
-        <h4 style='margin-top:0; color:#2ecc71;'><i class='fa-solid fa-bolt'></i> Integrasi PPOB (Pulsa & Tagihan)</h4>
-        <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan menu PPOB di web publik (cisverus.com) untuk semua user secara global.</p>
-        <div class='switch-wrap' style='border-color:#2ecc71; background:#0b0f19;'>
-          <div><b style='color:#2ecc71;'><i class='fa-solid fa-power-off'></i> Status Layanan PPOB</b></div>
-          <label class='switch'><input id='togglePpobActive' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
-        <button class='btn-main' onclick='window.simpanStatusPpob()' style='background:#2ecc71;'><i class='fa-solid fa-save'></i> Simpan Status PPOB</button>
-      </div>
-
-		<!-- --- START: SAKLAR STAKING --- -->
-      <div class='card-panel' style='border-top: 2px solid #8b5cf6; margin-top: 20px;'>
-        <h4 style='margin-top:0; color:#8b5cf6;'><i class='fa-solid fa-piggy-bank'></i> Integrasi Staking (Penahan Likuiditas)</h4>
-        <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan menu Staking 30 Hari di web publik untuk mengamankan kas Pusat.</p>
-        <div class='switch-wrap' style='border-color:#8b5cf6; background:#0b0f19;'>
-          <div><b style='color:#8b5cf6;'><i class='fa-solid fa-power-off'></i> Status Layanan Staking</b></div>
-          <label class='switch'><input id='toggleStakingActive' type='checkbox'><span class='slider-tg'></span></label>
-        </div>
-        <button class='btn-main' onclick='window.simpanStatusStaking()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Status Staking</button>
-		<!-- TUAS KENDALI PERSENTASE STAKING -->
-        <div style='margin-top:15px; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid #334155;'>
-            <label style='color:#4ade80; font-size:0.85rem; font-weight:bold;'><i class='fa-solid fa-chart-line'></i> Persentase Profit / Loss Staking (APY)</label>
-            <p style='font-size:0.7rem; color:#94a3b8; margin:5px 0 10px 0;'>Atur keuntungan/kerugian *member* secara *real-time*. Angka (+) untuk Profit, Angka (-) untuk Minus. (Contoh: 1.5 atau -0.5)</p>
-            <div style='display:flex; gap:10px; align-items:center;'>
-                <input type='number' id='inpStakingYield' step='0.1' class='input-dark' style='border-color:#4ade80; color:#fff; width:120px; text-align:center; font-size:1.2rem; font-weight:bold;' value='0'>
-                <span style='color:#4ade80; font-size:1.2rem; font-weight:bold;'>%</span>
-                <button class='btn-main' onclick='window.simpanYieldStaking()' style='background:#2ecc71; margin-bottom:0;'><i class='fa-solid fa-save'></i> Update Pasar Global</button>
+            <div style='text-align:center;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 HARI (24x)</div>
+                <div id='estGameHariVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameHariRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+            </div>
+            <div style='text-align:center; border-right:1px dashed #334155; border-top:1px dashed #334155; padding-top:8px;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 1 MINGGU</div>
+                <div id='estGameMingguVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameMingguRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
+            </div>
+            <div style='text-align:center; border-top:1px dashed #334155; padding-top:8px;'>
+                <div style='font-size:0.65rem; color:#94a3b8; font-weight:bold;'>EST 30 HARI</div>
+                <div id='estGameBulanVrsc' style='font-family:Orbitron; font-size:0.9rem; color:#38bdf8; font-weight:bold; margin-top:3px;'>0 VRSC</div>
+                <div id='estGameBulanRp' style='font-size:0.75rem; color:#4ade80; font-weight:bold;'>Rp 0</div>
             </div>
         </div>
+    </div>
+</div>
+    
+</div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Bonus Reward (VRSC)</label><input id='inpBonusGame' type='number' value='0'></div><div class='form-group' style='flex:1;'><label>Jam Mulai</label><input id='inpJamMulai' type='time' value='00:00'></div><div class='form-group' style='flex:1;'><label>Jam Selesai</label><input id='inpJamSelesai' type='time' value='00:00'></div></div><button class='btn-main' onclick='simpanConfigGame()' style='background:#f59e0b;'><i class='fa-solid fa-save'></i> Simpan Reward Game</button></div>
+    </div>
+  </div>
+
+  <div class='admin-screen' id='scr-stats'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Global Live Stats</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #8b5cf6;'><div class='form-group'><label>Miners Online (Angka Dasar)</label><input id='statInpOnline' type='number'></div><div class='form-group'><label>Registered Users</label><input id='statInpReg' type='number'></div><div class='form-group'><label>Total Withdrawn (VRSC)</label><input id='statInpWd' type='number'></div>
+<div class='form-group'><label style='color:#38bdf8;'><i class='fa-solid fa-scale-unbalanced'></i> Min. Exchange VRSC ke IDR (Rp)</label><input id='statInpMinExchange' type='number' placeholder='Contoh: 1000' style='border-color:#38bdf8;'></div>
+<div class='form-group' style='border:1px dashed #f59e0b; padding:10px; border-radius:8px;'><label style='color:#f1c40f;'><i class='fa-solid fa-crown'></i> Syarat Min. Saldo Top Sultan (Rp)</label><input id='statInpMinSultan' type='number' placeholder='Contoh: 1000000' style='border-color:#f1c40f;'></div><button class='btn-main' onclick='simpanGlobalStats()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Statistik</button></div>
+    </div>
+  </div>
+
+  <div class='admin-screen' id='scr-team'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
+    <div class='screen-content'>
+      <div class='card-panel'>
+        <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
+        <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
+          <h4 style='margin:0 0 15px 0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ringkasan Tim</h4>
+          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Stok Token (Aktif):</span><span id='timStokAktif' style='color:#10b981; font-weight:900;'>0 Lbr (Rp 0)</span></div>
+          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Token Terjual:</span><span id='timStokTerpakai' style='color:#ef4444; font-weight:900;'>0 Lbr (Rp 0)</span></div>
+          <div style='display:flex; justify-content:space-between; align-items:center;'><span style='color:#94a3b8; font-size:0.85rem;'>Total Pendapatan:</span><span id='timPendapatan' style='color:#fbbf24; font-family:Orbitron; font-size:1.2rem; font-weight:900;'>Rp 0</span></div>
+        </div>
+        <h4 style='color:#e2e8f0;'><i class='fa-solid fa-list'></i> Rincian Token Tim</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Tanggal Dibuat</th><th>Kode Token &amp; Modal</th><th>Status &amp; Pemakai</th></tr></thead><tbody id='tblTimDetail'><tr><td colspan='4' style='text-align:center;'>Pilih tim untuk memuat data.</td></tr></tbody></table></div>
       </div>
-      <!-- --- END --- -->
+    </div>
+  </div>
+
+  <div class='admin-screen' id='scr-reward'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Injeksi Reward</div>
+    <div class='screen-content'>
+      <div class='card-panel' style='border-top: 2px solid #3498db;'><div class='form-group'><label>Target Penerima:</label><select id='rewardTarget'><option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option></select></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Tambahan Speed (V/s)</label><input id='rewardSpeed' type='number'></div><div class='form-group' style='flex:1;'><label>Tambahan Durasi (Hari)</label><input id='rewardHari' type='number'></div></div><button class='btn-main' id='btnKirimReward' onclick='kirimReward()'><i class='fa-solid fa-paper-plane'></i> KIRIM REWARD</button></div>
     </div>
   </div>
 
   <div class='admin-screen' id='scr-notif'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pengumuman Global</div>
     <div class='screen-content'>
-      
-      <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom: 20px; background: rgba(168, 85, 247, 0.05);'>
-        <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-robot'></i> Kendali Mesin Viralitas (Auto-Posting)</h4>
-        <p style='font-size: 0.75rem; color: #94a3b8; margin-bottom: 15px;'>Nyalakan atau matikan robot promosi yang bekerja di latar belakang.</p>
-        <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
-          <div><b style='color: #00f2fe;'><i class='fa-solid fa-bullhorn'></i> Robot Edukasi & Motivasi</b><br/><span style='font-size: 0.65rem; color: #94a3b8;'>Posting materi acak otomatis ke media sosial.</span></div>
-          <label class='switch'><input id='toggleBotPromo' type='checkbox' onchange='window.simpanStatusRobot()'><span class='slider-tg'></span></label>
-        </div>
-        <div class='switch-wrap' style='border-color:#a855f7; background:#0b0f19;'>
-          <div><b style='color: #2ecc71;'><i class='fa-solid fa-money-bill-wave'></i> Radar Struk P2P (Social Proof)</b><br/><span style='font-size: 0.65rem; color: #94a3b8;'>Otomatis siarkan bukti transaksi P2P yang sukses.</span></div>
-          <label class='switch'><input id='toggleBotP2P' type='checkbox' onchange='window.simpanStatusRobot()'><span class='slider-tg'></span></label>
-        </div>
-      </div>
-
+      	<!-- KOTAK BANNER EVENT KLAIM -->
       <div class='card-panel' style='border-top: 2px solid #38bdf8; margin-bottom: 20px;'>
         <h4 style='margin-top:0; color:#38bdf8;'><i class='fa-solid fa-gift'></i> Pengaturan Banner Event (Area Claim)</h4>
-        <div class='switch-wrap'><div><b style='color:#38bdf8;'><i class='fa-solid fa-power-off'></i> Status Banner Event</b></div><label class='switch'><input id='toggleEventBanner' type='checkbox'><span class='slider-tg'></span></label></div>
+        
+        <div class='switch-wrap'>
+          <div><b style='color:#38bdf8;'><i class='fa-solid fa-power-off'></i> Status Banner Event</b></div>
+          <label class='switch'><input id='toggleEventBanner' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+        
         <div class='form-group'><label>Judul Event</label><input id='inpEventJudul' type='text' placeholder='Contoh: PROMO WEEKEND!'></div>
         <div class='form-group'><label>Pesan Singkat</label><textarea id='inpEventPesan' rows='2' placeholder='Dapatkan extra reward khusus hari ini...'></textarea></div>
+        
         <div class='form-group' style='border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.1);'>
           <label style='color: #38bdf8;'>Pilih Tipe Reward</label>
           <select id='selEventTipe' onchange='window.ubahFormEvent()' style='border-color: #38bdf8;'>
-            <option value='COIN'>1. Hanya Tambahan Coin VRSC</option><option value='SPEED'>2. Hanya Tambahan Speed Hash</option><option value='HARI'>3. Hanya Tambahan Hari (Akun / Speed)</option><option value='COIN_SPEED'>4. Coin VRSC + Speed Hash</option><option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari (Akun / Speed)</option>
+            <option value='COIN'>1. Hanya Tambahan Coin VRSC</option>
+            <option value='SPEED'>2. Hanya Tambahan Speed Hash</option>
+            <option value='HARI'>3. Hanya Tambahan Hari (Masa Aktif)</option>
+            <option value='COIN_SPEED'>4. Coin VRSC + Speed Hash</option>
+            <option value='COIN_HARI'>5. Coin VRSC + Tambahan Hari</option>
           </select>
         </div>
-        <div style='display:flex; gap:10px; flex-wrap:wrap;'>
-          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventCoin'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
-          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
-          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventHariAktif'><label style='color:#fbbf24;'>+ Hari (Aktif Akun)</label><input id='inpEventHariAktif' type='number' value='0' style='border-color:#fbbf24;'></div>
-          <div class='form-group' style='flex:1; display:none; min-width:120px;' id='wrapEventHariSpeed'><label style='color:#a855f7;'>+ Hari (Durasi Speed)</label><input id='inpEventHariSpeed' type='number' value='0' style='border-color:#a855f7;'></div>
+        
+        <div style='display:flex; gap:10px;'>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventCoin'><label>Extra Coin (VRSC)</label><input id='inpEventCoin' type='number' value='0'></div>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventSpeed'><label>Extra Speed (V/s)</label><input id='inpEventSpeed' type='text' value='0'></div>
+          <div class='form-group' style='flex:1; display:none;' id='wrapEventHari'><label>Tambahan Hari</label><input id='inpEventHari' type='number' value='0'></div>
         </div>
+        
         <div class='form-group'><label>Waktu Hitung Mundur Berakhir (Opsional)</label><input id='inpEventBatasWaktu' type='datetime-local' style='color:#fbbf24; font-weight:bold;'></div>
-        <hr style='border:1px dashed #334155; margin:15px 0;'/>
-        <div class='switch-wrap'><div><b style='color:#4ade80;'><i class='fa-solid fa-message'></i> Status Teks Info Broadcast</b></div><label class='switch'><input id='toggleEventBroadcast' type='checkbox'><span class='slider-tg'></span></label></div>
+		<hr style='border:1px dashed #334155; margin:15px 0;'/>
+        <div class='switch-wrap'>
+          <div><b style='color:#4ade80;'><i class='fa-solid fa-message'></i> Status Teks Info Broadcast</b></div>
+          <label class='switch'><input id='toggleEventBroadcast' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
         <div class='form-group'><label>Isi Teks Info Broadcast</label><textarea id='inpEventBroadcast' rows='3' placeholder='Ketik info tambahan atau pengumuman resmi di sini...'></textarea></div>
+		  
         <button class='btn-main' onclick='window.simpanEventBanner()' style='background:#38bdf8;'><i class='fa-solid fa-save'></i> Simpan & Update Banner</button>
       </div>
-
-      <div class='card-panel' style='border-top: 2px solid #f59e0b;'><textarea id='inputPengumuman' placeholder='Ketik pengumuman penting (Maintenance, Promo, dll) di sini...' rows='4'></textarea><button class='btn-main' id='btnKirimPengumuman' onclick='kirimPengumuman()' style='background:#f59e0b; margin-top:15px;'><i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User</button><div id='logPengumuman' style='margin-top:10px; font-size:0.85rem; color:#10b981; font-weight:bold; text-align:center;'></div></div>
+      <!-- END KOTAK BANNER EVENT KLAIM -->
+		<div class='card-panel' style='border-top: 2px solid #f59e0b;'><textarea id='inputPengumuman' placeholder='Ketik pengumuman penting (Maintenance, Promo, dll) di sini...' rows='4'></textarea><button class='btn-main' id='btnKirimPengumuman' onclick='kirimPengumuman()' style='background:#f59e0b; margin-top:15px;'><i class='fa-solid fa-bullhorn'></i> Broadcast ke Semua User</button><div id='logPengumuman' style='margin-top:10px; font-size:0.85rem; color:#10b981; font-weight:bold; text-align:center;'></div></div>
     </div>
   </div>
-  <!-- END REPLACE BLOCK -->
-  <!-- ================================================== -->
 
   <div class='admin-screen' id='scr-cpanel'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Akses C-Panel</div>
@@ -739,33 +723,6 @@
         <button class='btn-main' id='btnBuatAdmin' onclick='eksekusiBuatAdmin()' style='margin-top:15px; background:#64748b;'><i class='fa-solid fa-save'></i> Simpan Akun Asisten</button>
       </div>
       <div class='card-panel'><h4>Daftar Admin Terdaftar</h4><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Username &amp; Pass</th><th>Role Akses</th><th>Aksi</th></tr></thead><tbody id='tblAdminList'><tr><td colspan='4' style='text-align:center;'>Memuat...</td></tr></tbody></table></div></div>
-      
-      <!-- ========================================== -->
-      <!-- KOTAK CCTV AUDIT LOG MULAI DARI SINI       -->
-      <!-- ========================================== -->
-      <div class='card-panel' style='border-top: 2px solid #ef4444; margin-top: 20px;'>
-        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
-          <h4 style='margin:0; color:#ef4444;'><i class='fa-solid fa-video'></i> CCTV & Audit Log System</h4>
-          <button class='action-btn bg-dark' onclick='window.loadCctvLog()'><i class='fa-solid fa-rotate'></i> Refresh CCTV</button>
-        </div>
-        <p style='font-size:0.75rem; color:#94a3b8; margin-top:-5px;'>Merekam jejak digital perombakan saldo, edit data miner, dan aktivitas sensitif admin.</p>
-        <div class='table-wrap' style='max-height:400px; overflow-y:auto; border: 1px solid #334155; border-radius: 8px;'>
-          <table>
-            <thead>
-              <tr>
-                <th style='background:#0f172a;'>Waktu (WIB)</th>
-                <th style='background:#0f172a;'>Tipe Aksi</th>
-                <th style='background:#0f172a;'>Jejak Digital (Deskripsi)</th>
-              </tr>
-            </thead>
-            <tbody id='tblCctvLog'>
-              <tr><td colspan='3' style='text-align:center;'>Menghubungkan ke server CCTV...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- END KOTAK CCTV -->
-
     </div>
   </div>
 
@@ -804,43 +761,7 @@
     <div class='modal-card' style='max-width: 550px; background:#1e293b; border:1px solid #334155;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; margin:0;'><i class='fa-solid fa-user-edit'></i> Edit Data Akun Admin / User</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalEditData").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><input id='editDocId' type='hidden'><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>Username</label><input class='input-dark no-icon' id='editInpUser' type='text'></div><div class='form-group' style='flex:1;'><label>Email</label><input class='input-dark no-icon' id='editInpEmail' type='email'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label>No WhatsApp</label><input class='input-dark no-icon' id='editInpWa' type='text'></div><div class='form-group' style='flex:1;'><label>Sponsor (Upline)</label><input class='input-dark no-icon' id='editInpUpline' type='text'></div></div><div style='display:flex; gap:10px;'>
     <div class='form-group' style='flex:1;'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div>
     <div class='form-group' style='flex:1;'><label>PIN Transaksi</label><input class='input-dark no-icon' id='editInpPin' type='text' maxlength='6'></div>
-</div><hr style='border:1px dashed #334155; margin:15px 0;'/>
-        
-<!-- DATA REKENING & VERIFIKASI P2P -->
-<h4 style='margin-top:0; color:#1abc9c;'><i class='fa-solid fa-building-columns'></i> Data Rekening (P2P)</h4>
-<div style='background:rgba(26, 188, 156, 0.05); border:1px solid #1abc9c; padding:12px; border-radius:8px; margin-bottom:15px; font-size:0.75rem;'>
-    <div style='margin-bottom:5px;'><span style='color:#94a3b8;'>Bank:</span> <b id='editViewBank' style='color:#fff;'>-</b></div>
-    <div style='margin-bottom:5px;'><span style='color:#94a3b8;'>E-Wallet:</span> <b id='editViewEwallet' style='color:#fff;'>-</b></div>
-    <div style='margin-bottom:15px;'><span style='color:#94a3b8;'>Crypto:</span> <b id='editViewCrypto' style='color:#fff;'>-</b></div>
-    
-    <div class='switch-wrap' style='margin-bottom:0; padding:10px; border-color:#1abc9c; background:#0b0f19;'>
-        <div><b id='lblStatusRekening' style='color:#f39c12;'><i class='fa-solid fa-triangle-exclamation'></i> BELUM DIVERIFIKASI</b><br/><span style='font-size:0.65rem; color:#94a3b8;'>Setujui rekening ini agar valid untuk P2P.</span></div>
-        <label class='switch'><input id='editTogVerifRek' type='checkbox' onchange='window.ubahStatusVerifUI(this)'><span class='slider-tg'></span></label>
-    </div>
-</div>
-
-<h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4>
-<div style='display:flex; gap:10px;'>
-    <div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div>
-    <div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div>
-</div>
-
-<div class='form-group' style='margin-bottom:10px;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div>
-
-<!-- PEMISAHAN EXPIRED & PENGGUNAAN KALENDER -->
-<div style='display:flex; gap:10px; background:rgba(239, 68, 68, 0.05); padding:10px; border-radius:8px; border:1px dashed #ef4444; margin-bottom:15px;'>
-    <div class='form-group' style='flex:1; margin-bottom:0;'><label style='color:#ef4444;'><i class='fa-solid fa-calendar-xmark'></i> Expired Akun</label><input class='input-dark no-icon' id='editInpExpAkun' style='border-color:#ef4444; font-size:0.75rem; padding:10px !important;' type='datetime-local'></div>
-    <div class='form-group' style='flex:1; margin-bottom:0;'><label style='color:#f39c12;'><i class='fa-solid fa-calendar-xmark'></i> Expired Mesin</label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f39c12; font-size:0.75rem; padding:10px !important;' type='datetime-local'></div>
-</div>
-
-<!-- SAKLAR RESET INSTAN -->
-<div class='switch-wrap' style='border-color:#ef4444; background:rgba(239, 68, 68, 0.1); margin-bottom:15px; padding:10px;'>
-    <div><b style='color:#ef4444;'><i class='fa-solid fa-skull-crossbones'></i> Reset Instan (Nol-kan)</b><br/><span style='font-size:0.65rem; color:#94a3b8;'>Hapus Saldo, Speed, & Matikan Mesin!</span></div>
-    <label class='switch'><input id='editTogKiamat' type='checkbox' onchange='window.toggleKiamatUI(this)'><span class='slider-tg'></span></label>
-</div>
-
-<button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:5px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button>
-</div>
+</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
   
 <script type='module'>
@@ -869,44 +790,16 @@
     function formatTanggalJam(ts) { if(!ts) return "<span style='color:#64748b'>-</span>"; let d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) + " WIB"; }
 
     window.togglePassMaster = (id, icon) => { const inp = document.getElementById(id); if (inp.type === 'password') { inp.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { inp.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } };
-    window.ubahStatusVerifUI = (el) => {
-        const lbl = document.getElementById('lblStatusRekening');
-        if(el.checked) {
-            lbl.innerHTML = "<i class='fa-solid fa-circle-check'></i> REKENING TERVERIFIKASI";
-            lbl.style.color = "#2ecc71";
-        } else {
-            lbl.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> BELUM DIVERIFIKASI";
-            lbl.style.color = "#f39c12";
-        }
-    };
-
-    window.toggleKiamatUI = (el) => {
-        if(el.checked) {
-            document.getElementById('editInpSaldoVrsc').value = "0";
-            document.getElementById('editInpSaldoRp').value = "0";
-            document.getElementById('editInpSpeed').value = "0";
-            // Set tanggal ke masa lalu agar langsung mati
-            document.getElementById('editInpExpAkun').value = "2020-01-01T00:00"; 
-            document.getElementById('editInpExpMesin').value = "2020-01-01T00:00";
-            document.getElementById('btnSimpanEditData').style.background = "#ef4444";
-            document.getElementById('btnSimpanEditData').innerHTML = "<i class='fa-solid fa-biohazard'></i> EKSEKUSI RESET AKUN";
-        } else {
-            document.getElementById('btnSimpanEditData').style.background = "#10b981";
-            document.getElementById('btnSimpanEditData').innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN";
-            window.showToast("Batal reset. Silakan tutup dan buka ulang Form Edit untuk mengembalikan angka asli.");
-        }
-    };
-	window.showToast = (msg) => { const box = document.getElementById('toastBox'); document.getElementById('toastMsg').innerText = msg; box.style.opacity = 1; box.style.visibility = 'visible'; box.style.top = '50px'; setTimeout(() => { box.style.opacity = 0; box.style.visibility = 'hidden'; box.style.top = '20px'; }, 3000); };
+    window.showToast = (msg) => { const box = document.getElementById('toastBox'); document.getElementById('toastMsg').innerText = msg; box.style.opacity = 1; box.style.visibility = 'visible'; box.style.top = '50px'; setTimeout(() => { box.style.opacity = 0; box.style.visibility = 'hidden'; box.style.top = '20px'; }, 3000); };
     
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
         if(id === 'scr-donasi-admin') window.loadAdminDonasi();
 		if(id === 'scr-team') window.loadDataTim(); 
         if(id === 'scr-approval') window.switchTabWd('pending'); 
-        if(id === 'scr-cpanel') { window.loadDaftarAdmin(); window.loadCctvLog(); }
+        if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
-		if(id === 'scr-ppob') window.switchTabPPOB('pending');
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
@@ -956,9 +849,8 @@
         });
         
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
-        // --- START: TRIGGER LOAD PPOB ---
-        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.muatStatusRobot(); window.initRobotViralitas(); window.loadStatusPpob(); window.loadStatusStaking(); showToast("Access Granted: Welcome Commander.");
-       
+        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); showToast("Access Granted: Welcome Commander.");
+
 		// --- Kalkulator Realtime Est Rupiah ---
     window.hitungEstRegBonus = function() {
         let speed = getFloatVal('regBonusSpeed');
@@ -1104,25 +996,10 @@
         try {
             await updateDoc(doc(db, "Request_Withdraw", id), { status: "DISETUJUI" });
             let t = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for(let j = 0; j < 16; j++) t += chars.charAt(Math.floor(Math.random() * chars.length)); let tk = `${t.slice(0,4)}-${t.slice(4,8)}-${t.slice(8,12)}-${t.slice(12,16)}`;
-            
-            let emailTarget = email; 
-            if (targetUser !== username) { 
-                const targetSnap = await getDocs(query(collection(db, "Akun_Publik"), where("username", "==", targetUser))); 
-                if (!targetSnap.empty) emailTarget = targetSnap.docs[0].data().email; 
-            }
-            
+            let emailTarget = email; if (targetUser !== username) { const targetSnap = await getDocs(query(collection(db, "Akun_Publik"), where("username", "==", targetUser))); if (!targetSnap.empty) emailTarget = targetSnap.docs[0].data().email; }
             await addDoc(collection(db, "Database_Token"), { kode_token: tk, nominal_rupiah: nominal, durasi_hari: 30, status: "AKTIF", distribusi_ke: jenisToken, pemilik: emailTarget, pemilik_username: targetUser, pengirim: username, pembuat: "Pusat", dibuat_pada: serverTimestamp(), dipakai_oleh: null });
             await addDoc(collection(db, "Notifikasi_Personal"), { email: email, pesan: `? Penarikan WD Rp ${nominal.toLocaleString('id-ID')} Anda telah DISETUJUI! Token telah masuk ke stok ${targetUser}.`, timestamp_local: Date.now() });
             await addDoc(collection(db, "Mutasi_Pusat"), { jenis: "OUT", nominal: nominal, deskripsi: `Cairkan WD (Token ${jenisToken}) dari ${username}`, waktu: serverTimestamp() });
-            
-            // PENCATATAN MUTASI (AUDIT TRAIL) UNTUK PENERIMA TOKEN
-            await addDoc(collection(db, "Mutasi_Mining"), { email: emailTarget, jenis: "IN", deskripsi: `? Terima Swap Token ${jenisToken} dari ${username}`, nominal: nominal, timestamp_local: Date.now() });
-            
-            // NOTIFIKASI TAMBAHAN JIKA TARGET BUKAN DIRI SENDIRI
-            if (emailTarget !== email) {
-                await addDoc(collection(db, "Notifikasi_Personal"), { email: emailTarget, pesan: `?? Anda menerima Token ${jenisToken} senilai Rp ${nominal.toLocaleString('id-ID')} dari hasil pencairan WD ${username}. Cek stok token Anda!`, timestamp_local: Date.now() });
-            }
-
             showToast("WD Disetujui & Token Dicetak!"); window.loadAntreanWD();
         } catch(e) { alert("Terjadi kesalahan."); }
     };
@@ -1150,27 +1027,12 @@
     window.loadUser = async () => {
       const tbody = document.getElementById('tblUser'); tbody.innerHTML = ''; let rewardDropdownHtml = "<option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option>";
       const snap = await getDocs(collection(db, "Akun_Publik")); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Belum ada partisipan.</td></tr>"; return; }
-      
-      allUsersData = []; 
-      snap.forEach(d => { allUsersData.push({ id: d.id, ...d.data() }); }); 
-      
-      let downlineCount = {}; 
-      allUsersData.forEach(u => { if(u.referred_by && u.referred_by !== "") { downlineCount[u.referred_by] = (downlineCount[u.referred_by] || 0) + 1; } });
-      
-      // =========================================================
-      // SISTEM SORTING (PENGURUTAN DATA) - TERBARU KE TERLAMA
-      // =========================================================
-      allUsersData.sort((a, b) => {
-          let timeA = a.created_at ? (a.created_at.seconds || 0) : 0;
-          let timeB = b.created_at ? (b.created_at.seconds || 0) : 0;
-          return timeB - timeA; // Angka terbesar (terbaru) ditarik ke atas
-      });
-
+      allUsersData = []; snap.forEach(d => { allUsersData.push({ id: d.id, ...d.data() }); }); let downlineCount = {}; allUsersData.forEach(u => { if(u.referred_by && u.referred_by !== "") { downlineCount[u.referred_by] = (downlineCount[u.referred_by] || 0) + 1; } });
       let no = 1;
       
       allUsersData.forEach(u => {
         let stt = u.status_akun === "BLOKIR" ? "BLOKIR" : "AKTIF"; let badgeS = stt === "AKTIF" ? `<span class='badge bg-green'>Aktif</span>` : `<span class='badge bg-red'>Blokir</span>`; let pinStatus = (u.tx_pin && u.tx_pin !== "") ? `<span class='badge bg-green'>PIN OK</span>` : `<span class='badge bg-red'>No PIN</span>`;
-        let lockStatus = (u.device_id && u.device_id !== "" && window.CONFIG_DEVICE_LOCK !== false) ? `<button class='action-btn bg-dark' onclick='window.forceUnlock("${u.id}", "${u.username}")' title='Reset Perangkat'><i class='fa-solid fa-lock'></i> Terkunci (Reset)</button>` : `<span class='badge bg-dark'><i class='fa-solid fa-lock-open'></i> Bebas</span>`;
+        let lockStatus = (u.device_id && u.device_id !== "") ? `<button class='action-btn bg-dark' onclick='window.forceUnlock("${u.id}", "${u.username}")' title='Reset Perangkat'><i class='fa-solid fa-lock'></i> Terkunci (Reset)</button>` : `<span class='badge bg-dark'><i class='fa-solid fa-lock-open'></i> Bebas</span>`;
         let actBlok = stt === "AKTIF" ? `<button class='action-btn btn-del' onclick='window.togBlokir("${u.id}", "BLOKIR")' title='Blokir Akun'><i class='fa-solid fa-ban'></i></button>` : `<button class='action-btn bg-green' onclick='window.togBlokir("${u.id}", "AKTIF")' title='Buka Blokir'><i class='fa-solid fa-unlock'></i></button>`;
         let actReset = `<button class='action-btn btn-reset' onclick='window.resetUser("${u.id}", "${u.email}")' title='Reset Data Akun'><i class='fa-solid fa-rotate-left'></i></button>`;
         let actHapus = `<button class='action-btn btn-del' onclick='window.delUser("${u.id}")' title='Hapus Akun Permanen'><i class='fa-solid fa-trash'></i></button>`;
@@ -1183,21 +1045,13 @@
         tbody.innerHTML += `<tr><td style='text-align:center;'>${no++}</td><td><b style='color:#38bdf8; font-size:1.1rem;'>${u.username || 'No-Name'}</b><br/><span style='font-size:0.8rem; color:#94a3b8;'><i class='fa-solid fa-envelope'></i> ${u.email}</span><br/><span style='font-size:0.7rem; color:#64748b;'><i class='fa-solid fa-clock'></i> Daftar: ${dateReg}</span><br/><b style='color:#4ade80; font-size:0.8rem;'><i class='fa-solid fa-users'></i> Downline: ${totalDownline} User</b></td><td><span style='font-size:0.8rem; color:#94a3b8;'>WA: <b style='color:#e2e8f0;'>${u.wa || '-'}</b></span><br/><span style='font-size:0.8rem; color:#94a3b8;'>Pass: <b style='color:#f87171; font-family:monospace;'>${u.password}</b></span><br/><span style='font-size:0.8rem; color:#94a3b8;'>Upline: <b style='color:#fbbf24;'>${u.referred_by || 'Tanpa Sponsor'}</b></span><br/><div style='margin-top:5px;'>${actEditData} ${actMutasiUser}</div></td><td><div style='margin-bottom:8px;'>${badgeS} ${pinStatus} ${lockStatus}</div><div style='display:flex; flex-wrap:wrap; gap:5px;'>${actJaringan} ${actLacak}</div><div style='display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;'>${actBlok} ${actReset} ${actHapus}</div></td></tr>`;
         rewardDropdownHtml += `<option value='${u.email}'>${u.username || 'No-Name'} (${u.email})</option>`;
       }); document.getElementById('rewardTarget').innerHTML = rewardDropdownHtml;
-    };
+    }
 
     window.eksekusiResetDevice = async () => { const inputTarget = document.getElementById('inpTargetDeviceReset').value.trim().toLowerCase(); if(!inputTarget) return alert("Masukkan Username atau Email user!"); const btn = document.getElementById('btnResetDevice'); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MEMPROSES..."; btn.disabled = true; try { let targetUser = allUsersData.find(u => (u.username && u.username.toLowerCase() === inputTarget) || (u.email && u.email.toLowerCase() === inputTarget)); if (targetUser) { await updateDoc(doc(db, "Akun_Publik", targetUser.id), { device_id: "" }); alert(`SUKSES! Kunci perangkat [ ${targetUser.username} ] dihapus.`); document.getElementById('inpTargetDeviceReset').value = ""; loadUser(); } else { alert("GAGAL: Username atau Email tidak ditemukan."); } } catch (error) { alert("Terjadi kesalahan sistem."); } btn.innerHTML = "<i class='fa-solid fa-power-off'></i> RESET PERANGKAT"; btn.disabled = false; };
     window.forceUnlock = async (id, username) => { if(!confirm(`Buka kunci perangkat untuk user: ${username}?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { device_id: "" }); showToast(`Kunci perangkat ${username} dibuka!`); loadUser(); } catch(e) { alert("Gagal membuka kunci."); } };
 
     window.bukaModalLacak = (id) => { let user = allUsersData.find(u => u.id === id); if(user) { document.getElementById('trackUserTitle').innerText = user.username || user.email; document.getElementById('trackDevice').innerHTML = user.os_device ? `<i class='fa-solid fa-mobile-screen'></i> ${user.os_device}` : "Belum Ada Data"; document.getElementById('trackIP').innerHTML = user.ip_address ? `<i class='fa-solid fa-globe'></i> ${user.ip_address}` : "Menunggu User Login"; document.getElementById('trackLocation').innerHTML = user.lokasi ? `<i class='fa-solid fa-location-dot'></i> ${user.lokasi}` : "Menunggu User Login"; document.getElementById('trackISP').innerHTML = user.isp ? `<i class='fa-solid fa-wifi'></i> ${user.isp}` : "Menunggu User Login"; document.getElementById('modalLacakUser').style.display = 'flex'; } };
     
-    // Helper untuk mengubah Timestamp (Milidetik) menjadi Format Kalender HTML
-    function formatMsToDateTimeLocal(ms) {
-        if(!ms || ms <= 0) return "";
-        let tzoffset = (new Date()).getTimezoneOffset() * 60000; // Penyesuaian zona waktu lokal
-        let localISOTime = (new Date(ms - tzoffset)).toISOString().slice(0, 16);
-        return localISOTime;
-    }
-
     window.bukaModalEdit = (id) => { 
         let user = allUsersData.find(u => u.id === id); 
         if(user) { 
@@ -1206,37 +1060,15 @@
             document.getElementById('editInpEmail').value = user.email || ""; 
             document.getElementById('editInpWa').value = user.wa || ""; 
             document.getElementById('editInpPass').value = user.password || ""; 
-            document.getElementById('editInpPin').value = user.tx_pin || "";
+            document.getElementById('editInpPin').value = user.tx_pin || ""; // Memanggil data PIN
             document.getElementById('editInpUpline').value = user.referred_by || ""; 
             
+            // Memaksa format angka Kripto agar tidak menggunakan kode "e" (Scientific Notation)
             document.getElementById('editInpSaldoVrsc').value = Number(user.saldo_vrsc || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
             document.getElementById('editInpSpeed').value = Number(user.kecepatan_hash || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
+            
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
-            
-            // MENGISI DATA FINANSIAL (P2P)
-            document.getElementById('editViewBank').innerText = user.bank || "Kosong";
-            document.getElementById('editViewEwallet').innerText = user.ewallet || "Kosong";
-            document.getElementById('editViewCrypto').innerText = user.crypto || "Kosong";
-            
-            let togVerif = document.getElementById('editTogVerifRek');
-            if(togVerif) {
-                togVerif.checked = user.rekening_valid === true;
-                window.ubahStatusVerifUI(togVerif); // Panggil visualnya
-            }
-
-            // MENGISI TANGGAL KALENDER
-            document.getElementById('editInpExpAkun').value = formatMsToDateTimeLocal(user.expired_at);
-            
-            let expMesinMax = 0;
-            if(user.daftar_mesin && user.daftar_mesin.length > 0) {
-                expMesinMax = Math.max(...user.daftar_mesin.map(m => m.expired_kontrak));
-            }
-            document.getElementById('editInpExpMesin').value = formatMsToDateTimeLocal(expMesinMax);
-            
-            // Reset tombol kiamat agar aman setiap buka
-            let togKiamat = document.getElementById('editTogKiamat');
-            if(togKiamat) { togKiamat.checked = false; window.toggleKiamatUI(togKiamat); }
-
+            document.getElementById('editInpExp').value = user.expired_at || 0; 
             document.getElementById('modalEditData').style.display = 'flex'; 
         } 
     };
@@ -1247,71 +1079,37 @@
         const uEmail = document.getElementById('editInpEmail').value.trim(); 
         const uWa = document.getElementById('editInpWa').value.trim(); 
         const uPass = document.getElementById('editInpPass').value.trim(); 
-        const uPin = document.getElementById('editInpPin').value.trim();
+        const uPin = document.getElementById('editInpPin').value.trim(); // Menangkap data PIN baru
         const uUpline = document.getElementById('editInpUpline').value.trim(); 
-        
         const vrsc = getFloatVal('editInpSaldoVrsc'); 
         const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
         const spd = getFloatVal('editInpSpeed'); 
-        
-        // Mengubah Input Kalender menjadi Milidetik
-        const strExpAkun = document.getElementById('editInpExpAkun').value;
-        const expAkunMs = strExpAkun ? new Date(strExpAkun).getTime() : 0;
-        const strExpMesin = document.getElementById('editInpExpMesin').value;
-        const expMesinMs = strExpMesin ? new Date(strExpMesin).getTime() : 0;
-
-        const isKiamat = document.getElementById('editTogKiamat').checked;
-        const isRekeningValid = document.getElementById('editTogVerifRek').checked;
-
-        // Validasi Input Negatif (Keamanan Ekonomi P2P)
-        if(vrsc < 0 || rp < 0 || spd < 0) return alert("GAGAL: Saldo atau Speed tidak boleh minus!");
-
+        const exp = parseInt(document.getElementById('editInpExp').value) || 0; 
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
-        
         try { 
-            // LOGIKA GARASI MESIN
+            // LOGIKA GARASI MESIN: Saat Admin edit speed manual, buatkan 1 mesin khusus (Master Edit)
             let garasiBaru = [];
-            if(spd > 0 && !isKiamat) {
+            if(spd > 0) {
                 garasiBaru.push({
                     id_mesin: "EDIT-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
                     nominal_beli: 0,
                     speed_bawaan: spd,
-                    expired_kontrak: expMesinMs
+                    expired_kontrak: exp
                 });
             }
-
+            // Menyimpan semua pembaruan termasuk tx_pin
             await updateDoc(doc(db, "Akun_Publik", id), { 
                 username: uUser, email: uEmail, wa: uWa, 
                 password: uPass, tx_pin: uPin, referred_by: uUpline, 
-                saldo_vrsc: isKiamat ? 0 : vrsc, 
-                saldo_rupiah: isKiamat ? 0 : rp, 
-                kecepatan_hash: isKiamat ? 0 : spd, 
-                expired_at: isKiamat ? 0 : expAkunMs, 
-                daftar_mesin: garasiBaru,
-                rekening_valid: isRekeningValid
+                saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, 
+                expired_at: exp, daftar_mesin: garasiBaru 
             }); 
-
-            // CATAT LOG ADMIN (AUDIT TRAIL)
-            let namaAdmin = "Master";
-            try { let adminLog = JSON.parse(localStorage.getItem("cisAdminLog_v2")); if(adminLog) namaAdmin = adminLog.nama; } catch(e){}
-            let deskripsiLog = isKiamat ? `?? MELAKUKAN RESET KIAMAT PADA AKUN.` : `?? Edit Akun. VRSC: ${vrsc}, Rp: ${rp}, Speed: ${spd}, Rek_Valid: ${isRekeningValid}`;
-            
-            await addDoc(collection(db, "Mutasi_Pusat"), {
-                jenis: "EDIT",
-                nominal: rp,
-                deskripsi: `[${namaAdmin}] -> ${uUser}: ${deskripsiLog}`,
-                waktu: serverTimestamp()
-            });
-
-            window.showToast("Data Berhasil Disimpan & Log Admin Dicatat!"); 
+            window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); 
             document.getElementById('modalEditData').style.display = 'none'; 
             window.loadUser(); 
         } catch(e) { alert("Gagal menyimpan data."); } 
-        
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; 
-        btn.style.background = "#10b981";
-        btn.disabled = false; 
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
     };
 
     window.lihatMutasiUser = async (email, username) => { document.getElementById('mutasiUserTitle').innerText = "Ledger: " + (username || email); document.getElementById('modalMutasiUser').style.display = 'flex'; const tbody = document.getElementById('tblMutasiUser'); tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data...</td></tr>"; try { const snap = await getDocs(query(collection(db, "Mutasi_Mining"), where("email", "==", email))); let dataArr = []; snap.forEach(d => dataArr.push(d.data())); dataArr.sort((a, b) => (b.timestamp_local || 0) - (a.timestamp_local || 0)); if(dataArr.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Tidak ada riwayat mutasi.</td></tr>"; return; } let html = ""; dataArr.slice(0, 100).forEach(x => { let tgl = new Date(x.timestamp_local).toLocaleString('id-ID'); let cl = x.jenis === "IN" ? "#4ade80" : "#f87171"; let sign = x.jenis === "IN" ? "+" : "-"; let formatUang = x.deskripsi.toLowerCase().includes("reward") || x.deskripsi.toLowerCase().includes("sponsor") || x.deskripsi.toLowerCase().includes("upgrade") || x.deskripsi.toLowerCase().includes("yield") ? `${formatKripto(x.nominal || 0)} VRSC` : `Rp ${(x.nominal||0).toLocaleString('id-ID')}`; html += `<tr><td style='font-size:0.75rem; color:#94a3b8;'>${tgl}</td><td style='font-size:0.8rem; font-weight:bold;'>${x.deskripsi}</td><td style='color:${cl}; font-weight:900;'>${sign}${formatUang}</td></tr>`; }); tbody.innerHTML = html; } catch(e) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; } };
@@ -1320,40 +1118,7 @@
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
     window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
-    window.resetUser = async (id, email) => { 
-        if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, Mutasi, dan P2P milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; 
-        try { 
-            // 1. Nol-kan data dasar akun
-            await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [], rekening_valid: false }); 
-            
-            // 2. Hapus riwayat Mutasi, Notif, dan Withdraw (Tanpa mengganggu Token)
-            const listKol = ["Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; 
-            for(const kol of listKol) { 
-                const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":"email", "==", email)); 
-                const snap = await getDocs(q); 
-                for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } 
-            } 
-            
-            // 3. SAPU BERSIH STOK TOKEN (Ubah status agar langsung lenyap dari layar HP Member)
-            const qToken = query(collection(db, "Database_Token"), where("pemilik", "==", email));
-            const snapToken = await getDocs(qToken);
-            for (const d of snapToken.docs) {
-                await updateDoc(doc(db, "Database_Token", d.id), { status: "HANGUS_DIRESET" });
-            }
-            
-            // 4. Hapus riwayat P2P (Sebagai Pembeli maupun Penjual)
-            const qP2pBeli = query(collection(db, "P2P_Order"), where("pembeli", "==", email));
-            const snapBeli = await getDocs(qP2pBeli);
-            for (const d of snapBeli.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
-
-            const qP2pJual = query(collection(db, "P2P_Order"), where("penjual", "==", email));
-            const snapJual = await getDocs(qP2pJual);
-            for (const d of snapJual.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
-
-            showToast(`Data akun ${email} berhasil di-reset total dan token dihanguskan!`); 
-            loadUser(); 
-        } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } 
-    };
+    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [] }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
 
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
     window.masterReset = async () => { 
@@ -1365,7 +1130,7 @@
         try { 
             const snapU = await getDocs(collection(db, "Akun_Publik")); for (const d of snapU.docs) { await deleteDoc(doc(db, "Akun_Publik", d.id)); } 
             await addDoc(collection(db, "Akun_Publik"), { username: "CIS01", email: "cis01@gmail.com", wa: "6281234567890", password: "admin", tx_pin: "123456", referred_by: "MASTER", saldo_vrsc: 0, kecepatan_hash: 0, expired_at: Date.now() + (365 * 86400000), status_akun: "AKTIF", created_at: serverTimestamp(), saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, device_id: "" });
-            const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config", "P2P_Order", "Donasi_USDT" ]; 
+            const listKoleksi = [ "Database_Token", "Mutasi_Mining", "Mutasi_Pusat", "Notifikasi_Personal", "Notifikasi_Global", "Request_Withdraw", "Pesan_Bantuan", "System_Config" ]; 
             for (const kol of listKoleksi) { const snap = await getDocs(collection(db, kol)); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } 
             alert("? FACTORY RESET BERHASIL!\nDatabase bersih total. Akun Utama (CIS01) telah otomatis diciptakan."); window.location.reload();
         } catch(e) { alert("Gagal total! Pastikan koneksi internet stabil."); btn.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> ULANGI MASTER RESET"; btn.disabled = false; } 
@@ -1637,88 +1402,12 @@
         } catch (error) { alert("Gagal mengirim reward."); } btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> KIRIM REWARD"; btn.disabled = false;
     };
 
-	// --- START: SAKLAR PPOB (JS) ---
-    window.loadStatusPpob = async () => {
-        try {
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_STATUS")));
-            if(!snap.empty) {
-                document.getElementById('togglePpobActive').checked = snap.docs[0].data().is_active === true;
-            } else {
-                document.getElementById('togglePpobActive').checked = false;
-            }
-        } catch(e) { console.log("Gagal load status PPOB"); }
-    };
-
-    window.simpanStatusPpob = async () => {
-        const btn = document.querySelector(`button[onclick='window.simpanStatusPpob()']`);
-        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
-        let isActive = document.getElementById('togglePpobActive').checked;
-        try {
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_STATUS")));
-            let payload = { tipe: "PPOB_STATUS", is_active: isActive };
-            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
-            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
-            window.showToast("Status PPOB Berhasil Diupdate!");
-        } catch(e) { alert("Gagal menyimpan status PPOB."); }
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status PPOB"; btn.disabled = false;
-    };
-    // --- END ---
-
-	// --- START: SAKLAR STAKING (JS) ---
-    // --- START: SAKLAR STAKING (JS) ---
-    window.loadStatusStaking = async () => {
-        try {
-            // 1. Menarik memori status ON/OFF Saklar
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
-            if(!snap.empty) document.getElementById('toggleStakingActive').checked = snap.docs[0].data().is_active === true;
-            else document.getElementById('toggleStakingActive').checked = false;
-
-            // 2. Menarik memori angka Persentase (TAMBAHAN BARU)
-            const snapY = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_YIELD")));
-            if(!snapY.empty) {
-                document.getElementById('inpStakingYield').value = snapY.docs[0].data().persentase || 0;
-            }
-        } catch(e) {}
-    };
-
-    window.simpanStatusStaking = async () => {
-        const btn = document.querySelector(`button[onclick='window.simpanStatusStaking()']`);
-        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
-        let isActive = document.getElementById('toggleStakingActive').checked;
-        try {
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
-            let payload = { tipe: "STAKING_STATUS", is_active: isActive };
-            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
-            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
-            window.showToast("Status Staking Berhasil Diupdate!");
-        } catch(e) { alert("Gagal menyimpan status Staking."); }
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Staking"; btn.disabled = false;
-    };
-    // Panggil fungsi load di init (Tambahkan ke window.prosesSuksesLogin)
-	window.simpanYieldStaking = async () => {
-        let val = parseFloat(document.getElementById('inpStakingYield').value) || 0;
-        const btn = document.querySelector(`button[onclick='window.simpanYieldStaking()']`);
-        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i>"; btn.disabled = true;
-        try {
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_YIELD")));
-            let payload = { tipe: "STAKING_YIELD", persentase: val };
-            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
-            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
-            window.showToast("BUM! Jaringan Global Diupdate ke " + val + "%");
-        } catch(e) { alert("Gagal menyimpan persentase."); }
-        btn.innerHTML = "<i class='fa-solid fa-save'></i> Update Pasar Global"; btn.disabled = false;
-    };
-    // --- END ---
-	
 	// --- SISTEM BANNER EVENT (KLAIM) ---
     window.ubahFormEvent = () => {
         let tipe = document.getElementById('selEventTipe').value;
         document.getElementById('wrapEventCoin').style.display = (tipe === 'COIN' || tipe === 'COIN_SPEED' || tipe === 'COIN_HARI') ? 'block' : 'none';
         document.getElementById('wrapEventSpeed').style.display = (tipe === 'SPEED' || tipe === 'COIN_SPEED') ? 'block' : 'none';
-        // Input Hari otomatis muncul jika tipe reward melibatkan Hari ATAU Speed (karena Speed butuh durasi nyala)
-        let showHari = (tipe === 'HARI' || tipe === 'COIN_HARI' || tipe === 'SPEED' || tipe === 'COIN_SPEED') ? 'block' : 'none';
-        document.getElementById('wrapEventHariAktif').style.display = showHari;
-        document.getElementById('wrapEventHariSpeed').style.display = showHari;
+        document.getElementById('wrapEventHari').style.display = (tipe === 'HARI' || tipe === 'COIN_HARI') ? 'block' : 'none';
     };
 
     window.loadEventBanner = async () => {
@@ -1732,8 +1421,7 @@
                 document.getElementById('selEventTipe').value = d.reward_tipe || "COIN";
                 document.getElementById('inpEventCoin').value = d.reward_coin || 0;
                 document.getElementById('inpEventSpeed').value = d.reward_speed || 0;
-                document.getElementById('inpEventHariAktif').value = d.reward_hari_aktif || d.reward_hari || 0; // Mengamankan data lama
-                document.getElementById('inpEventHariSpeed').value = d.reward_hari_speed || 0;
+                document.getElementById('inpEventHari').value = d.reward_hari || 0;
                 if(d.batas_waktu) document.getElementById('inpEventBatasWaktu').value = d.batas_waktu;
                 
                 // Load Broadcast
@@ -1757,8 +1445,7 @@
             reward_tipe: document.getElementById('selEventTipe').value,
             reward_coin: getFloatVal('inpEventCoin'),
             reward_speed: getFloatVal('inpEventSpeed'),
-            reward_hari_aktif: parseInt(document.getElementById('inpEventHariAktif').value) || 0,
-            reward_hari_speed: parseInt(document.getElementById('inpEventHariSpeed').value) || 0,
+            reward_hari: parseInt(document.getElementById('inpEventHari').value) || 0,
             batas_waktu: document.getElementById('inpEventBatasWaktu').value,
             is_broadcast_active: document.getElementById('toggleEventBroadcast').checked,
             broadcast_text: document.getElementById('inpEventBroadcast').value
@@ -1806,44 +1493,6 @@
     };
     window.hapusAdmin = async (id, nama) => { if(confirm(`Yakin ingin menghapus akses admin: ${nama}?`)) { await deleteDoc(doc(db, "Akun_Admin", id)); showToast("Admin dihapus."); window.loadDaftarAdmin(); } };
 
-	// ==========================================
-    // MESIN CCTV & AUDIT LOG SYSTEM
-    // ==========================================
-    window.loadCctvLog = async () => {
-        const tbody = document.getElementById('tblCctvLog');
-        if(!tbody) return;
-        tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai Jejak Digital...</td></tr>";
-        try {
-            // Ambil dari Mutasi_Pusat (Tempat kita menyimpan log edit & transaksi)
-            const snap = await getDocs(query(collection(db, "Mutasi_Pusat"), orderBy("waktu", "desc")));
-            let html = "";
-            let dataArr = [];
-            snap.forEach(d => dataArr.push(d.data()));
-            
-            dataArr.slice(0, 150).forEach(x => {
-                let wkt = formatTanggalJam(x.waktu);
-                let badgeColor = "#334155";
-                
-                // Klasifikasi Warna Aksi
-                if(x.jenis === "EDIT") badgeColor = "#f59e0b"; // Kuning Warning (Edit Data)
-                else if(x.jenis === "OUT") badgeColor = "#ef4444"; // Merah (Pusat Cairkan WD)
-                else if(x.jenis === "IN") badgeColor = "#10b981"; // Hijau (Cetak Token)
-                
-                // Menyorot nama admin dengan warna biru terang (Pola: [NamaAdmin] -> Target)
-                let deskripsiHtml = x.deskripsi.replace(/\[(.*?)\]/g, "<b style='color:#38bdf8;'>[$1]</b>");
-                
-                html += `<tr>
-                    <td style='font-size:0.75rem; color:#cbd5e1; white-space:nowrap;'>${wkt}</td>
-                    <td><span class='badge' style='background:${badgeColor}; color:#fff;'>${x.jenis}</span></td>
-                    <td style='font-size:0.8rem; color:#e2e8f0;'>${deskripsiHtml}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html || "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Rekaman CCTV kosong. Belum ada aktivitas.</td></tr>";
-        } catch(e) {
-            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#ef4444;'>? Gagal memuat data CCTV.</td></tr>";
-        }
-    };
-	
     let liveUsersMap = new Map(); let omsetUpdateInterval = null; let cariUserLiveInput = "";
     window.initLiveMonitor = () => {
         onSnapshot(collection(db, "Akun_Publik"), (snap) => {
@@ -1852,137 +1501,6 @@
         });
         if(omsetUpdateInterval) clearInterval(omsetUpdateInterval); omsetUpdateInterval = setInterval(window.renderLiveDashboard, 1000);
     };
-
-	// ==========================================
-    // OTAK ROBOT VIRALITAS & FOMO (MISI 3)
-    // ==========================================
-    let unsubRobotP2P = null;
-
-    window.initRobotViralitas = () => {
-        // Hentikan radar lama jika ada agar tidak ganda
-        if (unsubRobotP2P) unsubRobotP2P();
-
-        // 1. RADAR P2P (Memantau order yang berstatus SELESAI)
-        const qP2P = query(collection(db, "P2P_Order"), where("status", "==", "SELESAI"));
-
-        unsubRobotP2P = onSnapshot(qP2P, async (snap) => {
-            // Cek apakah Saklar Radar P2P di layar Master sedang menyala (ON)?
-            let toggleP2P = document.getElementById('toggleBotP2P');
-            let isRobotOn = toggleP2P ? toggleP2P.checked : false;
-            
-            if (!isRobotOn) return; // Jika saklar mati, robot tidur.
-
-            snap.docChanges().forEach(async (change) => {
-                // Hanya bereaksi ketika ada perubahan data (Order baru saja diklik SELESAI oleh pembeli)
-                if (change.type === "modified" || change.type === "added") { 
-                    let d = change.doc.data();
-                    
-                    // Pastikan transaksi ini baru saja selesai (dalam 2 menit terakhir) agar tidak men-spam data lama
-                    let waktuUpdate = d.waktu_update ? (d.waktu_update.seconds * 1000) : Date.now();
-                    if (Date.now() - waktuUpdate < 120000) { 
-                        
-                        // Siapkan kalimat FOMO untuk disiarkan
-                        let nominalRp = (d.total_harga || 0).toLocaleString('id-ID');
-                        let pesanFomo = `?? P2P SUKSES! [${d.pembeli_user}] baru saja berhasil mengamankan ${d.qty}x Token ${d.jenis_token} dari [${d.penjual_user}] senilai Rp ${nominalRp}. Ekosistem berjalan ngebut! ??`;
-                        
-                        // Cek ke database Notifikasi Global agar robot tidak memposting hal yang sama dua kali
-                        const cekNotif = await getDocs(query(collection(db, "Notifikasi_Global"), where("pesan", "==", pesanFomo)));
-                        
-                        if (cekNotif.empty) {
-                            // Tembakkan ke Notifikasi Global!
-                            await addDoc(collection(db, "Notifikasi_Global"), { 
-                                pesan: pesanFomo, 
-                                pengirim: "Sistem Radar P2P", 
-                                timestamp_local: Date.now() 
-                            });
-                            console.log("?? Robot P2P menyiarkan: " + pesanFomo);
-                        }
-                    }
-                }
-            });
-        });
-    };
-
-	// ---------------------------------------------------------
-        // 2. ROBOT EDUKASI & MOTIVASI (Gudang 3 Laci)
-        // ---------------------------------------------------------
-        // Waktu standar: 60 * 60 * 1000 (1 Jam). 
-        // Untuk uji coba, kita set 60000 (1 Menit). Nanti Master bisa ubah!
-        let intervalWaktu = 21600000; 
-
-        if(window.intervalRobotPromo) clearInterval(window.intervalRobotPromo);
-
-        window.intervalRobotPromo = setInterval(async () => {
-            // Cek apakah Saklar Robot Edukasi & Motivasi sedang ON?
-            let togglePromo = document.getElementById('toggleBotPromo');
-            let isPromoOn = togglePromo ? togglePromo.checked : false;
-
-            if (!isPromoOn) return; // Jika saklar OFF, robot tidur.
-
-            // ==========================================
-            // GUDANG AMUNISI TEKS (3 LACI)
-            // Master bisa menambahkan kata-kata baru di sini sesuka hati!
-            // ==========================================
-            const gudangTeks = [
-                // LACI 1: FOMO & MOTIVASI
-                "?? Jangan cuma jadi penonton! Para Sultan sedang panen ratusan ribu tiap hari dari hasil P2P Cloud Mining. Upgrade mesinmu sekarang!",
-                "?? Harga Kripto terus bergerak. Kumpulkan koin VRSC-mu selagi masih mudah didapatkan dari mesin mining!",
-                "?? Hasil tidak akan mengkhianati proses. Terus kembangkan jaringan referralmu dan nikmati passive income di CIS Protocol.",
-
-                // LACI 2: EDUKASI SISTEM
-                "?? TAHUKAH ANDA? Kecepatan Hashrate (V/s) sangat menentukan seberapa cepat koin Anda tercetak. Tambah kecepatan Anda di menu P2P!",
-                "?? TIPS SULTAN: Jangan lupa rajin melakukan KLAIM setiap jam agar koin VRSC Anda terus bertambah secara gratis.",
-                "??? KEAMANAN: Bertransaksilah HANYA dengan penjual yang memiliki centang 'Rekening Valid' di P2P Marketplace agar 100% aman.",
-
-                // LACI 3: AJAKAN (CALL TO ACTION)
-                "?? Mau dapet tambahan Speed gratis? Sebarkan link referral Anda ke grup WA/Facebook. 1 orang aktif = Speed tambahan masuk otomatis!",
-                "?? Punya stok token berlebih? Jual segera di P2P Marketplace dan jadikan saldo Rupiah tunai langsung ke rekeningmu!",
-                "?? CIS Protocol bukan sekadar aplikasi, ini adalah ekosistem Cloud Mining & Charity terintegrasi. Bangga jadi bagian dari CIS!"
-            ];
-
-            // Acak dan pilih 1 peluru dari gudang
-            let randomIndex = Math.floor(Math.random() * gudangTeks.length);
-            let pesanAcak = gudangTeks[randomIndex];
-
-            try {
-                let pesanLengkap = "?? TIPS CIS: " + pesanAcak;
-
-                // 1. Tembakkan ke Layar Seluruh Miner (Internal Notifikasi Global)
-                await addDoc(collection(db, "Notifikasi_Global"), {
-                    pesan: pesanLengkap,
-                    pengirim: "Auto-Pilot Robot",
-                    timestamp_local: Date.now()
-                });
-                console.log("?? Robot Promo sukses menembakkan ke internal aplikasi.");
-
-                // ==========================================
-                // 2. JEMBATAN OTOMATIS KE FANS-PAGE FACEBOOK
-                // ==========================================
-                const FB_PAGE_ID = "1226935663827737"; 
-                const FB_ACCESS_TOKEN = "EAAWCaZCbyoGgBSIOowAVihZA9ls4wYCZB6JuYbeck3RCIz7b887nPnRyeqIeI65SeAmX3lxrcZBKXJVeZAynRQG2fJOHOFtQHxCqytVcDlwRIhWCccRC3q47RknWqoYqUe2npkCERvaQLj4E6ZCWJHhtjKIeT5Ui7NZBUMNlcvn8z0dAZB21VmcUUTXrb6SUrsxu6dfgEgiZCZAVQtInEbMcqJM13Or6tZA2Yss0ZAZAqo7U2jWn2"; // <-- PASTE TOKEN ANDA DI SINI
-
-                let fbUrl = `https://graph.facebook.com/v25.0/${FB_PAGE_ID}/feed`;
-                let fbResponse = await fetch(fbUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: pesanLengkap,
-                        access_token: FB_ACCESS_TOKEN
-                    })
-                });
-                
-                let fbResult = await fbResponse.json();
-                if(fbResult.id) {
-                    console.log("? Sukses Posting ke Facebook Cisverus! ID FB: " + fbResult.id);
-                } else {
-                    console.error("? Robot Gagal Menembus Facebook:", fbResult);
-                }
-
-            } catch(e) {
-                console.error("Mesin Robot Promo Mengalami Kendala:", e);
-            }
-        }, intervalWaktu);
-	
     window.cariLiveUser = () => { cariUserLiveInput = document.getElementById('searchLiveUser').value.toLowerCase(); window.renderLiveDashboard(); };
     window.renderLiveDashboard = () => {
         let totalSpeedSistem = 0; let onlineCount = 0; let offlineCount = 0; let now = Date.now(); let tbodyHtml = ""; let no = 1;
@@ -2039,14 +1557,8 @@
                 const data = snap.docs[0].data();
                 document.getElementById('toggleMaintenance').checked = data.is_maintenance === true;
                 document.getElementById('toggleCountdown').checked = data.is_countdown === true;
-                document.getElementById('toggleAntiHack').checked = data.is_antihack === true;
                 if(data.target_launch) document.getElementById('inpTargetLaunch').value = data.target_launch;
-				
-				// --- START: MODE MAINTENANCE KHUSUS IT (LOAD DATA) ---
-                if(data.ip_it_bypass) document.getElementById('inpIpBypass').value = data.ip_it_bypass;
-                else document.getElementById('inpIpBypass').value = "";
-                // --- END ---
-				
+
                 if(adminTimerInt) clearInterval(adminTimerInt);
                 
                 if((data.is_maintenance || data.is_countdown) && data.target_launch) {
@@ -2207,16 +1719,13 @@
         const btn = document.querySelector(`button[onclick='simpanStatusWeb()']`);
         if(!isAuto) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; }
 
-        // --- START: MODE MAINTENANCE KHUSUS IT (SAVE DATA) ---
         let payload = {
             tipe: "APP_STATUS",
             is_maintenance: document.getElementById('toggleMaintenance').checked,
             is_countdown: document.getElementById('toggleCountdown').checked,
-            is_antihack: document.getElementById('toggleAntiHack').checked,
-            target_launch: document.getElementById('inpTargetLaunch').value,
-            ip_it_bypass: document.getElementById('inpIpBypass').value.trim()
+            target_launch: document.getElementById('inpTargetLaunch').value
         };
-      
+
         try {
             const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "APP_STATUS")));
             if(snap.empty) {
@@ -2234,47 +1743,6 @@
         if(!isAuto) { btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Web"; btn.disabled = false; }
     };
 
-	// ==========================================
-    // FUNGSI KENDALI ROBOT VIRALITAS (MISI 3)
-    // ==========================================
-    window.muatStatusRobot = async () => {
-        try {
-            const qConfig = query(collection(db, "System_Config"), where("tipe", "==", "AUTO_POSTING"));
-            const snap = await getDocs(qConfig);
-            if (!snap.empty) {
-                let data = snap.docs[0].data();
-                document.getElementById('toggleBotPromo').checked = data.robot_promo_aktif === true;
-                document.getElementById('toggleBotP2P').checked = data.robot_p2p_aktif === true;
-            }
-        } catch(e) { console.error("Gagal memuat status robot."); }
-    };
-
-    window.simpanStatusRobot = async () => {
-        let statusBotPromo = document.getElementById('toggleBotPromo').checked;
-        let statusBotP2P = document.getElementById('toggleBotP2P').checked;
-
-        let payload = {
-            tipe: "AUTO_POSTING",
-            robot_promo_aktif: statusBotPromo,
-            robot_p2p_aktif: statusBotP2P,
-            waktu_update: serverTimestamp()
-        };
-
-        try {
-            const qConfig = query(collection(db, "System_Config"), where("tipe", "==", "AUTO_POSTING"));
-            const snap = await getDocs(qConfig);
-            
-            if (snap.empty) {
-                await addDoc(collection(db, "System_Config"), payload);
-            } else {
-                await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
-            }
-            window.showToast("? Status Robot berhasil diperbarui ke Pusat!");
-        } catch(e) {
-            window.showToast("? Gagal menyimpan status robot ke Firebase.");
-        }
-    };
-
     async function loadGlobalStats() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('statInpOnline').value = data.online || 1204; document.getElementById('statInpReg').value = data.registered || 8450; document.getElementById('statInpWd').value = data.withdrawn || 452890;
 if(document.getElementById('statInpMinSultan')) document.getElementById('statInpMinSultan').value = data.min_sultan || 0; 
 if(document.getElementById('statInpMinExchange')) document.getElementById('statInpMinExchange').value = data.min_exchange_rp || 100; } }
@@ -2284,141 +1752,12 @@ let minExchange = parseInt(document.getElementById('statInpMinExchange').value) 
 const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS")));
 let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: wd, min_sultan: minSultan, min_exchange_rp: minExchange }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Statistik Disimpan!"); } catch(e) { alert("Gagal Simpan!"); } };
 
-    async function loadConfigPendaftaran() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REGISTRATION"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('toggleAktivasiReg').checked = data.req_token === true; document.getElementById('toggleFreemium').checked = data.is_freemium === true; document.getElementById('inpHariGratis').value = data.free_days !== undefined ? data.free_days : 30; document.getElementById('togglePerpanjang').checked = data.req_perpanjang !== false; document.getElementById('toggleDeviceLock').checked = data.device_lock_active !== false; document.getElementById('regBonusSpeed').value = data.bonus_speed ? Number(data.bonus_speed).toFixed(10).replace(/\.?0+$/, "") : 0; document.getElementById('inpSponsorClaim').value = data.persentase_bonus_claim || 0; document.getElementById('inpSponsorTopup').value = data.persentase_bonus_topup || 0; } }
+    async function loadConfigPendaftaran() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REGISTRATION"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('toggleAktivasiReg').checked = data.req_token === true; document.getElementById('toggleFreemium').checked = data.is_freemium === true; document.getElementById('inpHariGratis').value = data.free_days !== undefined ? data.free_days : 30; document.getElementById('togglePerpanjang').checked = data.req_perpanjang !== false; document.getElementById('toggleDeviceLock').checked = data.device_lock_active !== false; document.getElementById('regBonusSpeed').value = data.bonus_speed || 0; document.getElementById('inpSponsorClaim').value = data.persentase_bonus_claim || 0; document.getElementById('inpSponsorTopup').value = data.persentase_bonus_topup || 0; } }
     window.simpanConfigPendaftaran = async () => { let payload = { tipe: "REGISTRATION", req_token: document.getElementById('toggleAktivasiReg').checked, is_freemium: document.getElementById('toggleFreemium').checked, free_days: parseInt(document.getElementById('inpHariGratis').value)||0, req_perpanjang: document.getElementById('togglePerpanjang').checked, device_lock_active: document.getElementById('toggleDeviceLock').checked, bonus_speed: getFloatVal('regBonusSpeed'), persentase_bonus_claim: getFloatVal('inpSponsorClaim'), persentase_bonus_topup: getFloatVal('inpSponsorTopup') }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REGISTRATION"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Konfigurasi Disimpan!"); } catch(e) { alert("Gagal menyimpan."); } }
 
-    async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim ? Number(d.reward_claim).toFixed(10).replace(/\.?0+$/, "") : 50; document.getElementById('inpBonusGame').value = d.bonus_claim ? Number(d.bonus_claim).toFixed(10).replace(/\.?0+$/, "") : 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
+    async function loadConfigGame() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(!snap.empty) { let d = snap.docs[0].data(); document.getElementById('inpRewardGame').value = d.reward_claim || 50; document.getElementById('inpBonusGame').value = d.bonus_claim || 0; document.getElementById('inpJamMulai').value = d.jam_mulai || "00:00"; document.getElementById('inpJamSelesai').value = d.jam_selesai || "00:00"; } }
     window.simpanConfigGame = async () => { let payload = { tipe: "GAME_CONFIG", reward_claim: getFloatVal('inpRewardGame'), bonus_claim: getFloatVal('inpBonusGame'), jam_mulai: document.getElementById('inpJamMulai').value || "00:00", jam_selesai: document.getElementById('inpJamSelesai').value || "00:00" }; try { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GAME_CONFIG"))); if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); showToast("Reward Game Disimpan!"); } catch (e) { alert("Gagal menyimpan."); } };
 
-	// ==========================================
-    // MESIN ANTREAN PPOB (BACKLOG 3)
-    // ==========================================
-    window.switchTabPPOB = (tab) => {
-        if(tab === 'pending') {
-            document.getElementById('areaPpobPending').style.display = 'block'; document.getElementById('areaPpobRiwayat').style.display = 'none';
-            document.getElementById('tabPpobPending').style.color = '#2ecc71'; document.getElementById('tabPpobPending').style.borderBottom = '2px solid #2ecc71';
-            document.getElementById('tabPpobRiwayat').style.color = '#94a3b8'; document.getElementById('tabPpobRiwayat').style.borderBottom = 'none';
-            window.loadAntreanPPOB();
-        } else {
-            document.getElementById('areaPpobPending').style.display = 'none'; document.getElementById('areaPpobRiwayat').style.display = 'block';
-            document.getElementById('tabPpobRiwayat').style.color = '#2ecc71'; document.getElementById('tabPpobRiwayat').style.borderBottom = '2px solid #2ecc71';
-            document.getElementById('tabPpobPending').style.color = '#94a3b8'; document.getElementById('tabPpobPending').style.borderBottom = 'none';
-            window.loadRiwayatPPOB();
-        }
-    };
-
-    window.loadAntreanPPOB = async () => {
-        const tbody = document.getElementById('tblPpobPending'); tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat antrean PPOB...</td></tr>";
-        try {
-            const snap = await getDocs(query(collection(db, "Transaksi_PPOB"), where("status", "==", "PENDING")));
-            let dataArr = []; snap.forEach(d => dataArr.push({ id: d.id, ...d.data() }));
-            dataArr.sort((a,b) => (a.waktu?.seconds || 0) - (b.waktu?.seconds || 0)); // Terlama di atas
-
-            let html = ""; let no = 1;
-            dataArr.forEach(x => {
-                let wkt = formatTanggalJam(x.waktu);
-                html += `<tr>
-                    <td style='text-align:center;'>${no++}</td>
-                    <td><b style='color:#38bdf8;'>${x.username}</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>${x.email}</span><br/><span style='font-size:0.7rem;'>${wkt}</span></td>
-                    <td><b style='color:#fbbf24; font-size:1.1rem;'>${x.target}</b><br/><span class='badge bg-dark'>${x.jenis}</span></td>
-                    <td><b style='color:#4ade80;'>Rp ${x.harga_bayar.toLocaleString('id-ID')}</b><br/><span style='font-size:0.7rem;'>Nominal: ${x.nominal.toLocaleString('id-ID')}</span></td>
-                    <td>
-                        <button class='action-btn bg-green' onclick='window.accPPOB("${x.id}", "${x.email}", "${x.username}", "${x.jenis}", "${x.target}", ${x.nominal})' style='margin-bottom:5px; width:100%;'><i class='fa-solid fa-check'></i> ACC & INPUT SN</button>
-                        <button class='action-btn btn-del' onclick='window.tolakPPOB("${x.id}", "${x.email}", "${x.username}", "${x.jenis}", ${x.harga_bayar})' style='width:100%;'><i class='fa-solid fa-xmark'></i> TOLAK & REFUND</button>
-                    </td>
-                </tr>`;
-            });
-            tbody.innerHTML = html === "" ? "<tr><td colspan='5' style='text-align:center; color:#94a3b8;'><i class='fa-solid fa-mug-hot'></i> Antrean PPOB Kosong.</td></tr>" : html;
-        } catch(e) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal memuat antrean PPOB.</td></tr>"; }
-    };
-
-    window.loadRiwayatPPOB = async () => {
-        const tbody = document.getElementById('tblPpobRiwayat'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat riwayat...</td></tr>";
-        try {
-            const snap = await getDocs(query(collection(db, "Transaksi_PPOB"), where("status", "!=", "PENDING"), limit(50)));
-            let dataArr = []; snap.forEach(d => dataArr.push({ id: d.id, ...d.data() }));
-            dataArr.sort((a,b) => (b.waktu?.seconds || 0) - (a.waktu?.seconds || 0)); // Terbaru di atas
-
-            let html = ""; let no = 1;
-            dataArr.forEach(x => {
-                let wkt = formatTanggalJam(x.waktu);
-                let sttBadge = x.status === "SUKSES" ? "<span class='badge bg-green'>SUKSES</span>" : "<span class='badge bg-red'>DITOLAK / REFUND</span>";
-                let snWarna = x.status === "SUKSES" ? "#2ecc71" : "#ef4444";
-                html += `<tr>
-                    <td style='text-align:center;'>${no++}</td>
-                    <td><b style='color:#38bdf8;'>${x.username}</b><br/><span style='font-size:0.7rem;'>${wkt}</span></td>
-                    <td><b>${x.jenis} - ${x.nominal.toLocaleString('id-ID')}</b><br/><span style='font-size:0.75rem; color:#fbbf24;'>Tujuan: ${x.target}</span></td>
-                    <td>${sttBadge}<br/><span style='font-size:0.8rem; font-weight:bold; color:${snWarna};'>${x.sn || '-'}</span></td>
-                </tr>`;
-            });
-            tbody.innerHTML = html === "" ? "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada riwayat PPOB.</td></tr>" : html;
-        } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat riwayat.</td></tr>"; }
-    };
-
-    window.accPPOB = async (id, email, username, jenis, target, nominal) => {
-        let sn = prompt(`Masukkan Serial Number (SN) / Token Listrik 20-Digit untuk pesanan:\n\n${jenis} ${nominal}\nNo Tujuan: ${target}\n\nCatatan: Token akan dikirim ke notifikasi user.`);
-        if(sn === null || sn.trim() === "") return;
-
-        try {
-            // 1. Update Transaksi
-            await updateDoc(doc(db, "Transaksi_PPOB", id), { status: "SUKSES", sn: sn.trim() });
-            
-            // 2. Kirim Notif ke Layar HP User
-            await addDoc(collection(db, "Notifikasi_Personal"), { 
-                email: email, 
-                pesan: `? Transaksi ${jenis} ${nominal} ke nomor ${target} BERHASIL!\nSN/Token: ${sn.trim()}`, 
-                timestamp_local: Date.now() 
-            });
-
-            showToast("Pesanan Disetujui & SN Dikirim!");
-            window.loadAntreanPPOB();
-        } catch(e) { alert("Gagal menyetujui PPOB. Cek koneksi."); }
-    };
-
-    window.tolakPPOB = async (id, email, username, jenis, hargaBayar) => {
-        let alasan = prompt("Masukkan alasan penolakan (misal: Gangguan / Nomor Salah):", "Nomor Tidak Valid / Gangguan Provider");
-        if(alasan === null) return;
-
-        try {
-            // 1. Update Status
-            await updateDoc(doc(db, "Transaksi_PPOB", id), { status: "DITOLAK", sn: `Gagal: ${alasan}` });
-
-            // 2. Kembalikan Saldo IDR (Refund)
-            const userDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", email)));
-            if(!userDoc.empty) {
-                let currentSaldoRp = userDoc.docs[0].data().saldo_rupiah || 0;
-                await updateDoc(doc(db, "Akun_Publik", userDoc.docs[0].id), { saldo_rupiah: currentSaldoRp + hargaBayar });
-            }
-
-            // 3. Catat Mutasi User (Uang Masuk)
-            await addDoc(collection(db, "Mutasi_Mining"), { 
-                email: email, jenis: "IN", 
-                deskripsi: `REFUND: Gagal Beli ${jenis} (Alasan: ${alasan})`, 
-                nominal: hargaBayar, timestamp_local: Date.now() 
-            });
-
-            // 4. Catat Pengembalian Buku Kas Pusat
-            let namaAdmin = "Master";
-            try { let adminLog = JSON.parse(localStorage.getItem("cisAdminLog_v2")); if(adminLog) namaAdmin = adminLog.nama; } catch(e){}
-            await addDoc(collection(db, "Mutasi_Pusat"), { 
-                jenis: "PPOB_OUT", nominal: hargaBayar, 
-                deskripsi: `REFUND PPOB: ${username} Beli ${jenis} [Oleh: ${namaAdmin}]`, 
-                waktu: serverTimestamp() 
-            });
-
-            // 5. Kirim Notif Kegagalan ke User
-            await addDoc(collection(db, "Notifikasi_Personal"), { 
-                email: email, 
-                pesan: `? Transaksi ${jenis} DITOLAK (${alasan}). Saldo Rp ${hargaBayar.toLocaleString('id-ID')} telah dikembalikan ke dompet.`, 
-                timestamp_local: Date.now() 
-            });
-
-            showToast("Pesanan Ditolak & Saldo Otomatis Direfund!");
-            window.loadAntreanPPOB();
-        } catch(e) { alert("Gagal menolak PPOB."); }
-    };
-    // ==========================================
-	
 	// --- MESIN HELP CENTER / PESAN BANTUAN ---
         window.loadPesanBantuan = () => {
             const list = document.getElementById('inboxListAdmin');
