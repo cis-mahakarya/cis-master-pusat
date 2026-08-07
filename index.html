@@ -767,7 +767,11 @@
 <script type='module'>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
+	import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
+	const functions = getFunctions(app, "us-central1"); 
+	window.httpsCallable = httpsCallable; 
+	window.functions = functions;
+	
     // KAPTEN, KUNCI API EMAS ADA DI SINI
     const firebaseConfig = {
     apiKey: "AIzaSyBlTTpJJ94TE4JUgdT49VtXVUQV3TuvkmA",
