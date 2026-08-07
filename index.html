@@ -252,6 +252,9 @@
       <div class='menu-box' id='menu-cpanel' onclick='openScreen("scr-cpanel")' style='border-top: 3px solid #64748b;'>
           <i class='fa-solid fa-user-tie' style='color:#64748b;'></i><span>Manajemen C-Panel</span>
       </div>
+		<div class='menu-box' id='menu-ppob' onclick='openScreen("scr-ppob")' style='border-top: 3px solid #0ea5e9;'>
+          <i class='fa-solid fa-mobile-screen-button' style='color:#0ea5e9;'></i><span>Pusat PPOB</span>
+      </div>
     </div>
   </div>
 
@@ -754,6 +757,45 @@
       </div>
     </div>
   </div>
+
+	<div class='admin-screen' id='scr-ppob'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pusat PPOB & Topup</div>
+    <div class='screen-content'>
+      
+      <!-- KOTAK PENGATURAN PPOB -->
+      <div class='card-panel' style='border-top: 2px solid #0ea5e9; margin-bottom:20px;'>
+        <h4 style='margin-top:0; color:#0ea5e9;'><i class='fa-solid fa-tags'></i> Pengaturan Markup & Status PPOB</h4>
+        <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Atur keuntungan (markup) dalam Rupiah yang akan ditambahkan ke harga asli Digiflazz.</p>
+        
+        <div class='switch-wrap' style='border-color:#0ea5e9; background:rgba(14, 165, 233, 0.05);'>
+          <div><b style='color:#0ea5e9;'><i class='fa-solid fa-power-off'></i> Status Layanan PPOB Web</b></div>
+          <label class='switch'><input id='togglePpobActive' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+
+        <div class='form-group'>
+          <label>Keuntungan / Markup Harga (Rp)</label>
+          <input id='inpMarkupPpob' type='number' placeholder='Contoh: 500' style='border-color:#0ea5e9; font-weight:bold; font-size:1.1rem; color:#38bdf8;'>
+        </div>
+        
+        <button class='btn-main' onclick='window.simpanConfigPpob()' style='background:#0ea5e9;'><i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB</button>
+      </div>
+
+      <!-- KOTAK RIWAYAT TRANSAKSI -->
+      <div class='card-panel' style='border-top: 2px solid #f59e0b;'>
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
+          <h4 style='margin:0; color:#f59e0b;'><i class='fa-solid fa-clock-rotate-left'></i> Riwayat Transaksi PPOB Global</h4>
+          <button class='action-btn bg-dark' onclick='window.loadRiwayatPpob()'><i class='fa-solid fa-rotate'></i> Refresh</button>
+        </div>
+        <div class='table-wrap'>
+          <table>
+            <thead><tr><th>Waktu & User</th><th>Tujuan & Produk</th><th>Harga & Status</th><th>SN / Keterangan</th></tr></thead>
+            <tbody id='tblRiwayatPpob'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat transaksi...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
 	
   <div class='modal-overlay' id='modalJaringan' style='z-index:9999;'>
     <div class='modal-card' style='max-width: 500px; max-height: 80vh; display: flex; flex-direction: column;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; font-family:Orbitron; margin:0;'><i class='fa-solid fa-network-wired'></i> POHON JARINGAN</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalJaringan").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><div style='background:#0b0f19; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; border: 1px solid #334155;'><span style='color:#94a3b8; font-size:0.8rem;'>Sponsor Utama:</span><br/><b id='sponsorUtama' style='color:#fbbf24; font-size:1.1rem;'>NamaUser</b></div><div id='jaringanList' style='overflow-y:auto; flex:1; padding-right:5px;'></div></div>
@@ -816,6 +858,7 @@
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
+		if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadRiwayatPpob(); }
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
 
@@ -2001,6 +2044,59 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             }
         };
         // --------------------------
+
+		// --- MESIN PUSAT PPOB ---
+        window.loadConfigPpob = async () => {
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
+                if(!snap.empty) {
+                    let d = snap.docs[0].data();
+                    document.getElementById('inpMarkupPpob').value = d.markup || 0;
+                    document.getElementById('togglePpobActive').checked = d.is_active || false;
+                }
+            } catch(e) { console.log("Gagal memuat config PPOB"); }
+        };
+
+        window.simpanConfigPpob = async () => {
+            let markup = parseInt(document.getElementById('inpMarkupPpob').value) || 0;
+            let isActive = document.getElementById('togglePpobActive').checked;
+            const btn = document.querySelector(`button[onclick='window.simpanConfigPpob()']`);
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
+            
+            let payload = { tipe: "PPOB_CONFIG", markup: markup, is_active: isActive };
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
+                if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+                else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+                window.showToast("Pengaturan PPOB Disimpan!");
+            } catch(e) { alert("Gagal menyimpan pengaturan PPOB."); }
+            btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB"; btn.disabled = false;
+        };
+
+        window.loadRiwayatPpob = async () => {
+            const tbody = document.getElementById('tblRiwayatPpob');
+            if(!tbody) return;
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai data satelit...</td></tr>";
+            try {
+                const snap = await getDocs(query(collection(db, "Riwayat_PPOB"), orderBy("timestamp", "desc"), limit(50)));
+                let html = "";
+                snap.forEach(d => {
+                    let x = d.data();
+                    let tgl = new Date(x.timestamp).toLocaleString('id-ID');
+                    let sttColor = x.status === 'Sukses' ? '#2ecc71' : (x.status === 'Pending' ? '#f59e0b' : '#ef4444');
+                    html += `<tr>
+                        <td style='font-size:0.8rem;'><b>${x.username}</b><br/><span style='color:#94a3b8; font-size:0.7rem;'>${tgl}</span></td>
+                        <td style='font-size:0.8rem;'><b style='color:#38bdf8;'>${x.tujuan}</b><br/>${x.nama_produk}</td>
+                        <td style='font-size:0.8rem;'><b style='color:#fbbf24;'>Rp ${x.harga_jual.toLocaleString('id-ID')}</b><br/><span style='color:${sttColor}; font-weight:bold;'>${x.status}</span></td>
+                        <td style='font-size:0.75rem; color:#cbd5e1;'>SN: ${x.sn || '-'}<br/><span style='color:#64748b;'>Ref: ${x.ref_id || '-'}</span></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada transaksi PPOB dari User.</td></tr>";
+            } catch(e) { 
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat riwayat dari server.</td></tr>"; 
+            }
+        };
+	
 </script>
 </body>
 </html>
