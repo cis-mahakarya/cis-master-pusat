@@ -778,9 +778,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 	import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
-	const functions = getFunctions(app, "us-central1"); 
-	window.httpsCallable = httpsCallable; 
-	window.functions = functions;
 	
     // KAPTEN, KUNCI API EMAS ADA DI SINI
     const firebaseConfig = {
@@ -794,7 +791,11 @@
   };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+	const db = getFirestore(app);
+
+	const functions = getFunctions(app, "us-central1"); 
+	window.httpsCallable = httpsCallable; 
+	window.functions = functions;
 
     let globalVrscPriceIdr = 0; let globalVrscPriceUsdt = 0; let globalSpeedMultiplier = 1.0; 
     let currentAdminRole = ""; let currentAdminAkses = []; let allUsersData = [];
