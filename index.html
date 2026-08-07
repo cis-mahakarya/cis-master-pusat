@@ -769,7 +769,20 @@
         
         <button class='btn-main' onclick='window.simpanConfigPpob()' style='background:#0ea5e9;'><i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB</button>
       </div>
+		<!-- KOTAK PENGATURAN STAKING (KONTRAK ASET 30 HARI) -->
+      <div class='card-panel' style='border-top: 2px solid #8b5cf6; margin-bottom:20px;'>
+        <h4 style='margin-top:0; color:#8b5cf6;'><i class='fa-solid fa-piggy-bank'></i> Pengaturan Fitur Kontrak Aset (Staking)</h4>
+        <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Fitur ini memungkinkan member mengunci saldo IDR selama 30 hari untuk mendapatkan hasil yang nanti cair menjadi Saldo PPOB.</p>
+        
+        <div class='switch-wrap' style='border-color:#8b5cf6; background:rgba(139, 92, 246, 0.05);'>
+          <div><b style='color:#8b5cf6;'><i class='fa-solid fa-power-off'></i> Status Layanan Kontrak Aset</b></div>
+          <label class='switch'><input id='toggleStakingActive' type='checkbox'><span class='slider-tg' style='background-color:#475569;'></span></label>
+        </div>
+        
+        <button class='btn-main' onclick='window.simpanConfigStaking()' style='background:#8b5cf6;'><i class='fa-solid fa-save'></i> Simpan Status Kontrak Aset</button>
+      </div>
 
+		
       <!-- KOTAK RIWAYAT TRANSAKSI -->
       <div class='card-panel' style='border-top: 2px solid #f59e0b;'>
         <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
@@ -858,7 +871,7 @@
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
-		if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadRiwayatPpob(); }
+		if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadConfigStaking(); window.loadRiwayatPpob(); }
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
 
@@ -2095,6 +2108,32 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             } catch(e) { 
                 tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat riwayat dari server.</td></tr>"; 
             }
+        };
+
+			// --- MESIN SAKLAR STAKING ---
+        window.loadConfigStaking = async () => {
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
+                if(!snap.empty) {
+                    let d = snap.docs[0].data();
+                    document.getElementById('toggleStakingActive').checked = d.is_active || false;
+                }
+            } catch(e) { console.log("Gagal memuat config Staking"); }
+        };
+
+        window.simpanConfigStaking = async () => {
+            let isActive = document.getElementById('toggleStakingActive').checked;
+            const btn = document.querySelector(`button[onclick='window.simpanConfigStaking()']`);
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
+            
+            let payload = { tipe: "STAKING_STATUS", is_active: isActive };
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "STAKING_STATUS")));
+                if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+                else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+                window.showToast("Status Kontrak Aset Disimpan!");
+            } catch(e) { alert("Gagal menyimpan pengaturan Kontrak Aset."); }
+            btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Kontrak Aset"; btn.disabled = false;
         };
 	
 </script>
