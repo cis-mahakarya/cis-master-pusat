@@ -2183,6 +2183,18 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                 
                 if (response.data.status === "success") {
                     let tiket = response.data.data;
+                    
+                    // --- SISTEM PELACAK INSTRUKSI PINTAR ---
+                    // Melacak berbagai bentuk balasan Digiflazz (Notes, Teks, atau Link ShopeePay)
+                    let instruksiTeks = tiket.notes || tiket.note || tiket.message || "";
+                    if (tiket.payment_url) {
+                        instruksiTeks += `<br><br><a href='${tiket.payment_url}' target='_blank' style='color:#f1c40f; text-decoration:underline; font-weight:bold;'><i class='fa-solid fa-link'></i> KLIK DI SINI UNTUK BAYAR (${bank})</a>`;
+                    }
+                    if (!instruksiTeks) {
+                        instruksiTeks = "Silakan login ke Dasbor Digiflazz (menu Isi Saldo) untuk melihat rincian pembayaran ini.";
+                    }
+                    // ----------------------------------------
+
                     infoBox.style.display = 'block';
                     infoBox.innerHTML = `
                         <b style='color:#2ecc71;'>✅ TIKET BERHASIL DIBUAT!</b><br/><br/>
@@ -2190,7 +2202,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                         <b style='font-size:1.5rem; color:#fff; font-family:Orbitron;'>Rp ${tiket.amount.toLocaleString('id-ID')}</b><br/>
                         <span style='font-size:0.75rem; color:#f1c40f;'>*Wajib persis hingga 3 digit terakhir agar otomatis masuk!</span><br/><br/>
                         <div style='background:#0b0f19; padding:10px; border-radius:5px;'>
-                            Instruksi: <span style='color:#00f2fe;'>${tiket.notes}</span>
+                            Instruksi: <span style='color:#00f2fe;'>${instruksiTeks}</span>
                         </div>
                     `;
                     window.showToast("Tiket deposit berhasil dibuat!");
