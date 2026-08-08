@@ -769,6 +769,29 @@
         
         <button class='btn-main' onclick='window.simpanConfigPpob()' style='background:#0ea5e9;'><i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB</button>
       </div>
+
+		<!-- KOTAK TOP UP SALDO SERVER (DIGIFLAZZ) -->
+      <div class='card-panel' style='border-top: 2px solid #2ecc71; margin-bottom:20px;'>
+        <h4 style='margin-top:0; color:#2ecc71;'><i class='fa-solid fa-building-columns'></i> Top Up Saldo Server (Digiflazz)</h4>
+        <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Minta tiket deposit otomatis. Transfer sesuai nominal unik agar masuk otomatis ke saldo server PPOB.</p>
+        
+        <div style='display:flex; gap:10px; margin-bottom:10px;'>
+            <input type='number' id='nominalDepositPusat' class='input-dark' placeholder='Nominal (Min. 200 Ribu)' style='border-color:#2ecc71; flex:1;'>
+            <select id='bankDepositPusat' class='input-dark' style='border-color:#2ecc71; width:120px;'>
+                <option value='BCA'>BCA</option>
+                <option value='MANDIRI'>MANDIRI</option>
+                <option value='BRI'>BRI</option>
+                <option value='BNI'>BNI</option>
+            </select>
+        </div>
+        
+        <button class='btn-main' id='btnReqDeposit' onclick='window.requestDepositServer()' style='background:#2ecc71;'><i class='fa-solid fa-paper-plane'></i> Request Tiket Deposit</button>
+        
+        <div id='infoTiketDeposit' style='display:none; margin-top:15px; padding:15px; background:rgba(46, 204, 113, 0.1); border:1px dashed #2ecc71; border-radius:8px; text-align:left;'>
+            <!-- Hasil tiket akan muncul di sini -->
+        </div>
+      </div>
+		
 		<!-- KOTAK PENGATURAN STAKING (KONTRAK ASET 30 HARI) -->
       <div class='card-panel' style='border-top: 2px solid #8b5cf6; margin-bottom:20px;'>
         <h4 style='margin-top:0; color:#8b5cf6;'><i class='fa-solid fa-piggy-bank'></i> Pengaturan Fitur Kontrak Aset (Staking)</h4>
@@ -2134,6 +2157,52 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                 window.showToast("Status Kontrak Aset Disimpan!");
             } catch(e) { alert("Gagal menyimpan pengaturan Kontrak Aset."); }
             btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Kontrak Aset"; btn.disabled = false;
+        };
+
+			// --- MESIN TOP UP SALDO SERVER (DIGIFLAZZ) ---
+        window.requestDepositServer = async () => {
+            const nominal = parseInt(document.getElementById('nominalDepositPusat').value);
+            const bank = document.getElementById('bankDepositPusat').value;
+            const btn = document.getElementById('btnReqDeposit');
+            const infoBox = document.getElementById('infoTiketDeposit');
+
+            if (!nominal || nominal < 200000) {
+                window.showToast("Minimal deposit Rp 200.000");
+                return;
+            }
+
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Meminta Tiket..."; 
+            btn.disabled = true;
+
+            try {
+                // Menembak ke Cloud Function Backend
+                const reqDeposit = window.httpsCallable(window.functions, 'requestDepositDigiflazz');
+                const response = await reqDeposit({ nominal: nominal, bank: bank });
+                
+                if (response.data.status === "success") {
+                    let tiket = response.data.data;
+                    infoBox.style.display = 'block';
+                    infoBox.innerHTML = `
+                        <b style='color:#2ecc71;'>✅ TIKET BERHASIL DIBUAT!</b><br/><br/>
+                        Silakan Transfer Tepat Sebesar:<br/>
+                        <b style='font-size:1.5rem; color:#fff; font-family:Orbitron;'>Rp ${tiket.amount.toLocaleString('id-ID')}</b><br/>
+                        <span style='font-size:0.75rem; color:#f1c40f;'>*Wajib persis hingga 3 digit terakhir agar otomatis masuk!</span><br/><br/>
+                        <div style='background:#0b0f19; padding:10px; border-radius:5px;'>
+                            Instruksi: <span style='color:#00f2fe;'>${tiket.notes}</span>
+                        </div>
+                    `;
+                    window.showToast("Tiket deposit berhasil dibuat!");
+                } else {
+                    infoBox.style.display = 'block';
+                    infoBox.innerHTML = `<b style='color:#ef4444;'>❌ GAGAL:</b> ${response.data.message}`;
+                }
+            } catch (e) {
+                infoBox.style.display = 'block';
+                infoBox.innerHTML = `<b style='color:#ef4444;'>❌ ERROR:</b> Koneksi ke satelit gagal. (Pastikan Backend sudah di-Deploy)`;
+            }
+
+            btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> Request Tiket Deposit"; 
+            btn.disabled = false;
         };
 	
 </script>
