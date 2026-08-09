@@ -648,9 +648,17 @@
     </div>
   </div>
 
-  <div class='admin-screen' id='scr-team'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Tim</div>
-    <div class='screen-content'>
+  <!-- PENGATURAN BONUS BAGI HASIL TIM -->
+      <div class='card-panel' style='border-top: 2px solid #f1c40f; margin-bottom:15px; background: rgba(241, 196, 15, 0.05);'>
+        <h4 style='margin-top:0; color:#f1c40f;'><i class='fa-solid fa-percent'></i> Pengaturan Bagi Hasil (Akuntansi Tim)</h4>
+        <div style='display:flex; gap:10px; align-items:flex-end;'>
+            <div class='form-group' style='flex:1; margin-bottom:0;'>
+                <label>Persentase Hak Tim (Contoh: 30 untuk 30%)</label>
+                <input type='number' id='inpPersenBonusTim' class='input-dark' placeholder='30' style='border-color:#f1c40f;'>
+            </div>
+            <button class='btn-main' onclick='window.simpanBonusTim()' style='background:#f1c40f; color:#000; width:auto; padding:12px 20px;'><i class='fa-solid fa-save'></i> SIMPAN PROPORSI</button>
+        </div>
+      </div>
       <div class='card-panel'>
         <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
         <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
@@ -1063,7 +1071,7 @@
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
         if(id === 'scr-donasi-admin') window.loadAdminDonasi();
-        if(id === 'scr-team') window.loadDataTim(); 
+        if(id === 'scr-team') { window.loadDataTim(); window.loadConfigBonusTim(); } 
         if(id === 'scr-approval') window.switchTabWd('pending'); 
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
@@ -1651,6 +1659,29 @@
         try { const snap = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim))); for (const d of snap.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } showToast(`Data ${tim} berhasil di-reset!`); window.loadDataTim(); } catch (e) { alert(`Gagal mereset.`); } btn.innerHTML = oldText; btn.disabled = false;
     };
 
+		window.loadConfigBonusTim = async () => {
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "TEAM_BONUS")));
+            if(!snap.empty) { document.getElementById('inpPersenBonusTim').value = snap.docs[0].data().persen_tim || 30; }
+            else { document.getElementById('inpPersenBonusTim').value = 30; }
+        } catch(e) {}
+    };
+
+    window.simpanBonusTim = async () => {
+        let p = parseFloat(document.getElementById('inpPersenBonusTim').value);
+        if(isNaN(p) || p < 0 || p > 100) return alert("Masukkan persentase yang valid (0 - 100)!");
+        
+        let btn = document.querySelector(`button[onclick='window.simpanBonusTim()']`);
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i>"; btn.disabled = true;
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "TEAM_BONUS")));
+            if(snap.empty) await addDoc(collection(db, "System_Config"), { tipe: "TEAM_BONUS", persen_tim: p });
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), { persen_tim: p });
+            window.showToast("Pengaturan Bagi Hasil Disimpan!");
+        } catch(e) { alert("Gagal menyimpan pengaturan."); }
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PROPORSI"; btn.disabled = false;
+    };
+	
     window.kirimReward = async () => {
         const target = document.getElementById('rewardTarget').value; const addSpeed = getFloatVal('rewardSpeed'); const addHari = parseInt(document.getElementById('rewardHari').value) || 0; const btn = document.getElementById('btnKirimReward');
         if(addSpeed <= 0 && addHari <= 0) return alert("Isi minimal Tambahan Speed atau Durasi!"); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGIRIM..."; btn.disabled = true;
