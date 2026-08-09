@@ -903,25 +903,49 @@
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Audit Likuiditas & Setoran Tim</div>
     <div class='screen-content'>
         
-        <!-- KARTU 1: PENCATATAN SETORAN TUNAI -->
-        <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom: 20px;'>
-            <h4 style='margin-top:0; color:#10b981;'><i class='fa-solid fa-hand-holding-dollar'></i> 1. Catat Setoran Tunai (INFLOW FIAT)</h4>
-            <p style='font-size:0.75rem; color:#94a3b8;'>Validasi dan catat uang nyata (Rupiah) yang sudah Anda pastikan masuk ke rekening Bank Anda dari para Ketua Tim.</p>
-            <div style='display:flex; gap:10px; margin-bottom:10px;'>
-                <div class='form-group' style='flex:1;'>
-                    <label>Pilih Tim Penyetor</label>
-                    <select id='inpSetoranTim' class='input-dark' style='border-color:#10b981;'>
-                        <option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option>
-                        <option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option>
-                        <option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option>
-                    </select>
+        <!-- KARTU 1A: PENGATURAN REKENING PUSAT -->
+        <div class='card-panel' style='border-top: 2px solid #38bdf8; margin-bottom: 20px;'>
+            <h4 style='margin-top:0; color:#38bdf8;'><i class='fa-solid fa-building-columns'></i> 1A. Pengaturan Rekening Pusat</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Rekening ini akan tampil di aplikasi Ketua Tim untuk tujuan transfer uang setoran P2P.</p>
+            <div style='display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;'>
+                <div class='form-group' style='flex:1; min-width:150px;'>
+                    <label>Nama Bank / E-Wallet</label>
+                    <input type='text' id='inpRekMasterBank' class='input-dark' placeholder='BCA / MANDIRI / DANA' style='border-color:#38bdf8;'>
                 </div>
-                <div class='form-group' style='flex:2;'>
-                    <label>Nominal Setoran (Rp)</label>
-                    <input type='number' id='inpSetoranNominal' class='input-dark' placeholder='Contoh: 1500000' style='border-color:#10b981;'>
+                <div class='form-group' style='flex:1; min-width:150px;'>
+                    <label>Nomor Rekening / HP</label>
+                    <input type='text' id='inpRekMasterNo' class='input-dark' placeholder='1234567890' style='border-color:#38bdf8;'>
+                </div>
+                <div class='form-group' style='flex:1; min-width:150px;'>
+                    <label>Atas Nama (Pemilik)</label>
+                    <input type='text' id='inpRekMasterNama' class='input-dark' placeholder='NAMA PEMILIK' style='border-color:#38bdf8;'>
                 </div>
             </div>
-            <button class='btn-main' onclick='window.simpanSetoranTim()' style='background:#10b981;'><i class='fa-solid fa-check-double'></i> KONFIRMASI UANG MASUK KE REKENING</button>
+            <button class='btn-main' onclick='window.simpanRekeningMaster()' style='background:#38bdf8;'><i class='fa-solid fa-save'></i> SIMPAN REKENING PUSAT</button>
+        </div>
+
+        <!-- KARTU 1B: VALIDASI SETORAN TIM -->
+        <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom: 20px;'>
+            <h4 style='margin-top:0; color:#10b981;'><i class='fa-solid fa-hand-holding-dollar'></i> 1B. Validasi Laporan Setoran Tim (INFLOW FIAT)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Setujui laporan di bawah ini agar nominalnya tercatat resmi di sistem Kalkulator Likuiditas.</p>
+            <div class='table-wrap' style='max-height:300px; overflow-y:auto; margin-bottom:15px;'>
+                <table>
+                    <thead>
+                        <tr><th>Waktu Lapor</th><th>Nama Tim</th><th>Nominal Transfer</th><th>Aksi Validasi</th></tr>
+                    </thead>
+                    <tbody id='tblLaporanSetoran'>
+                        <tr><td colspan='4' style='text-align:center;'>Memuat laporan...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <hr style='border:1px dashed #334155; margin:15px 0;'/>
+            <h5 style='color:#f59e0b; margin:0 0 10px 0;'><i class='fa-solid fa-triangle-exclamation'></i> Catat Manual (Jalur Darurat)</h5>
+            <div style='display:flex; gap:10px; margin-bottom:0;'>
+                <select id='inpSetoranTim' class='input-dark' style='flex:1; border-color:#f59e0b;'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select>
+                <input type='number' id='inpSetoranNominal' class='input-dark' placeholder='Nominal' style='flex:2; border-color:#f59e0b;'>
+                <button class='btn-main' onclick='window.simpanSetoranTim()' style='flex:1; background:#f59e0b; padding:10px;'><i class='fa-solid fa-plus'></i> TAMBAH</button>
+            </div>
         </div>
 
         <!-- KARTU 2: NERACA FIAT NYATA (UANG REAL) -->
@@ -2481,6 +2505,84 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             }
 
             if(btn) { btn.innerHTML = "<i class='fa-solid fa-rotate'></i> REFRESH AUDIT DATA"; btn.disabled = false; }
+            
+            // Panggil trigger tambahan saat merefresh layar
+            if(typeof window.loadRekeningMaster === 'function') window.loadRekeningMaster();
+            if(typeof window.loadLaporanSetoran === 'function') window.loadLaporanSetoran();
+        };
+
+        // --- MESIN PENGATURAN REKENING MASTER ---
+        window.loadRekeningMaster = async () => {
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REKENING_MASTER")));
+                if(!snap.empty) {
+                    let d = snap.docs[0].data();
+                    document.getElementById('inpRekMasterBank').value = d.nama_bank || "";
+                    document.getElementById('inpRekMasterNo').value = d.no_rek || "";
+                    document.getElementById('inpRekMasterNama').value = d.atas_nama || "";
+                }
+            } catch(e) {}
+        };
+
+        window.simpanRekeningMaster = async () => {
+            const bank = document.getElementById('inpRekMasterBank').value.trim();
+            const no = document.getElementById('inpRekMasterNo').value.trim();
+            const nama = document.getElementById('inpRekMasterNama').value.trim();
+            if(!bank || !no || !nama) return alert("Lengkapi data rekening Pusat!");
+            
+            let btn = document.querySelector(`button[onclick='window.simpanRekeningMaster()']`);
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true;
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "REKENING_MASTER")));
+                let payload = { tipe: "REKENING_MASTER", nama_bank: bank, no_rek: no, atas_nama: nama };
+                if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+                else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+                window.showToast("Rekening Master berhasil diperbarui!");
+            } catch(e) { alert("Gagal menyimpan Rekening Pusat."); }
+            btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN REKENING PUSAT"; btn.disabled = false;
+        };
+
+        // --- MESIN VALIDASI LAPORAN TIM ---
+        window.loadLaporanSetoran = () => {
+            const tbody = document.getElementById('tblLaporanSetoran');
+            if(!tbody) return;
+            onSnapshot(query(collection(db, "Laporan_Setoran"), where("status", "==", "PENDING")), (snap) => {
+                let html = "";
+                snap.forEach(d => {
+                    let x = d.data();
+                    let tgl = x.waktu_lapor ? new Date(x.waktu_lapor.seconds * 1000).toLocaleString('id-ID') : '-';
+                    html += `<tr>
+                        <td style='font-size:0.75rem; color:#94a3b8;'>${tgl}</td>
+                        <td><b style='color:#38bdf8;'>${x.username}</b></td>
+                        <td><b style='color:#2ecc71;'>Rp ${(x.nominal || 0).toLocaleString('id-ID')}</b></td>
+                        <td>
+                            <button onclick='window.validasiSetoran("${d.id}", "${x.username}", ${x.nominal}, "DISETUJUI")' style='background:#2ecc71; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:bold;'><i class='fa-solid fa-check'></i> ACC</button>
+                            <button onclick='window.validasiSetoran("${d.id}", "${x.username}", ${x.nominal}, "DITOLAK")' style='background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:5px;'><i class='fa-solid fa-xmark'></i> TOLAK</button>
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada antrean laporan.</td></tr>";
+            });
+        };
+
+        window.validasiSetoran = async (id, user, nominal, status) => {
+            if(!confirm(`Laporan setoran Rp ${nominal.toLocaleString('id-ID')} dari ${user} akan di-${status}. Lanjutkan?`)) return;
+            try {
+                await updateDoc(doc(db, "Laporan_Setoran", id), { status: status, waktu_validasi: serverTimestamp() });
+                
+                if (status === "DISETUJUI") {
+                    // Jika di-ACC, uangnya dicatat resmi sebagai IN_FIAT agar radar Anti-Tekor bertambah!
+                    await addDoc(collection(db, "Mutasi_Pusat"), {
+                        jenis: "IN_FIAT",
+                        nominal: nominal,
+                        deskripsi: `Setoran Tim Valid (${user})`,
+                        waktu: serverTimestamp()
+                    });
+                }
+                
+                window.showToast(`Laporan berhasil di-${status}!`);
+                window.loadLikuiditas(); // Auto-refresh hitungan kalkulator
+            } catch(e) { alert("Gagal memproses validasi."); }
         };
 
 		// ==========================================
