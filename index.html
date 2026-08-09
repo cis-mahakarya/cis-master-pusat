@@ -255,6 +255,9 @@
 		<div class='menu-box' id='menu-ppob' onclick='openScreen("scr-ppob")' style='border-top: 3px solid #0ea5e9;'>
           <i class='fa-solid fa-mobile-screen-button' style='color:#0ea5e9;'></i><span>Pusat PPOB</span>
       </div>
+		<div class='menu-box' id='menu-autopromo' onclick='openScreen("scr-autopromo")' style='border-top: 3px solid #f43f5e;'>
+          <i class='fa-solid fa-bullhorn' style='color:#f43f5e;'></i><span>Auto Promo</span>
+      </div>
     </div>
   </div>
 
@@ -834,6 +837,64 @@
 		
     </div>
   </div>
+
+	<div class='admin-screen' id='scr-autopromo'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Mesin Viralitas (Auto Promo)</div>
+    <div class='screen-content'>
+        <!-- 1. Radar P2P -->
+        <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom:20px;'>
+            <h4 style='margin-top:0; color:#10b981;'><i class='fa-solid fa-radar'></i> 1. Radar P2P (Social Proof FOMO)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Otomatis menyiarkan notifikasi global & Facebook saat ada transaksi P2P yang berstatus "SELESAI".</p>
+            <div class='switch-wrap' style='border-color:#10b981; background:rgba(16, 185, 129, 0.05);'>
+                <div><b style='color:#10b981;'>Status Radar P2P</b></div>
+                <label class='switch'><input id='tgRadarP2p' type='checkbox'><span class='slider-tg'></span></label>
+            </div>
+        </div>
+
+        <!-- 2. Robot Edukasi & Motivasi -->
+        <div class='card-panel' style='border-top: 2px solid #f59e0b; margin-bottom:20px;'>
+            <h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-robot'></i> 2. Robot Penyiaran (Gudang 3 Laci)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Menyiarkan pesan acak dari laci ke sistem & Facebook secara bergilir berdasarkan interval waktu.</p>
+            <div class='switch-wrap' style='border-color:#f59e0b; background:rgba(245, 158, 11, 0.05);'>
+                <div><b style='color:#f59e0b;'>Status Robot Penyiaran</b></div>
+                <label class='switch'><input id='tgRobotPromo' type='checkbox'><span class='slider-tg'></span></label>
+            </div>
+            <div class='form-group'><label>Interval Siaran (Menit)</label><input id='inpIntervalPromo' type='number' placeholder='Misal: 60'></div>
+            
+            <div style='display:grid; grid-template-columns: 1fr; gap:15px; margin-top:15px;'>
+                <div style='background:#0b0f19; padding:15px; border:1px solid #334155; border-radius:8px;'>
+                    <label style='color:#ef4444; margin-bottom:10px;'><i class='fa-solid fa-fire'></i> Laci 1: FOMO & Urgency</label>
+                    <textarea id='inpfomo' rows='3' placeholder='Contoh: Harga koin mau naik! | Jangan ketinggalan momen ini...'></textarea>
+                    <small style='color:#64748b; font-size:0.65rem;'>Pisahkan antar pesan dengan simbol pipa (|)</small>
+                </div>
+                <div style='background:#0b0f19; padding:15px; border:1px solid #334155; border-radius:8px;'>
+                    <label style='color:#38bdf8; margin-bottom:10px;'><i class='fa-solid fa-book-open'></i> Laci 2: Edukasi & Visi</label>
+                    <textarea id='inpedukasi' rows='3' placeholder='Contoh: CIS Protocol adalah DApp anti SCAM... | Koin ini dibackup oleh emas digital...'></textarea>
+                    <small style='color:#64748b; font-size:0.65rem;'>Pisahkan antar pesan dengan simbol pipa (|)</small>
+                </div>
+                <div style='background:#0b0f19; padding:15px; border:1px solid #334155; border-radius:8px;'>
+                    <label style='color:#a855f7; margin-bottom:10px;'><i class='fa-solid fa-bullseye'></i> Laci 3: Call-to-Action (CTA)</label>
+                    <textarea id='inpcta' rows='3' placeholder='Contoh: Yuk upgrade mesin sekarang! | Segera amankan posisi Anda di P2P...'></textarea>
+                    <small style='color:#64748b; font-size:0.65rem;'>Pisahkan antar pesan dengan simbol pipa (|)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Integrasi FB Graph API -->
+        <div class='card-panel' style='border-top: 2px solid #3b82f6; margin-bottom:20px;'>
+            <h4 style='margin-top:0; color:#3b82f6;'><i class='fa-brands fa-facebook'></i> 3. Integrasi Fans-Page Facebook</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Hubungkan robot langsung ke Facebook Anda menggunakan Graph API Access Token.</p>
+            <div class='switch-wrap' style='border-color:#3b82f6; background:rgba(59, 130, 246, 0.05);'>
+                <div><b style='color:#3b82f6;'>Status Auto Post Facebook</b></div>
+                <label class='switch'><input id='tgFbPost' type='checkbox'><span class='slider-tg'></span></label>
+            </div>
+            <div class='form-group'><label>Facebook Page ID</label><input id='inpFbPageId' type='text' placeholder='Contoh: 123456789012345' style='border-color:#3b82f6;'></div>
+            <div class='form-group'><label>Page Access Token (Graph API)</label><input id='inpFbToken' type='password' placeholder='EAA...' style='border-color:#3b82f6;'></div>
+        </div>
+
+        <button class='btn-main' onclick='window.simpanAutoPromo()' style='background:linear-gradient(135deg, #f43f5e, #e11d48); padding:20px; font-size:1rem;'><i class='fa-solid fa-save'></i> AKTIFKAN & SIMPAN MESIN VIRALITAS</button>
+    </div>
+  </div>
 	
   <div class='modal-overlay' id='modalJaringan' style='z-index:9999;'>
     <div class='modal-card' style='max-width: 500px; max-height: 80vh; display: flex; flex-direction: column;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; font-family:Orbitron; margin:0;'><i class='fa-solid fa-network-wired'></i> POHON JARINGAN</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalJaringan").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><div style='background:#0b0f19; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; border: 1px solid #334155;'><span style='color:#94a3b8; font-size:0.8rem;'>Sponsor Utama:</span><br/><b id='sponsorUtama' style='color:#fbbf24; font-size:1.1rem;'>NamaUser</b></div><div id='jaringanList' style='overflow-y:auto; flex:1; padding-right:5px;'></div></div>
@@ -897,6 +958,7 @@
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
 		if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadConfigStaking(); window.loadRiwayatPpob(); }
+		if(id === 'scr-autopromo') window.loadAutoPromo();
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
 
@@ -974,7 +1036,7 @@
         });
         
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
-        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); showToast("Access Granted: Welcome Commander.");
+        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.initAutoPromoEngine(); showToast("Access Granted: Welcome Commander.");
 
 		// --- Kalkulator Realtime Est Rupiah ---
     window.hitungEstRegBonus = function() {
@@ -2217,6 +2279,137 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
 
             btn.innerHTML = "<i class='fa-solid fa-paper-plane'></i> Request Tiket Deposit"; 
             btn.disabled = false;
+        };
+
+			// ==========================================
+        // --- MESIN VIRALITAS (AUTO PROMO ENGINE) --
+        // ==========================================
+        window.loadAutoPromo = async () => {
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_PROMO")));
+                if(!snap.empty) {
+                    let d = snap.docs[0].data();
+                    document.getElementById('tgRadarP2p').checked = d.radar_p2p || false;
+                    document.getElementById('tgRobotPromo').checked = d.robot_promo || false;
+                    document.getElementById('inpIntervalPromo').value = d.interval_menit || 60;
+                    document.getElementById('inpfomo').value = d.laci_fomo || "";
+                    document.getElementById('inpedukasi').value = d.laci_edukasi || "";
+                    document.getElementById('inpcta').value = d.laci_cta || "";
+                    document.getElementById('tgFbPost').checked = d.fb_active || false;
+                    document.getElementById('inpFbPageId').value = d.fb_page_id || "";
+                    document.getElementById('inpFbToken').value = d.fb_token || "";
+                }
+            } catch(e) { console.log("Gagal memuat config Auto Promo"); }
+        };
+
+        window.simpanAutoPromo = async () => {
+            const btn = document.querySelector(`button[onclick='window.simpanAutoPromo()']`);
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan Pengaturan..."; btn.disabled = true;
+
+            let payload = {
+                tipe: "AUTO_PROMO",
+                radar_p2p: document.getElementById('tgRadarP2p').checked,
+                robot_promo: document.getElementById('tgRobotPromo').checked,
+                interval_menit: parseInt(document.getElementById('inpIntervalPromo').value) || 60,
+                laci_fomo: document.getElementById('inpfomo').value.trim(),
+                laci_edukasi: document.getElementById('inpedukasi').value.trim(),
+                laci_cta: document.getElementById('inpcta').value.trim(),
+                fb_active: document.getElementById('tgFbPost').checked,
+                fb_page_id: document.getElementById('inpFbPageId').value.trim(),
+                fb_token: document.getElementById('inpFbToken').value.trim()
+            };
+
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_PROMO")));
+                if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+                else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+                
+                window.showToast("🔥 Mesin Viralitas Berhasil Diupdate!");
+                window.initAutoPromoEngine(); // Restart Engine dengan Config Baru
+            } catch(e) { alert("Gagal menyimpan pengaturan Auto Promo."); }
+            
+            btn.innerHTML = "<i class='fa-solid fa-save'></i> AKTIFKAN & SIMPAN MESIN VIRALITAS"; btn.disabled = false;
+        };
+
+        // --- Variabel Engine Global ---
+        let robotPromoInterval = null;
+        let unsubRadarP2p = null;
+
+        window.initAutoPromoEngine = async () => {
+            // Bersihkan interval & listener lama jika ada
+            if(robotPromoInterval) clearInterval(robotPromoInterval);
+            if(unsubRadarP2p) { unsubRadarP2p(); unsubRadarP2p = null; }
+
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_PROMO")));
+                if(snap.empty) return;
+                let cfg = snap.docs[0].data();
+
+                // 1. ENGINE RADAR P2P (Social Proof)
+                if(cfg.radar_p2p) {
+                    let isInitialRadarLoad = true;
+                    unsubRadarP2p = onSnapshot(query(collection(db, "P2P_Order"), where("status", "==", "SELESAI")), (snapshot) => {
+                        if(isInitialRadarLoad) { isInitialRadarLoad = false; return; } // Abaikan data masa lalu saat load pertama
+                        
+                        snapshot.docChanges().forEach(async (change) => {
+                            if (change.type === "modified") { 
+                                let order = change.doc.data();
+                                let qtyKoin = formatKripto(order.jumlah_vrsc);
+                                let hargaRp = order.total_bayar_rp.toLocaleString('id-ID');
+                                let msg = `🚀 LAKU KERAS! Transaksi P2P Berhasil! Member [ ${order.pembeli || 'Anonymous'} ] sukses memborong ${qtyKoin} VRSC seharga Rp ${hargaRp}. Pastikan Anda tidak ketinggalan momen ini!`;
+                                
+                                // Siarkan ke Aplikasi
+                                await addDoc(collection(db, "Notifikasi_Global"), { pesan: msg, pengirim: "Radar P2P", timestamp_local: Date.now() });
+                                // Tembak ke Facebook Page
+                                if(cfg.fb_active) window.tembakFacebookGraph(cfg, msg);
+                            }
+                        });
+                    });
+                }
+
+                // 2. ENGINE ROBOT PENYIARAN EDUKASI (Interval Gacha)
+                if(cfg.robot_promo && cfg.interval_menit > 0) {
+                    let msInterval = cfg.interval_menit * 60000;
+                    
+                    robotPromoInterval = setInterval(async () => {
+                        // Gabungkan Laci dan abaikan yang kosong
+                        let laci1 = cfg.laci_fomo ? cfg.laci_fomo.split('|').map(x=>x.trim()).filter(x=>x) : [];
+                        let laci2 = cfg.laci_edukasi ? cfg.laci_edukasi.split('|').map(x=>x.trim()).filter(x=>x) : [];
+                        let laci3 = cfg.laci_cta ? cfg.laci_cta.split('|').map(x=>x.trim()).filter(x=>x) : [];
+                        
+                        let semuaPesan = [...laci1, ...laci2, ...laci3];
+                        if(semuaPesan.length === 0) return;
+
+                        // Pilih 1 pesan secara acak
+                        let randomMsg = semuaPesan[Math.floor(Math.random() * semuaPesan.length)];
+                        
+                        // Siarkan ke Aplikasi
+                        await addDoc(collection(db, "Notifikasi_Global"), { pesan: randomMsg, pengirim: "Auto Promo", timestamp_local: Date.now() });
+                        
+                        // Tembak ke Facebook Page
+                        if(cfg.fb_active) window.tembakFacebookGraph(cfg, randomMsg);
+
+                    }, msInterval);
+                }
+            } catch(e) { console.log("Gagal inisialisasi Auto Promo Engine:", e); }
+        };
+
+        // 3. ENGINE FACEBOOK GRAPH API POSTER
+        window.tembakFacebookGraph = async (cfg, pesanToPost) => {
+            if(!cfg.fb_page_id || !cfg.fb_token) return;
+            try {
+                let url = `https://graph.facebook.com/v19.0/${cfg.fb_page_id}/feed`;
+                let formData = new URLSearchParams();
+                formData.append('message', pesanToPost);
+                formData.append('access_token', cfg.fb_token);
+
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                console.log("Auto Promo: Sukses menembak status ke Facebook Page.");
+            } catch(e) { console.log("Gagal menembak Facebook Graph:", e); }
         };
 	
 </script>
