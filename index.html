@@ -1040,8 +1040,9 @@
     <div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div>
 </div>
 <div style='display:flex; gap:10px;'>
-    <div class='form-group' style='flex:1;'><label style='color:#2ecc71;'>Exp Akun / REG (MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#2ecc71;' type='number'></div>
-    <div class='form-group' style='flex:1;'><label style='color:#f59e0b;'>Exp Mesin / MINING (MS)</label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f59e0b;' type='number'></div>
+    <div class='form-group' style='flex:1;'><label style='color:#2ecc71;'><i class="fa-regular fa-calendar-check"></i> Exp Akun (Tanggal)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#2ecc71;' type='datetime-local'></div>
+    <div class='form-group' style='flex:1;'><label style='color:#f59e0b;'><i class="fa-regular fa-calendar-xmark"></i> Exp Mesin (Tanggal)</label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f59e0b;' type='datetime-local'></div>
+</div>
 </div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
   
@@ -1392,14 +1393,23 @@
             document.getElementById('editInpSpeed').value = Number(user.kecepatan_hash || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
             
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
-            document.getElementById('editInpExp').value = user.expired_at || 0; 
+            
+            // MESIN PENERJEMAH: Konversi MiliDetik (MS) ke Format Kalender HTML
+            let formatKeKalender = (ms) => {
+                if(!ms || ms <= 0) return "";
+                let d = new Date(ms);
+                let local = new Date(d.getTime() - (d.getTimezoneOffset() * 60000));
+                return local.toISOString().slice(0,16);
+            };
+
+            document.getElementById('editInpExp').value = formatKeKalender(user.expired_at); 
             
             // Baca durasi mesin terjauh dari garasi
             let maxExpMesin = 0;
             if(user.daftar_mesin && user.daftar_mesin.length > 0) {
                 maxExpMesin = Math.max(...user.daftar_mesin.map(m => m.expired_kontrak));
             }
-            document.getElementById('editInpExpMesin').value = maxExpMesin;
+            document.getElementById('editInpExpMesin').value = formatKeKalender(maxExpMesin);
             
             document.getElementById('modalEditData').style.display = 'flex'; 
         } 
@@ -1417,8 +1427,14 @@
         const vrsc = getFloatVal('editInpSaldoVrsc'); 
         const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
         const spd = getFloatVal('editInpSpeed'); 
-        const expAkun = parseInt(document.getElementById('editInpExp').value) || 0; 
-        const expMesin = parseInt(document.getElementById('editInpExpMesin').value) || 0; 
+        
+        // MESIN PENERJEMAH: Konversi balik dari Tanggal Kalender ke MiliDetik (MS)
+        let valExpAkun = document.getElementById('editInpExp').value;
+        let valExpMesin = document.getElementById('editInpExpMesin').value;
+        
+        const expAkun = valExpAkun ? new Date(valExpAkun).getTime() : 0; 
+        const expMesin = valExpMesin ? new Date(valExpMesin).getTime() : 0; 
+        
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
         try { 
