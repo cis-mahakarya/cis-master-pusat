@@ -1036,7 +1036,13 @@
     <div class='form-group' style='flex:1;'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div>
     <div class='form-group' style='flex:1;'><label>PIN Transaksi</label><input class='input-dark no-icon' id='editInpPin' type='text' maxlength='6'></div>
     <div class='form-group' style='flex:1;'><label style='color:#f59e0b;'><i class='fa-solid fa-star'></i> Status/Role Akun</label><select id='editInpRole' class='input-dark' style='border-color:#f59e0b; color:#fbbf24; font-weight:bold;'><option value='MEMBER'>Member Biasa</option><option value='TIM 1'>Ketua Tim 1</option><option value='TIM 2'>Ketua Tim 2</option><option value='TIM 3'>Ketua Tim 3</option><option value='TIM 4'>Ketua Tim 4</option><option value='TIM 5'>Ketua Tim 5</option><option value='TIM 6'>Ketua Tim 6</option></select></div>
-</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#ef4444;'>Waktu Exp (Format MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#ef4444;' type='number'></div></div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
+</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'>
+    <div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div>
+</div>
+<div style='display:flex; gap:10px;'>
+    <div class='form-group' style='flex:1;'><label style='color:#2ecc71;'>Exp Akun / REG (MS)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#2ecc71;' type='number'></div>
+    <div class='form-group' style='flex:1;'><label style='color:#f59e0b;'>Exp Mesin / MINING (MS)</label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f59e0b;' type='number'></div>
+</div><button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
   
 <script type='module'>
@@ -1387,6 +1393,14 @@
             
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
             document.getElementById('editInpExp').value = user.expired_at || 0; 
+            
+            // Baca durasi mesin terjauh dari garasi
+            let maxExpMesin = 0;
+            if(user.daftar_mesin && user.daftar_mesin.length > 0) {
+                maxExpMesin = Math.max(...user.daftar_mesin.map(m => m.expired_kontrak));
+            }
+            document.getElementById('editInpExpMesin').value = maxExpMesin;
+            
             document.getElementById('modalEditData').style.display = 'flex'; 
         } 
     };
@@ -1403,7 +1417,8 @@
         const vrsc = getFloatVal('editInpSaldoVrsc'); 
         const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
         const spd = getFloatVal('editInpSpeed'); 
-        const exp = parseInt(document.getElementById('editInpExp').value) || 0; 
+        const expAkun = parseInt(document.getElementById('editInpExp').value) || 0; 
+        const expMesin = parseInt(document.getElementById('editInpExpMesin').value) || 0; 
         const btn = document.getElementById('btnSimpanEditData'); 
         btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true; 
         try { 
@@ -1414,15 +1429,15 @@
                     id_mesin: "EDIT-" + Math.random().toString(36).substr(2, 5).toUpperCase(),
                     nominal_beli: 0,
                     speed_bawaan: spd,
-                    expired_kontrak: exp
+                    expired_kontrak: expMesin
                 });
             }
-            // Menyimpan semua pembaruan termasuk tx_pin
+            // Menyimpan semua pembaruan secara terpisah
             await updateDoc(doc(db, "Akun_Publik", id), { 
                 username: uUser, email: uEmail, wa: uWa, 
                 password: uPass, tx_pin: uPin, referred_by: uUpline, role: uRole,
                 saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, 
-                expired_at: exp, daftar_mesin: garasiBaru 
+                expired_at: expAkun, daftar_mesin: garasiBaru 
             }); 
             window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); 
             document.getElementById('modalEditData').style.display = 'none'; 
