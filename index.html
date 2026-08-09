@@ -1339,7 +1339,12 @@
     window.loadUser = async () => {
       const tbody = document.getElementById('tblUser'); tbody.innerHTML = ''; let rewardDropdownHtml = "<option value='ALL'>-- SEMUA USER (GLOBAL REWARD) --</option>";
       const snap = await getDocs(collection(db, "Akun_Publik")); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Belum ada partisipan.</td></tr>"; return; }
-      allUsersData = []; snap.forEach(d => { allUsersData.push({ id: d.id, ...d.data() }); }); let downlineCount = {}; allUsersData.forEach(u => { if(u.referred_by && u.referred_by !== "") { downlineCount[u.referred_by] = (downlineCount[u.referred_by] || 0) + 1; } });
+      allUsersData = []; snap.forEach(d => { allUsersData.push({ id: d.id, ...d.data() }); }); 
+      
+      // MESIN PENGURUT (SORTING): Dari pendaftar terbaru (teratas) ke terlama
+      allUsersData.sort((a, b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+      
+      let downlineCount = {}; allUsersData.forEach(u => { if(u.referred_by && u.referred_by !== "") { downlineCount[u.referred_by] = (downlineCount[u.referred_by] || 0) + 1; } });
       let no = 1;
       
       allUsersData.forEach(u => {
