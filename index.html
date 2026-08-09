@@ -255,6 +255,9 @@
 		<div class='menu-box' id='menu-ppob' onclick='openScreen("scr-ppob")' style='border-top: 3px solid #0ea5e9;'>
           <i class='fa-solid fa-mobile-screen-button' style='color:#0ea5e9;'></i><span>Pusat PPOB</span>
       </div>
+		<div class='menu-box' id='menu-likuiditas' onclick='openScreen("scr-likuiditas")' style='border-top: 3px solid #facc15;'>
+          <i class='fa-solid fa-scale-balanced' style='color:#facc15;'></i><span>Audit Likuiditas</span>
+      </div>
 		<div class='menu-box' id='menu-autopromo' onclick='openScreen("scr-autopromo")' style='border-top: 3px solid #f43f5e;'>
           <i class='fa-solid fa-bullhorn' style='color:#f43f5e;'></i><span>Auto Promo</span>
       </div>
@@ -895,6 +898,90 @@
         <button class='btn-main' onclick='window.simpanAutoPromo()' style='background:linear-gradient(135deg, #f43f5e, #e11d48); padding:20px; font-size:1rem;'><i class='fa-solid fa-save'></i> AKTIFKAN & SIMPAN MESIN VIRALITAS</button>
     </div>
   </div>
+
+	<div class='admin-screen' id='scr-likuiditas'>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Audit Likuiditas & Setoran Tim</div>
+    <div class='screen-content'>
+        
+        <!-- KARTU 1: PENCATATAN SETORAN TUNAI -->
+        <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom: 20px;'>
+            <h4 style='margin-top:0; color:#10b981;'><i class='fa-solid fa-hand-holding-dollar'></i> 1. Catat Setoran Tunai (INFLOW FIAT)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Validasi dan catat uang nyata (Rupiah) yang sudah Anda pastikan masuk ke rekening Bank Anda dari para Ketua Tim.</p>
+            <div style='display:flex; gap:10px; margin-bottom:10px;'>
+                <div class='form-group' style='flex:1;'>
+                    <label>Pilih Tim Penyetor</label>
+                    <select id='inpSetoranTim' class='input-dark' style='border-color:#10b981;'>
+                        <option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option>
+                        <option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option>
+                        <option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option>
+                    </select>
+                </div>
+                <div class='form-group' style='flex:2;'>
+                    <label>Nominal Setoran (Rp)</label>
+                    <input type='number' id='inpSetoranNominal' class='input-dark' placeholder='Contoh: 1500000' style='border-color:#10b981;'>
+                </div>
+            </div>
+            <button class='btn-main' onclick='window.simpanSetoranTim()' style='background:#10b981;'><i class='fa-solid fa-check-double'></i> KONFIRMASI UANG MASUK KE REKENING</button>
+        </div>
+
+        <!-- KARTU 2: NERACA FIAT NYATA (UANG REAL) -->
+        <div class='live-dashboard' style='border-color:#facc15; background: radial-gradient(circle at top right, #332900, #0b0f19);'>
+            <h3 style='margin-top:0; color:#facc15;'><i class='fa-solid fa-scale-balanced'></i> 2. NERACA ARUS KAS (REAL MONEY)</h3>
+            <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Perbandingan antara Uang Nyata yang diterima Pusat vs Beban Nyata yang telah dibayar Pusat (PPOB & WD).</p>
+            
+            <div style='display:flex; justify-content:space-between; border-bottom:1px dashed rgba(250, 204, 21, 0.3); padding-bottom:10px; margin-bottom:10px;'>
+                <div>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-down'></i> INFLOW (UANG MASUK)</div>
+                    <div id='liqInflow' style='font-family:Orbitron; font-size:1.4rem; color:#4ade80; font-weight:900;'>Rp 0</div>
+                </div>
+                <div style='text-align:right;'>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-up'></i> OUTFLOW (WD + PPOB)</div>
+                    <div id='liqOutflow' style='font-family:Orbitron; font-size:1.4rem; color:#ef4444; font-weight:900;'>Rp 0</div>
+                </div>
+            </div>
+            
+            <div style='text-align:center; padding:15px; background:rgba(0,0,0,0.4); border-radius:10px; border:1px solid #facc15;'>
+                <div style='font-size:0.8rem; font-weight:bold; color:#facc15; margin-bottom:5px;'>STATUS KESEHATAN SISTEM:</div>
+                <div id='liqStatus' style='font-family:Orbitron; font-size:1.8rem; font-weight:900; color:#fff;'>MENGHITUNG...</div>
+                <div id='liqPesan' style='font-size:0.75rem; color:#cbd5e1; margin-top:5px;'>-</div>
+            </div>
+        </div>
+
+        <!-- KARTU 3: BEBAN HUTANG VIRTUAL -->
+        <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom: 20px;'>
+            <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-coins'></i> 3. Beban Hutang Virtual (Beredar)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Total saldo digital yang dipegang member (potensi bom waktu yang bisa disedot ke PPOB).</p>
+            
+            <div class='calc-grid' style='grid-template-columns: 1fr 1fr;'>
+                <div class='calc-item'>
+                    <div class='calc-title'>SALDO IDR BEREDAR</div>
+                    <div class='calc-val' id='liqBeredarIdr' style='color:#38bdf8;'>Rp 0</div>
+                </div>
+                <div class='calc-item'>
+                    <div class='calc-title'>SALDO VRSC BEREDAR</div>
+                    <div class='calc-val' id='liqBeredarVrsc' style='color:#fbbf24;'>0.0000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KARTU 4: SIRKULASI P2P (PAPAN SKOR) -->
+        <div class='card-panel' style='border-top: 2px solid #0ea5e9;'>
+            <h4 style='margin-top:0; color:#0ea5e9;'><i class='fa-solid fa-people-arrows'></i> 4. Sirkulasi P2P (Uang Berputar)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Memantau total uang yang berputar antar member di market P2P.</p>
+            
+            <div style='display:flex; justify-content:space-between; align-items:center; background:#0b0f19; padding:15px; border-radius:8px; border:1px solid #334155;'>
+                <div>
+                    <span style='font-size:0.75rem; color:#94a3b8;'>Total Transaksi P2P Sukses</span><br/>
+                    <b id='liqTotalP2p' style='font-size:1.4rem; font-family:Orbitron; color:#4ade80;'>Rp 0</b>
+                </div>
+                <i class='fa-solid fa-handshake' style='font-size:2.5rem; color:#0ea5e9; opacity:0.5;'></i>
+            </div>
+        </div>
+
+        <button class='btn-main' onclick='window.loadLikuiditas()' style='background:#facc15; color:#0f172a;'><i class='fa-solid fa-rotate'></i> REFRESH AUDIT DATA</button>
+    </div>
+  </div>
+	
 	
   <div class='modal-overlay' id='modalJaringan' style='z-index:9999;'>
     <div class='modal-card' style='max-width: 500px; max-height: 80vh; display: flex; flex-direction: column;'><div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'><h3 style='color:#38bdf8; font-family:Orbitron; margin:0;'><i class='fa-solid fa-network-wired'></i> POHON JARINGAN</h3><i class='fa-solid fa-xmark' onclick='document.getElementById("modalJaringan").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i></div><div style='background:#0b0f19; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; border: 1px solid #334155;'><span style='color:#94a3b8; font-size:0.8rem;'>Sponsor Utama:</span><br/><b id='sponsorUtama' style='color:#fbbf24; font-size:1.1rem;'>NamaUser</b></div><div id='jaringanList' style='overflow-y:auto; flex:1; padding-right:5px;'></div></div>
@@ -959,6 +1046,8 @@
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
 		if(id === 'scr-bantuan') window.loadPesanBantuan();
 		if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadConfigStaking(); window.loadRiwayatPpob(); }
+		if(id === 'scr-likuiditas') window.loadLikuiditas();
+    };
 		if(id === 'scr-autopromo') window.loadAutoPromo();
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
@@ -2284,7 +2373,118 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             btn.disabled = false;
         };
 
-			// ==========================================
+				// ==========================================
+        // --- MESIN KALKULATOR LIKUIDITAS (AUDIT) --
+        // ==========================================
+        
+        window.simpanSetoranTim = async () => {
+            let tim = document.getElementById('inpSetoranTim').value;
+            let nominal = parseInt(document.getElementById('inpSetoranNominal').value);
+            
+            if(!nominal || nominal <= 0) return alert("Masukkan nominal yang valid!");
+            if(!confirm(`PERHATIAN: Konfirmasi bahwa uang tunai sebesar Rp ${nominal.toLocaleString('id-ID')} benar-benar TELAH MASUK ke rekening Bank Anda dari ${tim}?`)) return;
+
+            const btn = document.querySelector(`button[onclick='window.simpanSetoranTim()']`);
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Mencatat..."; btn.disabled = true;
+            try {
+                // Disimpan dengan kode IN_FIAT agar tidak tercampur dengan hasil cetak token
+                await addDoc(collection(db, "Mutasi_Pusat"), {
+                    jenis: "IN_FIAT",
+                    nominal: nominal,
+                    deskripsi: `Setoran Tunai Valid dari ${tim}`,
+                    waktu: serverTimestamp()
+                });
+                window.showToast("Setoran Berhasil Dicatat ke Buku Kas!");
+                document.getElementById('inpSetoranNominal').value = "";
+                window.loadLikuiditas(); // Refresh hitungan
+            } catch(e) { alert("Gagal mencatat setoran."); }
+            btn.innerHTML = "<i class='fa-solid fa-check-double'></i> KONFIRMASI UANG MASUK KE REKENING"; btn.disabled = false;
+        };
+
+        window.loadLikuiditas = async () => {
+            const btn = document.querySelector(`button[onclick='window.loadLikuiditas()']`);
+            if(btn) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGHITUNG..."; btn.disabled = true; }
+
+            try {
+                let inflowPusat = 0;
+                let outflowWd = 0;
+                let outflowPpob = 0;
+                let saldoIdrBeredar = 0;
+                let saldoVrscBeredar = 0;
+                let totalP2p = 0;
+
+                // 1. Hitung Inflow Nyata & Outflow WD
+                const snapMutasi = await getDocs(collection(db, "Mutasi_Pusat"));
+                snapMutasi.forEach(d => {
+                    let x = d.data();
+                    if(x.jenis === "IN_FIAT") inflowPusat += x.nominal; // Hanya hitung uang tunai yg dikonfirmasi
+                    if(x.jenis === "OUT") outflowWd += x.nominal;
+                });
+
+                // 2. Hitung Outflow PPOB (Uang yg disedot ke Digiflazz)
+                const snapPpob = await getDocs(query(collection(db, "Riwayat_PPOB"), where("status", "==", "Sukses")));
+                snapPpob.forEach(d => {
+                    outflowPpob += (d.data().harga_asli || d.data().harga_jual || 0);
+                });
+
+                // 3. Hitung Beban Hutang Beredar di Member (Hanya role MEMBER yg berpotensi disedot)
+                const snapUsers = await getDocs(query(collection(db, "Akun_Publik"), where("role", "==", "MEMBER")));
+                snapUsers.forEach(d => {
+                    let u = d.data();
+                    saldoIdrBeredar += (u.saldo_rupiah || 0);
+                    saldoVrscBeredar += (u.saldo_vrsc || 0);
+                });
+
+                // 4. Hitung Sirkulasi P2P
+                const snapP2p = await getDocs(query(collection(db, "P2P_Order"), where("status", "==", "SELESAI")));
+                snapP2p.forEach(d => {
+                    totalP2p += (d.data().total_bayar_rp || 0);
+                });
+
+                // --- RENDER KE UI ---
+                let totalOutflow = outflowWd + outflowPpob;
+                let selisih = inflowPusat - totalOutflow;
+
+                document.getElementById('liqInflow').innerText = "Rp " + inflowPusat.toLocaleString('id-ID');
+                document.getElementById('liqOutflow').innerText = "Rp " + totalOutflow.toLocaleString('id-ID');
+                document.getElementById('liqBeredarIdr').innerText = "Rp " + saldoIdrBeredar.toLocaleString('id-ID');
+                document.getElementById('liqBeredarVrsc').innerText = saldoVrscBeredar.toFixed(4) + " VRSC";
+                document.getElementById('liqTotalP2p').innerText = "Rp " + totalP2p.toLocaleString('id-ID');
+
+                // Logika Status Anti-Tekor
+                let sttBox = document.getElementById('liqStatus');
+                let sttPesan = document.getElementById('liqPesan');
+                let cardLatar = sttBox.parentElement;
+
+                if (selisih > (saldoIdrBeredar * 0.3)) {
+                    // Sangat Sehat (Surplus mencukupi 30% dari potensi ancaman tarikan)
+                    sttBox.innerText = "SISTEM SEHAT";
+                    sttBox.style.color = "#4ade80";
+                    cardLatar.style.borderColor = "#4ade80";
+                    sttPesan.innerText = `Surplus Cadangan: Rp ${selisih.toLocaleString('id-ID')} (Aman dari Tarikan)`;
+                } else if (selisih >= 0) {
+                    // Waspada
+                    sttBox.innerText = "WASPADA (RESIKO TINGGI)";
+                    sttBox.style.color = "#fbbf24";
+                    cardLatar.style.borderColor = "#fbbf24";
+                    sttPesan.innerText = `Surplus Tipis: Rp ${selisih.toLocaleString('id-ID')}. Perbanyak penjualan Tim!`;
+                } else {
+                    // TEKOR (Bocor)
+                    sttBox.innerText = "SISTEM TEKOR (DEFISIT)";
+                    sttBox.style.color = "#ef4444";
+                    cardLatar.style.borderColor = "#ef4444";
+                    sttPesan.innerText = `MINUS: Rp ${Math.abs(selisih).toLocaleString('id-ID')}. Stop pencairan PPOB & segera suntik modal!`;
+                }
+
+            } catch(e) {
+                console.error("Gagal Audit:", e);
+                window.showToast("Gagal mengambil data Audit.");
+            }
+
+            if(btn) { btn.innerHTML = "<i class='fa-solid fa-rotate'></i> REFRESH AUDIT DATA"; btn.disabled = false; }
+        };
+
+		// ==========================================
         // --- MESIN VIRALITAS (AUTO PROMO ENGINE) --
         // ==========================================
         window.loadAutoPromo = async () => {
