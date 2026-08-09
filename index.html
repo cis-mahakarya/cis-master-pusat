@@ -1039,16 +1039,15 @@
     window.openScreen = (id) => {
         document.getElementById('mainDashboard').style.display = 'none'; document.getElementById(id).style.display = 'flex';
         if(id === 'scr-donasi-admin') window.loadAdminDonasi();
-		if(id === 'scr-team') window.loadDataTim(); 
+        if(id === 'scr-team') window.loadDataTim(); 
         if(id === 'scr-approval') window.switchTabWd('pending'); 
         if(id === 'scr-cpanel') window.loadDaftarAdmin();
         if(id === 'scr-akuntansi') window.loadAkuntansiPusat();
         if(id === 'scr-miner' || id === 'scr-reward') window.loadUser();
-		if(id === 'scr-bantuan') window.loadPesanBantuan();
-		if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadConfigStaking(); window.loadRiwayatPpob(); }
-		if(id === 'scr-likuiditas') window.loadLikuiditas();
-    };
-		if(id === 'scr-autopromo') window.loadAutoPromo();
+        if(id === 'scr-bantuan') window.loadPesanBantuan();
+        if(id === 'scr-ppob') { window.loadConfigPpob(); window.loadConfigStaking(); window.loadRiwayatPpob(); }
+        if(id === 'scr-likuiditas') window.loadLikuiditas();
+        if(id === 'scr-autopromo') window.loadAutoPromo();
     };
     window.closeScreen = () => { document.querySelectorAll('.admin-screen').forEach(el => el.style.display = 'none'); document.getElementById('mainDashboard').style.display = 'block'; };
 
