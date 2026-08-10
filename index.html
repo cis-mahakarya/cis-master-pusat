@@ -555,21 +555,6 @@
   <div class='admin-screen' id='scr-sistem'>
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Sistem Aplikasi &amp; Pendaftaran</div>
     <div class='screen-content'>
-
-	<div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px; background: rgba(168, 85, 247, 0.05); border: 1px dashed #a855f7;'>
-        <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-life-ring'></i> Disaster Recovery Center</h4>
-        <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Amankan urat nadi platform cisverus.com dari serangan fatal takedown atau hacker dengan fitur evakuasi otomatis.</p>
-        
-        <button class='btn-main' id='btnBackupDb' onclick='window.evakuasiDatabase()' style='background:#a855f7; color:#fff; margin-bottom:15px;'><i class='fa-solid fa-cloud-arrow-down'></i> 1. DOWNLOAD BACKUP DATABASE (.JSON)</button>
-        
-        <hr style='border:1px dashed rgba(168, 85, 247, 0.3); margin:15px 0;'/>
-        
-        <label style='color:#c084fc;'><i class='fa-solid fa-file-import'></i> 2. PENGEMBALIAN DATA (RESTORE ENGINE)</label>
-        <input type='file' id='inpRestoreDb' accept='.json' style='margin-top:5px; margin-bottom:10px; background:#0b0f19; border:1px solid #475569; padding:8px; border-radius:8px; color:#fff;'>
-        <button class='btn-main' id='btnRestoreDb' onclick='window.pulihkanDatabase()' style='background:linear-gradient(135deg, #a855f7, #6b21a8); color:#fff;'><i class='fa-solid fa-shield-heart'></i> EKSEKUSI PEMULIHAN DATA SYSTEM</button>
-        
-        <div id='logBackup' style='margin-top:10px; font-size:0.75rem; color:#4ade80; text-align:center;'></div>
-      </div>
 		
       <!-- KOTAK KENDALI STATUS WEB (MAINTENANCE & LAUNCH) -->
       <div class='card-panel' style='border-top: 2px solid #ef4444; margin-bottom:20px;'>
