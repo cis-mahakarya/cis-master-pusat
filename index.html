@@ -1372,13 +1372,25 @@
 
             log.innerText = `Menyuntikkan Saldo ke ${targetUsernameFinal}...`;
 
-            // 2. AMBIL SALDO VRSC TERKINI
+            // 2. AMBIL SALDO VRSC TERKINI & DETEKSI BRANKAS GANDA
             const uDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", targetEmail)));
-            let currentVrsc = uDoc.docs[0].data().saldo_vrsc || 0;
-            let saldoVrscBaru = currentVrsc + nominalVrsc;
+            let uData = uDoc.docs[0].data();
+            
+            let isTargetTim = uData.role && uData.role.includes("TIM");
+            let fieldUpdate = {};
+            
+            if (isTargetTim) {
+                // Masuk ke Brankas Titipan Pusat
+                let currentVrscMaster = uData.saldo_vrsc_master || 0;
+                fieldUpdate = { saldo_vrsc_master: currentVrscMaster + nominalVrsc };
+            } else {
+                // Masuk ke Brankas Pribadi (Member Biasa)
+                let currentVrsc = uData.saldo_vrsc || 0;
+                fieldUpdate = { saldo_vrsc: currentVrsc + nominalVrsc };
+            }
 
             // 3. INJEKSI SALDO KE DATABASE MEMBER
-            await updateDoc(doc(db, "Akun_Publik", targetDocId), { saldo_vrsc: saldoVrscBaru });
+            await updateDoc(doc(db, "Akun_Publik", targetDocId), fieldUpdate);
 
             // 4. CATAT BUKU MUTASI MEMBER
             await addDoc(collection(db, "Mutasi_Mining"), { 
