@@ -353,7 +353,11 @@
         
         <div class='form-group' style='border: 1px dashed #38bdf8; padding: 15px; border-radius: 8px; background: rgba(56, 189, 248, 0.05); margin-top: 15px;'>
             <label style='color: #38bdf8;'><i class='fa-solid fa-coins'></i> Nominal Injeksi (VRSC):</label>
-            <input id='inpInjeksiVrsc' type='number' step='any' placeholder='Contoh: 150.5' style='font-family:Orbitron; font-size:1.5rem; font-weight:bold; color:#f1c40f; text-align:center; margin-top:5px; border-color:#38bdf8;'>
+            <input id='inpInjeksiVrsc' type='number' step='any' placeholder='Contoh: 150.5' style='font-family:Orbitron; font-size:1.5rem; font-weight:bold; color:#f1c40f; text-align:center; margin-top:5px; border-color:#38bdf8;' oninput='window.hitungEstimasiInjeksi()'>
+            <div style='display:flex; justify-content:space-between; margin-top:10px; padding-top:10px; border-top:1px dashed rgba(56,189,248,0.3); font-size:0.8rem;'>
+                <div><span style='color:#94a3b8;'>Estimasi IDR:</span><br/><b id='estInjeksiIdr' style='color:#2ecc71;'>Rp 0</b></div>
+                <div style='text-align:right;'><span style='color:#94a3b8;'>Estimasi USDT:</span><br/><b id='estInjeksiUsdt' style='color:#f1c40f;'>$ 0.00</b></div>
+            </div>
         </div>
         
         <div class='form-group'>
@@ -1293,6 +1297,33 @@
         if (savedSession) { let data = JSON.parse(savedSession); document.documentElement.classList.add("sesi-aktif"); window.prosesSuksesLogin(data.role, data.aksesArr, data.nama); }
     });
 
+		window.globalVrscPriceIdr = 0;
+    window.globalVrscPriceUsdt = 0;
+
+    window.fetchPriceAdmin = async () => {
+        try {
+            const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=verus-coin&vs_currencies=idr,usd');
+            const data = await res.json();
+            window.globalVrscPriceIdr = data['verus-coin'].idr;
+            window.globalVrscPriceUsdt = data['verus-coin'].usd;
+            // Update angka di layar secara otomatis saat harga berubah (jika input tidak kosong)
+            if(document.getElementById('inpInjeksiVrsc').value) window.hitungEstimasiInjeksi();
+        } catch (e) {
+            if(window.globalVrscPriceIdr === 0) window.globalVrscPriceIdr = 2500;
+            if(window.globalVrscPriceUsdt === 0) window.globalVrscPriceUsdt = 0.15;
+        }
+    };
+    setInterval(window.fetchPriceAdmin, 60000); // Cek harga per 60 detik
+    setTimeout(window.fetchPriceAdmin, 1000);   // Tarik harga saat web dibuka
+
+    window.hitungEstimasiInjeksi = () => {
+        let vrsc = parseFloat(document.getElementById('inpInjeksiVrsc').value) || 0;
+        let estIdr = vrsc * window.globalVrscPriceIdr;
+        let estUsdt = vrsc * window.globalVrscPriceUsdt;
+        document.getElementById('estInjeksiIdr').innerText = "Rp " + Math.floor(estIdr).toLocaleString('id-ID');
+        document.getElementById('estInjeksiUsdt').innerText = "$ " + estUsdt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    };
+	
     document.getElementById('btnCetakToken').addEventListener('click', async () => {
         const tim = document.getElementById('distTim').value;
         const nominalVrsc = parseFloat(document.getElementById('inpInjeksiVrsc').value);
