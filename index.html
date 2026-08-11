@@ -210,8 +210,8 @@
     </div>
 
     <div class='grid-menu'>
-      <div class='menu-box' id='menu-pabrik' onclick='openScreen("scr-pabrik")' style='border-top: 3px solid #3498db;'>
-          <i class='fa-solid fa-industry' style='color:#3498db;'></i><span>Pabrik Token</span>
+      <div class='menu-box' id='menu-pabrik' onclick='openScreen("scr-pabrik")' style='border-top: 3px solid #38bdf8;'>
+          <i class='fa-solid fa-droplet' style='color:#38bdf8;'></i><span>Suplai VRSC</span>
       </div>
       <div class='menu-box' id='menu-approval' onclick='openScreen("scr-approval")' style='border-top: 3px solid #e67e22;'>
           <i class='fa-solid fa-money-bill-transfer' style='color:#e67e22;'></i><span>Persetujuan WD</span>
@@ -337,26 +337,32 @@
   </div>
 
   <div class='admin-screen' id='scr-pabrik'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Pabrik Token Resmi</div>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Manajemen Suplai Likuiditas</div>
     <div class='screen-content'>
-      <div class='card-panel'>
-        <h3 style="color:#38bdf8; margin-top:0;"><i class="fa-solid fa-industry"></i> Cetak Token Aktivasi & Speed</h3>
+      <div class='card-panel' style='border-top: 2px solid #38bdf8;'>
+        <h3 style="color:#38bdf8; margin-top:0;"><i class="fa-brands fa-hive"></i> Injeksi Saldo VRSC</h3>
+        <p style="font-size:0.75rem; color:#94a3b8; margin-top:-5px; margin-bottom:15px;">Kirim saldo VRSC langsung ke akun Tim untuk modal perputaran P2P.</p>
         
         <div class='form-group'>
-          <label>Target Distribusi:</label>
+          <label>Target Penerima (Akun Tim / User):</label>
           <select id='distTim' onchange='if(this.value==="USER"){document.getElementById("inpTargetUserPabrik").style.display="block";}else{document.getElementById("inpTargetUserPabrik").style.display="none";}'>
-            <option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option><option value='USER'>?? KIRIM LANGSUNG KE PEMAIN</option>
+            <option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option><option value='USER'>👉 KIRIM MANUAL KE USERNAME / EMAIL</option>
           </select>
-          <input class='login-input' id='inpTargetUserPabrik' placeholder='Ketik Username atau Email Pemain' style='display:none; margin-top:10px;' type='text'>
+          <input class='login-input' id='inpTargetUserPabrik' placeholder='Ketik Username atau Email Penerima' style='display:none; margin-top:10px; border-color:#38bdf8;' type='text'>
         </div>
-        <div class='form-group' style='border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; background: rgba(56, 189, 248, 0.1);'><label style='color: #38bdf8;'><i class='fa-solid fa-tags'></i> Jenis Token yang Dicetak:</label><select id='jenisTokenPabrik' style='border-color: #38bdf8;'><option value='REG'>Token Aktivasi Akun (REG)</option><option value='MINING'>Token Upgrade Mesin (MINING)</option></select></div>
-        <div style='display:flex; gap:10px; flex-wrap:wrap; margin-top: 15px;'>
-            <div class='form-group' style='flex:1; min-width:100px;'>
-                <label>Nominal Sesuai Harga Pasar</label>
-                <select id='nomToken'><option value='10000'>Default 10K</option></select>
-            </div>
-            <div class='form-group' style='flex:1; min-width:100px;'><label>Lembar</label><input id='jmlToken' inputmode='numeric' type='text' value='1'></div><div class='form-group' style='flex:1; min-width:100px;'><label>Masa Aktif (Hari)</label><input id='durasiToken' inputmode='numeric' type='text' value='30'></div></div>
-        <button class='btn-main' id='btnCetakToken'><i class='fa-solid fa-print'></i> Cetak &amp; Distribusi</button><div id='logToken' style='margin-top:10px; text-align:center; color:#4ade80; font-weight:bold;'></div>
+        
+        <div class='form-group' style='border: 1px dashed #38bdf8; padding: 15px; border-radius: 8px; background: rgba(56, 189, 248, 0.05); margin-top: 15px;'>
+            <label style='color: #38bdf8;'><i class='fa-solid fa-coins'></i> Nominal Injeksi (VRSC):</label>
+            <input id='inpInjeksiVrsc' type='number' step='any' placeholder='Contoh: 150.5' style='font-family:Orbitron; font-size:1.5rem; font-weight:bold; color:#f1c40f; text-align:center; margin-top:5px; border-color:#38bdf8;'>
+        </div>
+        
+        <div class='form-group'>
+            <label>Catatan Mutasi Transaksi:</label>
+            <input id='inpCatatanInjeksi' class='login-input' type='text' value='Suntikan Likuiditas Pusat' style='margin-bottom:0;'>
+        </div>
+        
+        <button class='btn-main' id='btnCetakToken' style='background:linear-gradient(135deg, #38bdf8, #0284c7); margin-top: 10px;'><i class='fa-solid fa-paper-plane'></i> INJEKSI SALDO SEKARANG</button>
+        <div id='logToken' style='margin-top:15px; text-align:center; color:#4ade80; font-weight:bold; font-size:0.85rem;'></div>
       </div>
     </div>
   </div>
