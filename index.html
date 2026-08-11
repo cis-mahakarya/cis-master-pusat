@@ -1342,7 +1342,7 @@
         log.innerText = "Mencari target penerima...";
 
         try {
-            // 1. CARI TARGET AKUN (USER MANUAL ATAU KETUA TIM)
+            // 1. CARI TARGET AKUN
             if (tim === 'USER') { 
                 let rawInput = document.getElementById('inpTargetUserPabrik').value.trim(); 
                 if(!rawInput) { alert("Masukkan Username atau Email penerima!"); log.innerText = ""; btn.disabled = false; return; } 
@@ -1358,12 +1358,11 @@
                 targetUsernameFinal = foundDoc.data().username || "User"; 
                 targetDocId = foundDoc.id;
             } else {
-                // Cari akun berdasarkan Role (contoh: Role "TIM 1")
                 const roleTim = tim.toUpperCase(); 
                 const qTim = query(collection(db, "Akun_Publik"), where("role", "==", roleTim));
                 const resTim = await getDocs(qTim);
                 
-                if(resTim.empty) { alert(`GAGAL: Belum ada akun yang diatur sebagai Ketua ${tim} di menu Data Miner!`); log.innerText = ""; btn.disabled = false; return; }
+                if(resTim.empty) { alert(`GAGAL: Belum ada akun yang diatur sebagai Ketua ${tim}!`); log.innerText = ""; btn.disabled = false; return; }
                 let foundDoc = resTim.docs[0];
                 targetEmail = foundDoc.data().email; 
                 targetUsernameFinal = foundDoc.data().username || tim;
@@ -1372,27 +1371,31 @@
 
             log.innerText = `Menyuntikkan Saldo ke ${targetUsernameFinal}...`;
 
-            // 2. AMBIL SALDO VRSC TERKINI & DETEKSI BRANKAS GANDA
+            // 2. AMBIL SALDO & TENTUKAN BRANKAS (RADAR DIPERKUAT)
             const uDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", targetEmail)));
             let uData = uDoc.docs[0].data();
             
-            let isTargetTim = uData.role && uData.role.includes("TIM");
+            let isTargetTim = false;
+            if (tim !== 'USER') {
+                isTargetTim = true; // Jika admin pilih "Tim 1", "Tim 2" dari dropdown, pasti itu Tim!
+            } else if (uData.role) {
+                // Jika pilih "USER" (manual), paksa huruf jadi besar semua untuk dicek
+                isTargetTim = String(uData.role).toUpperCase().includes("TIM");
+            }
+
             let fieldUpdate = {};
-            
             if (isTargetTim) {
-                // Masuk ke Brankas Titipan Pusat
-                let currentVrscMaster = uData.saldo_vrsc_master || 0;
+                let currentVrscMaster = parseFloat(uData.saldo_vrsc_master) || 0;
                 fieldUpdate = { saldo_vrsc_master: currentVrscMaster + nominalVrsc };
             } else {
-                // Masuk ke Brankas Pribadi (Member Biasa)
-                let currentVrsc = uData.saldo_vrsc || 0;
+                let currentVrsc = parseFloat(uData.saldo_vrsc) || 0;
                 fieldUpdate = { saldo_vrsc: currentVrsc + nominalVrsc };
             }
 
-            // 3. INJEKSI SALDO KE DATABASE MEMBER
+            // 3. INJEKSI SALDO KE DATABASE
             await updateDoc(doc(db, "Akun_Publik", targetDocId), fieldUpdate);
 
-            // 4. CATAT BUKU MUTASI MEMBER
+            // 4. CATAT MUTASI
             await addDoc(collection(db, "Mutasi_Mining"), { 
                 email: targetEmail, 
                 jenis: "IN", 
@@ -1401,23 +1404,27 @@
                 timestamp_local: Date.now() 
             });
 
-            // 5. KIRIM NOTIFIKASI POP-UP KE MEMBER/TIM
+            // 5. NOTIFIKASI
+            let namaBrankas = isTargetTim ? "BRANKAS MASTER TIM" : "Saldo VRSC";
             await addDoc(collection(db, "Notifikasi_Personal"), { 
                 email: targetEmail, 
-                pesan: `💰 INJEKSI LIKUIDITAS: Pusat telah mengirimkan ${nominalVrsc} VRSC ke saldo Anda.`, 
+                pesan: `💰 INJEKSI LIKUIDITAS PUSAT: ${nominalVrsc} VRSC telah masuk ke ${namaBrankas} Anda.`, 
                 timestamp_local: Date.now() 
             });
 
-            // 6. CATAT BUKU MUTASI PUSAT (Sebagai Outflow/Injeksi)
+            // 6. CATAT BUKU PUSAT
             await addDoc(collection(db, "Mutasi_Pusat"), { 
                 jenis: "OUT", 
-                nominal: 0, // Nominal fiat 0 karena ini injeksi aset digital
-                deskripsi: `Injeksi ${nominalVrsc} VRSC ke ${targetUsernameFinal}`, 
+                nominal: 0, 
+                deskripsi: `Injeksi ${nominalVrsc} VRSC ke ${targetUsernameFinal} (${isTargetTim ? 'Brankas Tim' : 'Member'})`, 
                 waktu: serverTimestamp() 
             });
 
-            log.innerText = `✅ SUKSES! ${nominalVrsc} VRSC berhasil dikirim ke ${targetUsernameFinal}.`;
+            log.innerText = `✅ SUKSES! ${nominalVrsc} VRSC masuk ke ${isTargetTim ? 'Brankas Tim' : 'Brankas Member'}.`;
             document.getElementById('inpInjeksiVrsc').value = '';
+            
+            // Trigger hitung ulang estimasi agar kembali 0
+            if(typeof window.hitungEstimasiInjeksi === "function") window.hitungEstimasiInjeksi();
 
         } catch (e) {
             console.error(e);
