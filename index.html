@@ -1294,43 +1294,95 @@
     });
 
     document.getElementById('btnCetakToken').addEventListener('click', async () => {
-      const tim = document.getElementById('distTim').value; 
-      const nom = parseInt(document.getElementById('nomToken').value); 
-      const jml = parseInt(document.getElementById('jmlToken').value); 
-      const durasiHari = parseInt(document.getElementById('durasiToken').value) || 30; 
-      let jenisTkn = document.getElementById('jenisTokenPabrik').value; 
-      const log = document.getElementById('logToken'); 
-      let targetUserEmail = ""; let targetUsernameFinal = ""; let finalPemilik = tim;
+        const tim = document.getElementById('distTim').value;
+        const nominalVrsc = parseFloat(document.getElementById('inpInjeksiVrsc').value);
+        const catatanMutasi = document.getElementById('inpCatatanInjeksi').value.trim();
+        const log = document.getElementById('logToken');
+        const btn = document.getElementById('btnCetakToken');
 
-      if(tim === 'USER') { 
-          let rawInput = document.getElementById('inpTargetUserPabrik').value.trim(); 
-          if(!rawInput) return alert("Masukkan Username atau Email pemain!"); 
-          let searchKey = rawInput.includes('@') ? rawInput.toLowerCase() : rawInput.toUpperCase().replace(/\s/g, "");
-          log.innerText = "Mencari data pemain..."; document.getElementById('btnCetakToken').disabled = true;
+        if (isNaN(nominalVrsc) || nominalVrsc <= 0) return alert("Masukkan nominal VRSC yang valid!");
+        if (!catatanMutasi) return alert("Catatan mutasi tidak boleh kosong!");
 
-          const q1 = query(collection(db, "Akun_Publik"), where("email", "==", searchKey)); 
-          const q2 = query(collection(db, "Akun_Publik"), where("username", "==", searchKey)); 
-          let res1 = await getDocs(q1); let res2 = await getDocs(q2); 
-          
-          if(res1.empty && res2.empty) { alert("GAGAL: Pemain tidak ditemukan di database!"); log.innerText = ""; document.getElementById('btnCetakToken').disabled = false; return; } 
-          let foundDoc = !res1.empty ? res1.docs[0].data() : res2.docs[0].data();
-          targetUserEmail = foundDoc.email; targetUsernameFinal = foundDoc.username || ""; finalPemilik = targetUserEmail; 
-      }
-      
-      log.innerText = "Memproses Pencetakan Token..."; document.getElementById('btnCetakToken').disabled = true;
-      
-      for(let i = 0; i < jml; i++){
-        let t = ''; const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for(let j = 0; j < 16; j++) t += chars.charAt(Math.floor(Math.random() * chars.length)); let tk = `${t.slice(0,4)}-${t.slice(4,8)}-${t.slice(8,12)}-${t.slice(12,16)}`;
-        
-        await addDoc(collection(db, "Database_Token"), { kode_token: tk, nominal_rupiah: nom, durasi_hari: durasiHari, status: "AKTIF", distribusi_ke: jenisTkn, pemilik: finalPemilik, pemilik_username: targetUsernameFinal, pengirim: "Pusat (Master)", pembuat: "Master Admin", dibuat_pada: serverTimestamp(), dipakai_oleh: null });
-        
-        if(tim === 'USER') { 
-            await addDoc(collection(db, "Notifikasi_Personal"), { email: targetUserEmail, pesan: `?? PUSAT mengirimkan Token ${jenisTkn} senilai Rp ${nom.toLocaleString('id-ID')}! Kode: ${tk}`, timestamp_local: Date.now() }); 
-            await addDoc(collection(db, "Mutasi_Mining"), { email: targetUserEmail, jenis: "IN", deskripsi: `?? Terima Token ${jenisTkn} dari Pusat`, nominal: nom, timestamp_local: Date.now() });
+        let targetEmail = ""; 
+        let targetUsernameFinal = ""; 
+        let targetDocId = "";
+
+        btn.disabled = true;
+        log.innerText = "Mencari target penerima...";
+
+        try {
+            // 1. CARI TARGET AKUN (USER MANUAL ATAU KETUA TIM)
+            if (tim === 'USER') { 
+                let rawInput = document.getElementById('inpTargetUserPabrik').value.trim(); 
+                if(!rawInput) { alert("Masukkan Username atau Email penerima!"); log.innerText = ""; btn.disabled = false; return; } 
+                let searchKey = rawInput.includes('@') ? rawInput.toLowerCase() : rawInput.toUpperCase().replace(/\s/g, "");
+
+                const q1 = query(collection(db, "Akun_Publik"), where("email", "==", searchKey)); 
+                const q2 = query(collection(db, "Akun_Publik"), where("username", "==", searchKey)); 
+                let res1 = await getDocs(q1); let res2 = await getDocs(q2); 
+                
+                if(res1.empty && res2.empty) { alert("GAGAL: Akun penerima tidak ditemukan di database!"); log.innerText = ""; btn.disabled = false; return; } 
+                let foundDoc = !res1.empty ? res1.docs[0] : res2.docs[0];
+                targetEmail = foundDoc.data().email; 
+                targetUsernameFinal = foundDoc.data().username || "User"; 
+                targetDocId = foundDoc.id;
+            } else {
+                // Cari akun berdasarkan Role (contoh: Role "TIM 1")
+                const roleTim = tim.toUpperCase(); 
+                const qTim = query(collection(db, "Akun_Publik"), where("role", "==", roleTim));
+                const resTim = await getDocs(qTim);
+                
+                if(resTim.empty) { alert(`GAGAL: Belum ada akun yang diatur sebagai Ketua ${tim} di menu Data Miner!`); log.innerText = ""; btn.disabled = false; return; }
+                let foundDoc = resTim.docs[0];
+                targetEmail = foundDoc.data().email; 
+                targetUsernameFinal = foundDoc.data().username || tim;
+                targetDocId = foundDoc.id;
+            }
+
+            log.innerText = `Menyuntikkan Saldo ke ${targetUsernameFinal}...`;
+
+            // 2. AMBIL SALDO VRSC TERKINI
+            const uDoc = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", targetEmail)));
+            let currentVrsc = uDoc.docs[0].data().saldo_vrsc || 0;
+            let saldoVrscBaru = currentVrsc + nominalVrsc;
+
+            // 3. INJEKSI SALDO KE DATABASE MEMBER
+            await updateDoc(doc(db, "Akun_Publik", targetDocId), { saldo_vrsc: saldoVrscBaru });
+
+            // 4. CATAT BUKU MUTASI MEMBER
+            await addDoc(collection(db, "Mutasi_Mining"), { 
+                email: targetEmail, 
+                jenis: "IN", 
+                deskripsi: catatanMutasi, 
+                nominal: nominalVrsc, 
+                timestamp_local: Date.now() 
+            });
+
+            // 5. KIRIM NOTIFIKASI POP-UP KE MEMBER/TIM
+            await addDoc(collection(db, "Notifikasi_Personal"), { 
+                email: targetEmail, 
+                pesan: `💰 INJEKSI LIKUIDITAS: Pusat telah mengirimkan ${nominalVrsc} VRSC ke saldo Anda.`, 
+                timestamp_local: Date.now() 
+            });
+
+            // 6. CATAT BUKU MUTASI PUSAT (Sebagai Outflow/Injeksi)
+            await addDoc(collection(db, "Mutasi_Pusat"), { 
+                jenis: "OUT", 
+                nominal: 0, // Nominal fiat 0 karena ini injeksi aset digital
+                deskripsi: `Injeksi ${nominalVrsc} VRSC ke ${targetUsernameFinal}`, 
+                waktu: serverTimestamp() 
+            });
+
+            log.innerText = `✅ SUKSES! ${nominalVrsc} VRSC berhasil dikirim ke ${targetUsernameFinal}.`;
+            document.getElementById('inpInjeksiVrsc').value = '';
+
+        } catch (e) {
+            console.error(e);
+            alert("Terjadi kesalahan jaringan saat mengirim saldo!");
+            log.innerText = "";
         }
-      }
-      await addDoc(collection(db, "Mutasi_Pusat"), { jenis: "IN", nominal: (nom * jml), deskripsi: `Cetak ${jml} Lembar Token ${jenisTkn} untuk ${tim === 'USER' ? targetUsernameFinal : tim}`, waktu: serverTimestamp() });
-      log.innerText = tim === 'USER' ? `? Sukses mengirim ${jml} Token ${jenisTkn} ke ${targetUsernameFinal}!` : `? Sukses mencetak ${jml} Token ${jenisTkn} untuk ${tim}!`; document.getElementById('btnCetakToken').disabled = false;
+
+        btn.disabled = false;
     });
 
     window.switchTabWd = (tab) => {
