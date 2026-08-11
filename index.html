@@ -946,6 +946,27 @@
                 <input type='number' id='inpSetoranNominal' class='input-dark' placeholder='Nominal' style='flex:2; border-color:#f59e0b;'>
                 <button class='btn-main' onclick='window.simpanSetoranTim()' style='flex:1; background:#f59e0b; padding:10px;'><i class='fa-solid fa-plus'></i> TAMBAH</button>
             </div>
+
+            <!-- TABEL RIWAYAT VALIDASI (ACC / DITOLAK) -->
+            <div style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px dashed #334155;">
+                <h5 style="color: #94a3b8; margin: 0 0 10px 0; font-size: 0.8rem;"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Validasi Setoran</h5>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table style="width:100%; border-collapse: collapse; font-size: 0.75rem;">
+                        <thead>
+                            <tr style="color: #64748b; border-bottom: 1px solid #334155; text-align: left;">
+                                <th style="padding: 6px;">Waktu</th>
+                                <th style="padding: 6px;">Tim</th>
+                                <th style="padding: 6px;">Nominal</th>
+                                <th style="padding: 6px;">Struk</th>
+                                <th style="padding: 6px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblRiwayatSetoranMaster">
+                            <tr><td colspan="5" style="text-align:center; color:#64748b; padding:10px;">Memuat riwayat...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- KARTU 2: NERACA FIAT NYATA (UANG REAL) -->
@@ -2648,6 +2669,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             // Panggil trigger tambahan saat merefresh layar
             if(typeof window.loadRekeningMaster === 'function') window.loadRekeningMaster();
             if(typeof window.loadLaporanSetoran === 'function') window.loadLaporanSetoran();
+            if(typeof window.loadRiwayatSetoranMaster === 'function') window.loadRiwayatSetoranMaster();
         };
 
         // --- MESIN PENGATURAN REKENING MASTER ---
@@ -2725,6 +2747,36 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             } catch(e) { alert("Gagal memproses validasi."); }
         };
 
+		window.loadRiwayatSetoranMaster = async () => {
+            const tbody = document.getElementById('tblRiwayatSetoranMaster');
+            if (!tbody) return;
+            try {
+                const snap = await getDocs(query(collection(db, "Laporan_Setoran"), orderBy("waktu_lapor", "desc"), limit(30)));
+                let html = "";
+                snap.forEach(d => {
+                    let x = d.data();
+                    if (x.status === "DISETUJUI" || x.status === "DITOLAK") {
+                        let tgl = x.waktu_lapor ? new Date(x.waktu_lapor.seconds * 1000).toLocaleString('id-ID') : '-';
+                        let badgeStatus = x.status === "DISETUJUI" 
+                            ? `<span style="background:rgba(46,204,113,0.2); color:#2ecc71; padding:2px 6px; border-radius:4px; font-weight:bold;">ACC</span>`
+                            : `<span style="background:rgba(239,68,68,0.2); color:#ef4444; padding:2px 6px; border-radius:4px; font-weight:bold;">DITOLAK</span>`;
+                        let linkStruk = x.bukti_tf 
+                            ? `<a href="${x.bukti_tf}" target="_blank" style="color:#38bdf8; text-decoration:none;"><i class="fa-solid fa-image"></i> Cek</a>` 
+                            : `<span style="color:#64748b;">-</span>`;
+
+                        html += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:6px; color:#94a3b8;">${tgl}</td>
+                            <td style="padding:6px; color:#e2e8f0;"><b>${x.username || '-'}</b></td>
+                            <td style="padding:6px; color:#f1c40f;">Rp ${(x.nominal || 0).toLocaleString('id-ID')}</td>
+                            <td style="padding:6px;">${linkStruk}</td>
+                            <td style="padding:6px;">${badgeStatus}</td>
+                        </tr>`;
+                    }
+                });
+                tbody.innerHTML = html || `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:10px;">Belum ada riwayat validasi.</td></tr>`;
+            } catch (err) { console.error("Gagal muat riwayat:", err); }
+        };
+	
 		// ==========================================
         // --- MESIN VIRALITAS (AUTO PROMO ENGINE) --
         // ==========================================
