@@ -1542,7 +1542,9 @@
       let no = 1;
       
       allUsersData.forEach(u => {
-        let stt = u.status_akun === "BLOKIR" ? "BLOKIR" : "AKTIF"; let badgeS = stt === "AKTIF" ? `<span class='badge bg-green'>Aktif</span>` : `<span class='badge bg-red'>Blokir</span>`; let pinStatus = (u.tx_pin && u.tx_pin !== "") ? `<span class='badge bg-green'>PIN OK</span>` : `<span class='badge bg-red'>No PIN</span>`;
+        let stt = u.status_akun === "BLOKIR" ? "BLOKIR" : "AKTIF"; 
+        let badgeS = stt === "AKTIF" ? `<span class='badge bg-green'>Aktif</span>` : `<span class='badge bg-red'>Blokir</span>`; 
+        let pinStatus = (u.tx_pin && u.tx_pin !== "") ? `<span class='badge bg-green'>PIN OK</span>` : `<span class='badge bg-red'>No PIN</span>`;
         let lockStatus = (u.device_id && u.device_id !== "") ? `<button class='action-btn bg-dark' onclick='window.forceUnlock("${u.id}", "${u.username}")' title='Reset Perangkat'><i class='fa-solid fa-mobile-screen-button' style='color:#38bdf8;'></i> Terikat HP (Reset)</button>` : `<span class='badge bg-dark'><i class='fa-solid fa-mobile-screen-button'></i> Belum Terikat</span>`;
         let actBlok = stt === "AKTIF" ? `<button class='action-btn btn-del' onclick='window.togBlokir("${u.id}", "BLOKIR")' title='Blokir Akun'><i class='fa-solid fa-ban'></i></button>` : `<button class='action-btn bg-green' onclick='window.togBlokir("${u.id}", "AKTIF")' title='Buka Blokir'><i class='fa-solid fa-unlock'></i></button>`;
         let actReset = `<button class='action-btn btn-reset' onclick='window.resetUser("${u.id}", "${u.email}")' title='Reset Data Akun'><i class='fa-solid fa-rotate-left'></i></button>`;
@@ -1551,9 +1553,51 @@
         let actMutasiUser = `<button class='action-btn bg-green' onclick='window.lihatMutasiUser("${u.email}", "${u.username}")'><i class='fa-solid fa-receipt'></i> Mutasi</button>`;
         let actJaringan = `<button class='action-btn btn-block' onclick='window.lihatJaringan("${u.username}")'><i class='fa-solid fa-network-wired'></i> Jaringan</button>`;
         let actLacak = `<button class='action-btn btn-reset' onclick='window.bukaModalLacak("${u.id}")'><i class='fa-solid fa-satellite-dish'></i> Lacak</button>`;
-        let dateReg = formatTanggalJam(u.created_at); let totalDownline = downlineCount[u.username] || 0;
+        let dateReg = formatTanggalJam(u.created_at); 
+        let totalDownline = downlineCount[u.username] || 0;
+        
+        // --- TAMBAHAN RADAR TIM PUSAT ---
+        let roleBadge = "";
+        let infoBrankasMaster = "";
+        if (u.role && u.role.includes("TIM")) {
+            roleBadge = `<span class='badge' style='background:#f59e0b; color:#000;'><i class='fa-solid fa-star'></i> ${u.role}</span>`;
+            let sIdrMaster = (u.saldo_rupiah_master || 0).toLocaleString('id-ID');
+            let sVrscMaster = formatKripto(u.saldo_vrsc_master || 0);
+            infoBrankasMaster = `<div style='background:rgba(245, 158, 11, 0.1); border:1px dashed #f59e0b; padding:5px; border-radius:5px; margin-top:5px;'>
+                <div style='font-size:0.65rem; color:#f59e0b; font-weight:bold;'>BRANKAS MASTER PUSAT:</div>
+                <div style='font-size:0.75rem; color:#fff;'>IDR: <b style='color:#4ade80;'>Rp ${sIdrMaster}</b></div>
+                <div style='font-size:0.75rem; color:#fff;'>VRSC: <b style='color:#38bdf8;'>${sVrscMaster}</b></div>
+            </div>`;
+        } else {
+            roleBadge = `<span class='badge bg-dark'>MEMBER</span>`;
+        }
+        // --------------------------------
 
-        tbody.innerHTML += `<tr><td style='text-align:center;'>${no++}</td><td><b style='color:#38bdf8; font-size:1.1rem;'>${u.username || 'No-Name'}</b><br/><span style='font-size:0.8rem; color:#94a3b8;'><i class='fa-solid fa-envelope'></i> ${u.email}</span><br/><span style='font-size:0.7rem; color:#64748b;'><i class='fa-solid fa-clock'></i> Daftar: ${dateReg}</span><br/><b style='color:#4ade80; font-size:0.8rem;'><i class='fa-solid fa-users'></i> Downline: ${totalDownline} User</b></td><td><span style='font-size:0.8rem; color:#94a3b8;'>WA: <b style='color:#e2e8f0;'>${u.wa || '-'}</b></span><br/><span style='font-size:0.8rem; color:#94a3b8;'>Pass: <b style='color:#f87171; font-family:monospace;'>${u.password}</b></span><br/><span style='font-size:0.8rem; color:#94a3b8;'>Upline: <b style='color:#fbbf24;'>${u.referred_by || 'Tanpa Sponsor'}</b></span><br/><div style='margin-top:5px;'>${actEditData} ${actMutasiUser}</div></td><td><div style='margin-bottom:8px;'>${badgeS} ${pinStatus} ${lockStatus}</div><div style='display:flex; flex-wrap:wrap; gap:5px;'>${actJaringan} ${actLacak}</div><div style='display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;'>${actBlok} ${actReset} ${actHapus}</div></td></tr>`;
+        tbody.innerHTML += `<tr>
+            <td style='text-align:center;'>${no++}</td>
+            <td>
+                <div style='display:flex; justify-content:space-between;'>
+                    <b style='color:#38bdf8; font-size:1.1rem;'>${u.username || 'No-Name'}</b>
+                    ${roleBadge}
+                </div>
+                <span style='font-size:0.8rem; color:#94a3b8;'><i class='fa-solid fa-envelope'></i> ${u.email}</span><br/>
+                <span style='font-size:0.7rem; color:#64748b;'><i class='fa-solid fa-clock'></i> Daftar: ${dateReg}</span><br/>
+                <b style='color:#4ade80; font-size:0.8rem;'><i class='fa-solid fa-users'></i> Downline: ${totalDownline} User</b>
+                ${infoBrankasMaster}
+            </td>
+            <td>
+                <span style='font-size:0.8rem; color:#94a3b8;'>WA: <b style='color:#e2e8f0;'>${u.wa || '-'}</b></span><br/>
+                <span style='font-size:0.8rem; color:#94a3b8;'>Pass: <b style='color:#f87171; font-family:monospace;'>${u.password}</b></span><br/>
+                <span style='font-size:0.8rem; color:#94a3b8;'>Upline: <b style='color:#fbbf24;'>${u.referred_by || 'Tanpa Sponsor'}</b></span><br/>
+                <div style='margin-top:5px;'>${actEditData} ${actMutasiUser}</div>
+            </td>
+            <td>
+                <div style='margin-bottom:8px;'>${badgeS} ${pinStatus} ${lockStatus}</div>
+                <div style='display:flex; flex-wrap:wrap; gap:5px;'>${actJaringan} ${actLacak}</div>
+                <div style='display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;'>${actBlok} ${actReset} ${actHapus}</div>
+            </td>
+        </tr>`;
+        
         rewardDropdownHtml += `<option value='${u.email}'>${u.username || 'No-Name'} (${u.email})</option>`;
       }); document.getElementById('rewardTarget').innerHTML = rewardDropdownHtml;
     }
