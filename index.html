@@ -2608,28 +2608,120 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB"; btn.disabled = false;
         };
 
+        // --- MESIN RIWAYAT & EKSEKUSI PPOB MANUAL ---
         window.loadRiwayatPpob = async () => {
             const tbody = document.getElementById('tblRiwayatPpob');
             if(!tbody) return;
-            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memindai data satelit...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data transaksi PPOB...</td></tr>";
             try {
-                const snap = await getDocs(query(collection(db, "Riwayat_PPOB"), orderBy("timestamp", "desc"), limit(50)));
+                // Sinkronisasi dengan koleksi Transaksi_PPOB dari Web Publik
+                const snap = await getDocs(query(collection(db, "Transaksi_PPOB"), orderBy("waktu", "desc"), limit(50)));
                 let html = "";
                 snap.forEach(d => {
                     let x = d.data();
-                    let tgl = new Date(x.timestamp).toLocaleString('id-ID');
-                    let sttColor = x.status === 'Sukses' ? '#2ecc71' : (x.status === 'Pending' ? '#f59e0b' : '#ef4444');
-                    html += `<tr>
-                        <td style='font-size:0.8rem;'><b>${x.username}</b><br/><span style='color:#94a3b8; font-size:0.7rem;'>${tgl}</span></td>
-                        <td style='font-size:0.8rem;'><b style='color:#38bdf8;'>${x.tujuan}</b><br/>${x.nama_produk}</td>
-                        <td style='font-size:0.8rem;'><b style='color:#fbbf24;'>Rp ${x.harga_jual.toLocaleString('id-ID')}</b><br/><span style='color:${sttColor}; font-weight:bold;'>${x.status}</span></td>
-                        <td style='font-size:0.75rem; color:#cbd5e1;'>SN: ${x.sn || '-'}<br/><span style='color:#64748b;'>Ref: ${x.ref_id || '-'}</span></td>
+                    let tgl = x.waktu ? new Date(x.waktu.seconds * 1000).toLocaleString('id-ID') : '-';
+                    
+                    // Standarisasi Status
+                    let sT = x.status.toUpperCase();
+                    let sttColor = sT === 'SUKSES' ? '#2ecc71' : (sT === 'PENDING' ? '#f59e0b' : '#ef4444');
+                    
+                    let actionBtns = "";
+                    if (sT === "PENDING") {
+                        actionBtns = `
+                            <div style='display:flex; gap:5px; margin-top:8px;'>
+                                <button onclick='window.accPpobManual("${d.id}", "${x.email}")' style='background:#2ecc71; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;'><i class='fa-solid fa-check'></i> ACC</button>
+                                <button onclick='window.tolakPpobManual("${d.id}", "${x.email}", ${x.harga_bayar || x.harga_jual || 0}, "${x.jenis}", "${x.nominal}")' style='background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;'><i class='fa-solid fa-xmark'></i> REFUND</button>
+                            </div>
+                        `;
+                    }
+
+                    html += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#fff;'>${x.username}</b><br/><span style='color:#94a3b8; font-size:0.7rem;'>${tgl}</span></td>
+                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#38bdf8;'>${x.target || x.tujuan || '-'}</b><br/><span style='color:#cbd5e1;'>${x.jenis} ${x.nominal}</span></td>
+                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#fbbf24;'>Rp ${(x.harga_bayar || x.harga_jual || 0).toLocaleString('id-ID')}</b><br/><span style='color:${sttColor}; font-weight:bold; font-size:0.7rem;'>${sT}</span></td>
+                        <td style='font-size:0.75rem; color:#cbd5e1; padding:8px;'>SN: ${x.sn || '-'}<br/><span style='color:#64748b;'>Ref: ${x.ref_id || '-'}</span>${actionBtns}</td>
                     </tr>`;
                 });
                 tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada transaksi PPOB dari User.</td></tr>";
             } catch(e) { 
+                console.error(e);
                 tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat riwayat dari server.</td></tr>"; 
             }
+        };
+
+        window.accPpobManual = async (id, email) => {
+            let snInput = prompt("Masukkan Serial Number (SN) atau Token Listrik:\n(Bisa dikosongkan jika tidak ada/nanti menyusul)", "Sukses Manual");
+            if(snInput === null) return; // User membatalkan
+
+            try {
+                await updateDoc(doc(db, "Transaksi_PPOB", id), {
+                    status: "SUKSES",
+                    sn: snInput
+                });
+                
+                // Beri notif pop-up ke layar member
+                await addDoc(collection(db, "Notifikasi_Personal"), { 
+                    email: email, 
+                    pesan: `✅ PESANAN PPOB SUKSES: Transaksi Anda telah berhasil diproses! SN/Token: ${snInput}`, 
+                    timestamp_local: Date.now() 
+                });
+                
+                window.showToast("Transaksi PPOB Berhasil di-ACC!");
+                window.loadRiwayatPpob();
+            } catch(e) { alert("Gagal memproses ACC transaksi PPOB."); }
+        };
+
+        window.tolakPpobManual = async (id, email, harga_bayar, jenis, nominal) => {
+            let alasan = prompt("Masukkan alasan pembatalan (opsional):", "Nomor tidak valid / Gangguan Provider");
+            if(alasan === null) return; // User membatalkan
+
+            if(!confirm(`Yakin membatalkan transaksi ini dan me-refund saldo Rp ${harga_bayar.toLocaleString('id-ID')} ke dompet member?`)) return;
+
+            try {
+                // 1. Ubah status transaksi jadi GAGAL
+                await updateDoc(doc(db, "Transaksi_PPOB", id), {
+                    status: "GAGAL",
+                    sn: "Dibatalkan: " + alasan
+                });
+
+                // 2. Kembalikan Saldo (Refund) ke Dompet PPOB Member
+                const uSnap = await getDocs(query(collection(db, "Akun_Publik"), where("email", "==", email)));
+                if(!uSnap.empty) {
+                    let uData = uSnap.docs[0].data();
+                    let currentSaldoPpob = uData.saldo_ppob || 0;
+                    await updateDoc(doc(db, "Akun_Publik", uSnap.docs[0].id), {
+                        saldo_ppob: currentSaldoPpob + harga_bayar
+                    });
+                }
+
+                // 3. Catat di Buku Mutasi Member (Refund IN)
+                await addDoc(collection(db, "Mutasi_Mining"), { 
+                    email: email, 
+                    jenis: "IN", 
+                    deskripsi: `REFUND PPOB: ${jenis} ${nominal} Gagal`, 
+                    nominal: harga_bayar, 
+                    timestamp_local: Date.now() 
+                });
+
+                // 4. Catat di Buku Mutasi Pusat (PPOB_OUT Refund) agar sistem Audit Likuiditas anti tekor tidak berantakan
+                await addDoc(collection(db, "Mutasi_Pusat"), { 
+                    jenis: "PPOB_OUT", 
+                    nominal: harga_bayar, 
+                    deskripsi: `REFUND PPOB GAGAL: ${email} - ${jenis} ${nominal}`, 
+                    waktu: serverTimestamp() 
+                });
+
+                // 5. Beri Notifikasi Lonceng
+                await addDoc(collection(db, "Notifikasi_Personal"), { 
+                    email: email, 
+                    pesan: `❌ PESANAN PPOB GAGAL: Transaksi ${jenis} ${nominal} dibatalkan. Alasan: ${alasan}. Saldo Rp ${harga_bayar.toLocaleString('id-ID')} telah dikembalikan utuh ke Dompet PPOB Anda.`, 
+                    timestamp_local: Date.now() 
+                });
+
+                window.showToast("Transaksi Ditolak & Saldo berhasil di-Refund!");
+                window.loadRiwayatPpob();
+                window.loadLikuiditas(); // Refresh Audit
+            } catch(e) { alert("Gagal melakukan refund transaksi."); }
         };
 
 			// --- MESIN SAKLAR STAKING ---
