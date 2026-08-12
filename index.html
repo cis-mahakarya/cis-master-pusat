@@ -1124,7 +1124,7 @@
     <div class='form-group' style='flex:1;'><label>Password</label><input class='input-dark no-icon' id='editInpPass' type='text'></div>
     <div class='form-group' style='flex:1;'><label>PIN Transaksi</label><input class='input-dark no-icon' id='editInpPin' type='text' maxlength='6'></div>
     <div class='form-group' style='flex:1;'><label style='color:#f59e0b;'><i class='fa-solid fa-star'></i> Status/Role Akun</label><select id='editInpRole' class='input-dark' style='border-color:#f59e0b; color:#fbbf24; font-weight:bold;'><option value='MEMBER'>Member Biasa</option><option value='TIM 1'>Ketua Tim 1</option><option value='TIM 2'>Ketua Tim 2</option><option value='TIM 3'>Ketua Tim 3</option><option value='TIM 4'>Ketua Tim 4</option><option value='TIM 5'>Ketua Tim 5</option><option value='TIM 6'>Ketua Tim 6</option></select></div>
-</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div></div><div style='display:flex; gap:10px;'>
+</div><hr style='border:1px dashed #334155; margin:15px 0;'/><h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-wallet'></i> Edit Saldo &amp; Mesin (Dewa)</h4><div style='display:flex; gap:10px;'><div class='form-group' style='flex:1;'><label style='color:#fbbf24;'>Saldo VRSC</label><input class='input-dark no-icon' id='editInpSaldoVrsc' style='border-color:#fbbf24;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#4ade80;'>Saldo IDR Dompet</label><input class='input-dark no-icon' id='editInpSaldoRp' style='border-color:#4ade80;' type='text'></div><div class='form-group' style='flex:1;'><label style='color:#0ea5e9;'>Saldo PPOB</label><input class='input-dark no-icon' id='editInpSaldoPpob' style='border-color:#0ea5e9;' type='text'></div></div><div style='display:flex; gap:10px;'>
     <div class='form-group' style='flex:1;'><label style='color:#38bdf8;'>Speed Hash (V/s)</label><input class='input-dark no-icon' id='editInpSpeed' style='border-color:#38bdf8;' type='text'></div>
 </div>
 <div style='display:flex; gap:10px;'>
@@ -1624,7 +1624,9 @@
             document.getElementById('editInpSpeed').value = Number(user.kecepatan_hash || 0).toFixed(10).replace(/\.?0+$/, "") || "0"; 
             
             document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
-            
+			document.getElementById('editInpSaldoRp').value = user.saldo_rupiah || 0; 
+            document.getElementById('editInpSaldoPpob').value = user.saldo_ppob || 0;
+			
             // MESIN PENERJEMAH: Konversi MiliDetik (MS) ke Format Kalender HTML
             let formatKeKalender = (ms) => {
                 if(!ms || ms <= 0) return "";
@@ -1657,6 +1659,7 @@
 		const uRole = document.getElementById('editInpRole').value;
         const vrsc = getFloatVal('editInpSaldoVrsc'); 
         const rp = parseInt(document.getElementById('editInpSaldoRp').value.replace(/\./g, '')) || 0; 
+        const ppob = parseInt(document.getElementById('editInpSaldoPpob').value.replace(/\./g, '')) || 0; 
         const spd = getFloatVal('editInpSpeed'); 
         
         // MESIN PENERJEMAH: Konversi balik dari Tanggal Kalender ke MiliDetik (MS)
@@ -1683,9 +1686,9 @@
             await updateDoc(doc(db, "Akun_Publik", id), { 
                 username: uUser, email: uEmail, wa: uWa, 
                 password: uPass, tx_pin: uPin, referred_by: uUpline, role: uRole,
-                saldo_vrsc: vrsc, saldo_rupiah: rp, kecepatan_hash: spd, 
+                saldo_vrsc: vrsc, saldo_rupiah: rp, saldo_ppob: ppob, kecepatan_hash: spd, 
                 expired_at: expAkun, daftar_mesin: garasiBaru 
-            }); 
+            });
             window.showToast("Data Berhasil Disimpan & Garasi Mesin Diupdate!"); 
             document.getElementById('modalEditData').style.display = 'none'; 
             window.loadUser(); 
