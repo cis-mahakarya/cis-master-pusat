@@ -779,9 +779,9 @@
         <h4 style='margin-top:0; color:#0ea5e9;'><i class='fa-solid fa-tags'></i> Pengaturan Markup & Status PPOB</h4>
         <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Atur keuntungan (markup) dalam Rupiah yang akan ditambahkan ke harga asli Digiflazz.</p>
         
-        <div class='switch-wrap' style='border-color:#0ea5e9; background:rgba(14, 165, 233, 0.05);'>
-          <div><b style='color:#0ea5e9;'><i class='fa-solid fa-power-off'></i> Status Layanan PPOB Web</b></div>
-          <label class='switch'><input id='togglePpobActive' type='checkbox'><span class='slider-tg'></span></label>
+        <div class='switch-wrap' style='border-color:#2ecc71; background:rgba(46, 204, 113, 0.05);'>
+          <div><b style='color:#2ecc71;'><i class='fa-solid fa-robot'></i> Auto Persetujuan (Kirim ke Digiflazz)</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Jika OFF, pesanan masuk antrean untuk diproses manual.</span></div>
+          <label class='switch'><input id='togglePpobAutoApi' type='checkbox'><span class='slider-tg'></span></label>
         </div>
 
         <div class='form-group'>
@@ -2591,6 +2591,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                     let d = snap.docs[0].data();
                     document.getElementById('inpMarkupPpob').value = d.markup || 0;
                     document.getElementById('togglePpobActive').checked = d.is_active || false;
+                    document.getElementById('togglePpobAutoApi').checked = d.is_auto_api || false;
                 }
             } catch(e) { console.log("Gagal memuat config PPOB"); }
         };
@@ -2598,10 +2599,11 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
         window.simpanConfigPpob = async () => {
             let markup = parseInt(document.getElementById('inpMarkupPpob').value) || 0;
             let isActive = document.getElementById('togglePpobActive').checked;
+            let isAutoApi = document.getElementById('togglePpobAutoApi').checked;
             const btn = document.querySelector(`button[onclick='window.simpanConfigPpob()']`);
             btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
             
-            let payload = { tipe: "PPOB_CONFIG", markup: markup, is_active: isActive };
+            let payload = { tipe: "PPOB_CONFIG", markup: markup, is_active: isActive, is_auto_api: isAutoApi };
             try {
                 const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
                 if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
@@ -2617,39 +2619,45 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             if(!tbody) return;
             tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data transaksi PPOB...</td></tr>";
             try {
-                // Sinkronisasi dengan koleksi Transaksi_PPOB dari Web Publik
                 const snap = await getDocs(query(collection(db, "Transaksi_PPOB"), orderBy("waktu", "desc"), limit(50)));
                 let html = "";
                 snap.forEach(d => {
                     let x = d.data();
                     let tgl = x.waktu ? new Date(x.waktu.seconds * 1000).toLocaleString('id-ID') : '-';
                     
-                    // Standarisasi Status
                     let sT = x.status.toUpperCase();
-                    let sttColor = sT === 'SUKSES' ? '#2ecc71' : (sT === 'PENDING' ? '#f59e0b' : '#ef4444');
+                    let sttColor = sT === 'SUKSES' ? '#2ecc71' : (sT === 'PENDING' ? '#f59e0b' : (sT === 'MENUNGGU_ACC' ? '#a855f7' : '#ef4444'));
                     
                     let actionBtns = "";
-                    if (sT === "PENDING") {
+                    if (sT === "PENDING" || sT === "MENUNGGU_ACC") {
+                        let btnTeruskanAPI = sT === "MENUNGGU_ACC" ? `<button onclick='window.teruskanPpobApi("${d.id}")' style='background:#38bdf8; color:#0b0f19; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer; margin-top:5px; width:100%;'><i class='fa-solid fa-satellite-dish'></i> TERUSKAN KE API</button>` : "";
                         actionBtns = `
                             <div style='display:flex; gap:5px; margin-top:8px;'>
-                                <button onclick='window.accPpobManual("${d.id}", "${x.email}")' style='background:#2ecc71; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;'><i class='fa-solid fa-check'></i> ACC</button>
-                                <button onclick='window.tolakPpobManual("${d.id}", "${x.email}", ${x.harga_bayar || x.harga_jual || 0}, "${x.jenis}", "${x.nominal}")' style='background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;'><i class='fa-solid fa-xmark'></i> REFUND</button>
+                                <button onclick='window.accPpobManual("${d.id}", "${x.email}")' style='background:#2ecc71; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer; flex:1;'><i class='fa-solid fa-check'></i> ACC MANUAL</button>
+                                <button onclick='window.tolakPpobManual("${d.id}", "${x.email}", ${x.harga_bayar || x.harga_jual || 0}, "${x.jenis}", "${x.nominal}")' style='background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer; flex:1;'><i class='fa-solid fa-xmark'></i> REFUND</button>
                             </div>
+                            ${btnTeruskanAPI}
                         `;
                     }
 
                     html += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                         <td style='font-size:0.8rem; padding:8px;'><b style='color:#fff;'>${x.username}</b><br/><span style='color:#94a3b8; font-size:0.7rem;'>${tgl}</span></td>
                         <td style='font-size:0.8rem; padding:8px;'><b style='color:#38bdf8;'>${x.target || x.tujuan || '-'}</b><br/><span style='color:#cbd5e1;'>${x.jenis} ${x.nominal}</span></td>
-                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#fbbf24;'>Rp ${(x.harga_bayar || x.harga_jual || 0).toLocaleString('id-ID')}</b><br/><span style='color:${sttColor}; font-weight:bold; font-size:0.7rem;'>${sT}</span></td>
+                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#fbbf24;'>Rp ${(x.harga_bayar || x.harga_jual || 0).toLocaleString('id-ID')}</b><br/><span style='background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px; border:1px solid ${sttColor}; color:${sttColor}; font-weight:bold; font-size:0.65rem;'>${sT}</span></td>
                         <td style='font-size:0.75rem; color:#cbd5e1; padding:8px;'>SN: ${x.sn || '-'}<br/><span style='color:#64748b;'>Ref: ${x.ref_id || '-'}</span>${actionBtns}</td>
                     </tr>`;
                 });
                 tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada transaksi PPOB dari User.</td></tr>";
-            } catch(e) { 
-                console.error(e);
-                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat riwayat dari server.</td></tr>"; 
-            }
+            } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat riwayat dari server.</td></tr>"; }
+        };
+
+        window.teruskanPpobApi = async (id) => {
+            if(!confirm("Teruskan pesanan ini ke satelit API Digiflazz sekarang?")) return;
+            try {
+                await updateDoc(doc(db, "Transaksi_PPOB", id), { status: "PENDING", sn: "Diteruskan ke API..." });
+                window.showToast("Pesanan diteruskan ke API!");
+                window.loadRiwayatPpob();
+            } catch(e) { alert("Gagal meneruskan ke API."); }
         };
 
         window.accPpobManual = async (id, email) => {
