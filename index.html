@@ -2770,12 +2770,20 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                     outflowPpob += (d.data().harga_asli || d.data().harga_jual || 0);
                 });
 
-                // 3. Hitung Beban Hutang Beredar di Member (Hanya role MEMBER yg berpotensi disedot)
-                const snapUsers = await getDocs(query(collection(db, "Akun_Publik"), where("role", "==", "MEMBER")));
+                // 3. Hitung Beban Hutang Beredar Menyeluruh (Member & Brankas Ganda Tim)
+                const snapUsers = await getDocs(collection(db, "Akun_Publik"));
                 snapUsers.forEach(d => {
                     let u = d.data();
-                    saldoIdrBeredar += (u.saldo_rupiah || 0);
-                    saldoVrscBeredar += (u.saldo_vrsc || 0);
+                    // Abaikan akun Master Pusat sendiri agar tidak terjadi false alarm
+                    if (u.role !== "MASTER" && u.username !== "CIS01" && u.username !== "Pusat") {
+                        let sIdrPribadi = u.saldo_rupiah || 0;
+                        let sIdrMaster = u.saldo_rupiah_master || 0;
+                        let sVrscPribadi = u.saldo_vrsc || 0;
+                        let sVrscMaster = u.saldo_vrsc_master || 0;
+                        
+                        saldoIdrBeredar += (sIdrPribadi + sIdrMaster);
+                        saldoVrscBeredar += (sVrscPribadi + sVrscMaster);
+                    }
                 });
 
                 // 4. Hitung Sirkulasi P2P
