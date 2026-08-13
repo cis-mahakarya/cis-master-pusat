@@ -365,7 +365,25 @@
                 </div>
             </div>
             
-            <button class='btn-main' onclick='window.simpanBiayaOperasional()' style='background:#f59e0b; color:#000; width:100%;'><i class='fa-solid fa-plus'></i> TAMBAHKAN PENGELUARAN KE BUKU KAS</button>
+            <button class='btn-main' onclick='window.simpanBiayaOperasional()' style='background:#f59e0b; color:#000; width:100%; margin-bottom:20px;'><i class='fa-solid fa-plus'></i> TAMBAHKAN PENGELUARAN KE BUKU KAS</button>
+
+            <!-- TABEL DAFTAR BIAYA OPERASIONAL BULAN INI -->
+            <div style='border:1px solid #ef4444; border-radius:8px; overflow:hidden;'>
+                <div style='display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.1); padding:10px; border-bottom:1px solid #ef4444;'>
+                    <h5 style='margin:0; color:#ef4444; font-size:0.8rem;'><i class='fa-solid fa-list'></i> Rincian Pengeluaran Bulan Ini</h5>
+                    <button class='action-btn btn-del' onclick='window.hapusSemuaBiayaOperasional()' style='margin:0; font-size:0.65rem;'><i class='fa-solid fa-trash-can'></i> Hapus Semua</button>
+                </div>
+                <div class='table-wrap' style='max-height: 200px; overflow-y: auto; background:#0b0f19;'>
+                    <table>
+                        <thead style='position: sticky; top: 0; background: #1e293b; z-index: 1;'>
+                            <tr><th>Waktu</th><th>Deskripsi</th><th style='text-align:right;'>Nominal</th><th style='text-align:center;'>Aksi</th></tr>
+                        </thead>
+                        <tbody id='tblBiayaOperasional'>
+                            <tr><td colspan='4' style='text-align:center; color:#94a3b8; padding:15px;'>Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- ANALISIS TOKEN & PERPUTARAN P2P -->
@@ -2046,17 +2064,18 @@
 
     window.loadAkuntansiPusat = async () => {
             const tbody = document.getElementById('tblAkuntansiPusat');
-            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Menarik Laporan Induk & Tokenomics...</td></tr>";
+            const tbodyOp = document.getElementById('tblBiayaOperasional');
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Menarik Laporan Induk...</td></tr>";
 
             try {
                 let nowD = new Date();
                 let currentMonthKey = nowD.getFullYear() + "-" + String(nowD.getMonth()+1).padStart(2, '0');
 
-                // --- 1. Tarik Data Mutasi Pusat (Arus Kas Uang Real) ---
+                // --- 1. Tarik Data Mutasi Pusat ---
                 const snapMutasi = await getDocs(query(collection(db, "Mutasi_Pusat")));
                 let allMutasi = [];
                 let monthSet = new Set();
-                monthSet.add(currentMonthKey); // Pastikan bulan ini selalu ada di dropdown
+                monthSet.add(currentMonthKey); 
 
                 snapMutasi.forEach(d => {
                     let x = d.data();
@@ -2070,10 +2089,10 @@
                     }
                 });
 
-                // Render Dropdown Bulan
                 let sortedMonths = Array.from(monthSet).sort((a,b) => b.localeCompare(a));
                 let selFilter = document.getElementById('masterFilterBulanAkuntansi');
                 let selectedMonth = selFilter.value || currentMonthKey;
+                window.currentBulanAkuntansi = selectedMonth; // Simpan memori bulan terpilih untuk fitur Delete All
                 
                 let optHtml = "";
                 sortedMonths.forEach(m => {
@@ -2085,20 +2104,19 @@
                 selFilter.innerHTML = optHtml;
                 selectedMonth = selFilter.value;
 
-                // --- 2. Kalkulasi Laba Rugi Uang Real (Sesuai Bulan Terpilih) ---
+                // --- 2. Kalkulasi Arus Kas ---
                 let totalIn = 0;
                 let totalOut = 0;
-                let totalOutOp = 0; // Wadah untuk Biaya Operasional Tambahan
+                let totalOutOp = 0; 
                 let htmlTable = "";
+                let htmlTableOp = ""; // WADAH TABEL OPERASIONAL
 
-                // Filter Mutasi by selected month, lalu urutkan dari yang terbaru (descending)
                 let filteredMutasi = allMutasi.filter(x => x.monthKey === selectedMonth).sort((a,b) => b.ms - a.ms);
 
                 filteredMutasi.forEach(x => {
-                    // KATEGORISASI ARUS KAS
                     let isIncome = (x.jenis === "IN_FIAT");
                     let isExpense = (x.jenis === "OUT" || x.jenis === "PPOB_OUT");
-                    let isOpExpense = (x.jenis === "OUT_OP"); // Kode khusus Biaya Operasional
+                    let isOpExpense = (x.jenis === "OUT_OP"); 
                     
                     if (isIncome) totalIn += x.nominal;
                     if (isExpense) totalOut += x.nominal;
@@ -2106,6 +2124,7 @@
 
                     let wktFormat = new Date(x.ms).toLocaleString('id-ID', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
                     
+                    // A. Bangun Tabel Buku Kas Utama
                     let color = isIncome ? "#4ade80" : ((isExpense || isOpExpense) ? "#f87171" : "#94a3b8");
                     let sign = isIncome ? "+" : ((isExpense || isOpExpense) ? "-" : "");
                     
@@ -2115,6 +2134,18 @@
                         <td style='font-size:0.75rem; color:#e2e8f0;'><b>${x.deskripsi}</b></td>
                         <td style='color:${color}; font-weight:bold; text-align:right;'>${sign} Rp ${(x.nominal||0).toLocaleString('id-ID')}</td>
                     </tr>`;
+
+                    // B. Bangun Tabel Rincian Operasional Khusus
+                    if (isOpExpense) {
+                        htmlTableOp += `<tr style='border-bottom:1px solid #334155;'>
+                            <td style='font-size:0.7rem; color:#94a3b8;'>${wktFormat}</td>
+                            <td style='font-size:0.75rem; color:#e2e8f0;'><b>${x.deskripsi.replace("BIAYA OP: ", "")}</b></td>
+                            <td style='color:#ef4444; font-weight:bold; text-align:right;'>Rp ${(x.nominal||0).toLocaleString('id-ID')}</td>
+                            <td style='text-align:center;'>
+                                <button class='action-btn btn-del' onclick='window.hapusBiayaOperasional("${x.id}")' title='Batalkan/Hapus Pengeluaran'><i class='fa-solid fa-xmark'></i></button>
+                            </td>
+                        </tr>`;
+                    }
                 });
 
                 // PEMOTONGAN PROFIT
@@ -2122,9 +2153,7 @@
                 
                 document.getElementById('kasTotalIn').innerText = "Rp " + totalIn.toLocaleString('id-ID');
                 document.getElementById('kasTotalOut').innerText = "Rp " + totalOut.toLocaleString('id-ID');
-                
-                let elKasOp = document.getElementById('kasTotalOp');
-                if (elKasOp) elKasOp.innerText = "- Rp " + totalOutOp.toLocaleString('id-ID');
+                document.getElementById('kasTotalOp').innerText = "- Rp " + totalOutOp.toLocaleString('id-ID');
                 
                 let elProfit = document.getElementById('kasProfit');
                 if (profit > 0) {
@@ -2138,42 +2167,28 @@
                     elProfit.style.color = "#facc15";
                 }
 
-                tbody.innerHTML = htmlTable || "<tr><td colspan='4' style='text-align:center; color:#94a3b8; padding:15px;'>Tidak ada transaksi keuangan di bulan ini.</td></tr>";
+                tbody.innerHTML = htmlTable || "<tr><td colspan='4' style='text-align:center; color:#94a3b8; padding:15px;'>Tidak ada transaksi keuangan.</td></tr>";
+                if(tbodyOp) tbodyOp.innerHTML = htmlTableOp || "<tr><td colspan='4' style='text-align:center; color:#94a3b8; padding:15px;'>Belum ada catatan biaya operasional di bulan ini.</td></tr>";
 
-                // --- 3. Analisis Tokenomics & P2P (Sesuai Bulan Terpilih) ---
-                let tknDicetak = 0;
-                let p2pTim = 0;
-                let p2pMember = 0;
-
+                // --- 3. Analisis Tokenomics & P2P ---
+                let tknDicetak = 0; let p2pTim = 0; let p2pMember = 0;
                 const snapTkn = await getDocs(query(collection(db, "Database_Token")));
                 snapTkn.forEach(d => {
-                    let x = d.data();
-                    let wkt = x.dibuat_pada;
-                    let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                    let x = d.data(); let wkt = x.dibuat_pada; let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
                     if(ms > 0) {
-                        let dt = new Date(ms);
-                        let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
-                        if (mStr === selectedMonth && x.nominal_rupiah) {
-                            tknDicetak += x.nominal_rupiah;
-                        }
+                        let mStr = new Date(ms).getFullYear() + "-" + String(new Date(ms).getMonth()+1).padStart(2, '0');
+                        if (mStr === selectedMonth && x.nominal_rupiah) tknDicetak += x.nominal_rupiah;
                     }
                 });
 
                 const snapP2P = await getDocs(query(collection(db, "P2P_Order"), where("status", "==", "SELESAI")));
                 snapP2P.forEach(d => {
-                    let x = d.data();
-                    let wkt = x.waktu_update || x.waktu_order;
-                    let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                    let x = d.data(); let wkt = x.waktu_update || x.waktu_order; let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
                     if(ms > 0) {
-                        let dt = new Date(ms);
-                        let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
+                        let mStr = new Date(ms).getFullYear() + "-" + String(new Date(ms).getMonth()+1).padStart(2, '0');
                         if (mStr === selectedMonth) {
-                            let nominal = x.total_harga || x.total_bayar_rp || 0;
-                            if (x.sumber_dana === "MASTER") {
-                                p2pTim += nominal; 
-                            } else {
-                                p2pMember += nominal; 
-                            }
+                            let nom = x.total_harga || x.total_bayar_rp || 0;
+                            if (x.sumber_dana === "MASTER") p2pTim += nom; else p2pMember += nom; 
                         }
                     }
                 });
@@ -2181,17 +2196,11 @@
                 document.getElementById('statTokenCetak').innerText = "Rp " + tknDicetak.toLocaleString('id-ID');
                 document.getElementById('statP2pTim').innerText = "Rp " + p2pTim.toLocaleString('id-ID');
                 document.getElementById('statP2pMember').innerText = "Rp " + p2pMember.toLocaleString('id-ID');
-                
-                let rasio = tknDicetak > 0 ? ((p2pTim / tknDicetak) * 100).toFixed(1) : 0;
-                document.getElementById('statRasioJual').innerText = rasio + "%";
+                document.getElementById('statRasioJual').innerText = (tknDicetak > 0 ? ((p2pTim / tknDicetak) * 100).toFixed(1) : 0) + "%";
 
-            } catch(e) { 
-                console.error("Akuntansi Pusat Error: ", e);
-                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat buku kas. Cek koneksi Anda.</td></tr>"; 
-            }
+            } catch(e) { console.error(e); }
         };
 
-        // --- FUNGSI BARU: PENYIMPANAN BIAYA OPERASIONAL ---
         window.simpanBiayaOperasional = async () => {
             let desc = document.getElementById('inpOpDeskripsi').value.trim();
             let nom = parseInt(document.getElementById('inpOpNominal').value);
@@ -2205,20 +2214,65 @@
 
             try {
                 await addDoc(collection(db, "Mutasi_Pusat"), {
-                    jenis: "OUT_OP", // Kode rahasia khusus biaya operasional
+                    jenis: "OUT_OP", 
                     nominal: nom,
                     deskripsi: `BIAYA OP: ${desc}`,
                     waktu: serverTimestamp()
                 });
                 
-                window.showToast("Biaya Operasional Berhasil Dicatat ke Buku Kas!");
+                window.showToast("Biaya Operasional Berhasil Dicatat!");
                 document.getElementById('inpOpDeskripsi').value = "";
                 document.getElementById('inpOpNominal').value = "";
-                
-                // Refresh data seketika
                 window.loadAkuntansiPusat(); 
+            } catch(e) { alert("Gagal mencatat data."); }
+            btn.innerHTML = oldHtml; btn.disabled = false;
+        };
+
+        // --- FUNGSI HAPUS SATUAN ---
+        window.hapusBiayaOperasional = async (docId) => {
+            if(!confirm("Batalkan pengeluaran ini? (Nominal akan dikembalikan ke Laba Bersih)")) return;
+            try {
+                await deleteDoc(doc(db, "Mutasi_Pusat", docId));
+                window.showToast("Pengeluaran dibatalkan!");
+                window.loadAkuntansiPusat(); // Refresh data layar & profit otomatis naik
+            } catch (e) {
+                alert("Gagal menghapus data.");
+            }
+        };
+
+        // --- FUNGSI HAPUS MASSAL (MENGOSONGKAN BULAN INI) ---
+        window.hapusSemuaBiayaOperasional = async () => {
+            let bulanTerpilih = window.currentBulanAkuntansi; // Mengambil memori filter bulan
+            if(!bulanTerpilih) return alert("Sistem tidak mendeteksi bulan yang dipilih!");
+            
+            if(!confirm(`PERINGATAN SANGAT KERAS!\n\nHapus SEMUA data biaya operasional di bulan [${bulanTerpilih}] ini?\nData tidak dapat dikembalikan!`)) return;
+            
+            const btn = document.querySelector(`button[onclick='window.hapusSemuaBiayaOperasional()']`);
+            let oldHtml = btn.innerHTML;
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menghapus..."; btn.disabled = true;
+
+            try {
+                const snap = await getDocs(query(collection(db, "Mutasi_Pusat"), where("jenis", "==", "OUT_OP")));
+                let jumlahHapus = 0;
+                
+                for (const d of snap.docs) {
+                    let wkt = d.data().waktu;
+                    let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                    if(ms > 0) {
+                        let dt = new Date(ms);
+                        let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
+                        // Hanya hapus jika bulan dari data tersebut sama dengan bulan yang difilter di layar
+                        if (mStr === bulanTerpilih) {
+                            await deleteDoc(doc(db, "Mutasi_Pusat", d.id));
+                            jumlahHapus++;
+                        }
+                    }
+                }
+                
+                window.showToast(`${jumlahHapus} Data operasional bulan ini berhasil dibersihkan!`);
+                window.loadAkuntansiPusat();
             } catch(e) {
-                alert("Gagal mencatat data ke Firebase.");
+                alert("Gagal memproses penghapusan massal.");
             }
             btn.innerHTML = oldHtml; btn.disabled = false;
         };
