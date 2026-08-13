@@ -970,26 +970,10 @@
                 <button class='btn-main' onclick='window.simpanSetoranTim()' style='flex:1; background:#f59e0b; padding:10px;'><i class='fa-solid fa-plus'></i> TAMBAH</button>
             </div>
 
-            <!-- TABEL RIWAYAT VALIDASI (ACC / DITOLAK) -->
-            <div style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px dashed #334155;">
-                <h5 style="color: #94a3b8; margin: 0 0 10px 0; font-size: 0.8rem;"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Validasi Setoran</h5>
-                <div style="max-height: 200px; overflow-y: auto;">
-                    <table style="width:100%; border-collapse: collapse; font-size: 0.75rem;">
-                        <thead>
-                            <tr style="color: #64748b; border-bottom: 1px solid #334155; text-align: left;">
-                                <th style="padding: 6px;">Waktu</th>
-                                <th style="padding: 6px;">Tim</th>
-                                <th style="padding: 6px;">Nominal</th>
-                                <th style="padding: 6px;">Struk</th>
-                                <th style="padding: 6px;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblRiwayatSetoranMaster">
-                            <tr><td colspan="5" style="text-align:center; color:#64748b; padding:10px;">Memuat riwayat...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- TOMBOL BUKA MODAL RIWAYAT SETORAN TIM -->
+            <button onclick="document.getElementById('modalRiwayatSetoran').style.display='flex'" style="background:#334155; color:#fff; width:100%; padding:12px; border:none; border-radius:8px; margin-top:20px; font-weight:bold; cursor:pointer; border: 1px solid #475569; transition: 0.3s;">
+                <i class="fa-solid fa-clock-rotate-left"></i> BUKA BUKU RIWAYAT SETORAN TIM
+            </button>
         </div>
 
         <!-- KARTU 2: NERACA FIAT NYATA (UANG REAL) -->
@@ -1140,7 +1124,35 @@
 </div>
 <button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
-  
+
+	<!-- MODAL RIWAYAT SETORAN TIM -->
+  <div class='modal-overlay' id='modalRiwayatSetoran' style='z-index:10005;'>
+    <div class='modal-card' style='max-width: 700px; padding:0; overflow:hidden;'>
+        <div style='padding:20px; background:#1e293b; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;'>
+            <h3 style='color:#10b981; margin:0; font-family:Orbitron;'><i class='fa-solid fa-book-open'></i> Buku Riwayat Setoran</h3>
+            <i class='fa-solid fa-xmark' onclick='document.getElementById("modalRiwayatSetoran").style.display="none"' style='cursor:pointer; color:#ef4444; font-size:1.2rem;'></i>
+        </div>
+        <div style='padding:20px; background:#0f172a;'>
+            <div class="table-wrap" style="max-height: 400px; overflow-y: auto;">
+                <table style="width:100%; border-collapse: collapse; font-size: 0.8rem;">
+                    <thead style="position: sticky; top: 0; background: #1e293b; z-index:1;">
+                        <tr style="color: #cbd5e1; border-bottom: 2px solid #334155; text-align: left;">
+                            <th style="padding: 10px;">Waktu</th>
+                            <th style="padding: 10px;">Tim</th>
+                            <th style="padding: 10px;">Nominal</th>
+                            <th style="padding: 10px;">Struk</th>
+                            <th style="padding: 10px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblRiwayatSetoranMaster">
+                        <tr><td colspan="5" style="text-align:center; color:#64748b; padding:15px;">Memuat riwayat...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  </div>
+	
 <script type='module'>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
