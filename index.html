@@ -2460,15 +2460,31 @@
                 // 6. TAMPILKAN RINCIAN GUDANG TOKEN MILIK TIM INI
                 const snapToken = await getDocs(query(collection(db, "Database_Token"), where("pengirim", "==", timUsername)));
                 let stokAktif = 0; let valAktif = 0; let stokTerpakai = 0; let valTerpakai = 0; let htmlToken = ""; let no = 1;
+                
                 snapToken.forEach(d => {
                     let t = d.data(); 
-                    if(t.status === "AKTIF" || t.status === "TERKUNCI_P2P") { stokAktif++; valAktif += t.nominal_rupiah; } 
-                    else if(t.status === "TERPAKAI") { stokTerpakai++; valTerpakai += t.nominal_rupiah; }
+                    if(t.status === "AKTIF" || t.status === "TERKUNCI_P2P") { 
+                        stokAktif++; valAktif += t.nominal_rupiah; 
+                    } else if(t.status === "TERPAKAI") { 
+                        stokTerpakai++; valTerpakai += t.nominal_rupiah; 
+                    }
                     
                     let sttBadge = t.status.includes("AKTIF") || t.status.includes("TERKUNCI") ? "<span class='badge bg-green'>"+t.status+"</span>" : "<span class='badge bg-red'>"+t.status+"</span>"; 
-                    let userDipakai = t.dipakai_oleh || '-'; let waktuBuat = formatTanggalJam(t.dibuat_pada);
-                    htmlToken += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style='text-align:center;'>${no++}</td><td style='font-size:0.75rem; color:#94a3b8;'>${waktuBuat}</td><td><span style='font-family:Orbitron; font-size:0.7rem; color:#38bdf8;'>${t.kode_token}</span><br/><b>Rp ${t.nominal_rupiah.toLocaleString('id-ID')}</b></td><td>${sttBadge}<br/><span style='font-size:0.7rem;'>Pemakai: <b style="color:#f59e0b;">${userDipakai}</b></span></td></tr>`;
+                    let userDipakai = t.dipakai_oleh || '-'; 
+                    let waktuBuat = formatTanggalJam(t.dibuat_pada);
+                    
+                    htmlToken += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style='text-align:center;'>${no++}</td>
+                        <td style='font-size:0.75rem; color:#94a3b8;'>${waktuBuat}</td>
+                        <td><span style='font-family:Orbitron; font-size:0.7rem; color:#38bdf8;'>${t.kode_token}</span><br/><b>Rp ${t.nominal_rupiah.toLocaleString('id-ID')}</b></td>
+                        <td>
+                            ${sttBadge}<br/>
+                            <span style='font-size:0.7rem;'>Pemakai: <b style="color:#f59e0b;">${userDipakai}</b></span><br/>
+                            <button onclick='window.hapusTokenGudangPusat("${d.id}")' style='background:transparent; border:1px solid #ef4444; color:#ef4444; padding:3px 8px; border-radius:4px; font-size:0.65rem; cursor:pointer; margin-top:5px;'><i class='fa-solid fa-trash'></i> Hapus Token</button>
+                        </td>
+                    </tr>`;
                 });
+                
                 document.getElementById('timStokAktif').innerText = stokAktif + " Lbr (Rp " + valAktif.toLocaleString('id-ID') + ")"; 
                 document.getElementById('timStokTerpakai').innerText = stokTerpakai + " Lbr (Rp " + valTerpakai.toLocaleString('id-ID') + ")"; 
                 tbody.innerHTML = htmlToken || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada stok token yang dicetak oleh tim ini.</td></tr>";
@@ -2478,7 +2494,20 @@
                 tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal menarik data. Server sedang sibuk.</td></tr>"; 
             }
         };
-    window.resetDataTim = async () => {
+
+        // --- FUNGSI BARU: PENGHAPUSAN TOKEN SATUAN DARI GUDANG ---
+        window.hapusTokenGudangPusat = async (tokenId) => {
+            if(!confirm("Hapus token ini secara permanen?\n\n(Aksi ini akan menghanguskan token dan mengurangi angka Stok Aktif Tim secara langsung).")) return;
+            try {
+                await deleteDoc(doc(db, "Database_Token", tokenId));
+                window.showToast("Token berhasil dihapus!");
+                window.loadDataTim(); // Auto-refresh tampilan dan kalkulasi angka
+            } catch (e) {
+                alert("Gagal menghapus token. Cek koneksi Anda.");
+            }
+        };
+
+        window.resetDataTim = async () => {
             const tim = document.getElementById('selectTimManager').value.toUpperCase();
             
             if(!confirm(`PERINGATAN SANGAT KERAS!\n\nAnda akan melakukan PEMUTIHAN TOTAL untuk ${tim}.\nSeluruh Stok Token, Riwayat Penjualan P2P, dan Riwayat Setoran akan DIHAPUS PERMANEN.\n\nAkuntansi ${tim} akan kembali menjadi Rp 0. Lanjutkan?`)) return;
