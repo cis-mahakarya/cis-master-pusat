@@ -1987,18 +1987,152 @@
     };
 
     window.loadDataTim = async () => {
-        const tim = document.getElementById('selectTimManager').value; const tbody = document.getElementById('tblTimDetail'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data tim...</td></tr>";
-        try {
-            const snap = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim)));
-            let stokAktif = 0; let valAktif = 0; let stokTerpakai = 0; let valTerpakai = 0; let html = ""; let no = 1;
-            snap.forEach(d => {
-                let t = d.data(); if(t.status === "AKTIF") { stokAktif++; valAktif += t.nominal_rupiah; } else if(t.status === "TERPAKAI") { stokTerpakai++; valTerpakai += t.nominal_rupiah; }
-                let sttBadge = t.status === "AKTIF" ? "<span class='badge bg-green'>AKTIF</span>" : "<span class='badge bg-red'>TERPAKAI</span>"; let userDipakai = t.dipakai_oleh || '-'; let waktuBuat = formatTanggalJam(t.dibuat_pada);
-                html += `<tr><td style='text-align:center;'>${no++}</td><td style='font-size:0.75rem; color:#94a3b8;'>${waktuBuat}</td><td><span style='font-family:Orbitron; font-size:0.7rem; color:#38bdf8;'>${t.kode_token}</span><br/><b>Rp ${t.nominal_rupiah.toLocaleString('id-ID')}</b></td><td>${sttBadge}<br/><span style='font-size:0.7rem;'>Pemakai: ${userDipakai}</span></td></tr>`;
-            });
-            document.getElementById('timStokAktif').innerText = stokAktif + " Lbr (Rp " + valAktif.toLocaleString('id-ID') + ")"; document.getElementById('timStokTerpakai').innerText = stokTerpakai + " Lbr (Rp " + valTerpakai.toLocaleString('id-ID') + ")"; document.getElementById('timPendapatan').innerText = "Rp " + valTerpakai.toLocaleString('id-ID'); tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center;'>Belum ada stok token.</td></tr>";
-        } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat data.</td></tr>"; }
-    };
+            const tim = document.getElementById('selectTimManager').value.toUpperCase(); // Contoh: "TIM 1"
+            const tbody = document.getElementById('tblTimDetail');
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Mengumpulkan Data Akuntansi Tim...</td></tr>";
+            
+            try {
+                // 1. CARI IDENTITAS KETUA TIM DI DATABASE (BERDASARKAN ROLE)
+                const timSnap = await getDocs(query(collection(db, "Akun_Publik"), where("role", "==", tim)));
+                if(timSnap.empty) {
+                    document.getElementById('mtSisaTagihan').innerText = "BELUM ADA USER";
+                    tbody.innerHTML = `<tr><td colspan='4' style='text-align:center; color:#f59e0b;'>Anda belum menugaskan user mana pun sebagai Ketua ${tim}.<br/>(Ubah Role user menjadi ${tim} di menu Edit Data).</td></tr>`;
+                    return;
+                }
+                
+                let timEmail = timSnap.docs[0].data().email;
+                let timUsername = timSnap.docs[0].data().username;
+
+                // 2. TARIK PENGATURAN PERSENTASE
+                let persenTim = 30; 
+                const confSnap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "TEAM_BONUS")));
+                if(!confSnap.empty) { persenTim = parseInt(confSnap.docs[0].data().persen_tim) || 30; }
+                let persenPusat = 100 - persenTim;
+
+                document.getElementById('mtPersenTim').innerText = persenTim;
+                document.getElementById('mtPersenPusat').innerText = persenPusat;
+
+                // 3. TARIK SELURUH BUKU BESAR (LEDGER) MILIK TIM INI
+                let allLedger = [];
+
+                // A. P2P Jual
+                const snapP2P = await getDocs(query(collection(db, "P2P_Order"), where("penjual", "==", timEmail), where("status", "==", "SELESAI")));
+                snapP2P.forEach(d => {
+                    let o = d.data();
+                    if (o.sumber_dana === "MASTER") {
+                        let wkt = o.waktu_update || o.waktu_order;
+                        let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                        allLedger.push({ waktu: ms, jenis: "JUAL", nominal: o.total_harga || o.total_bayar_rp || 0 });
+                    }
+                });
+
+                // B. Swap Jual (Cetak Token)
+                const snapSwap = await getDocs(query(collection(db, "Request_Withdraw"), where("email_pemohon", "==", timEmail), where("status", "==", "DISETUJUI")));
+                snapSwap.forEach(d => {
+                    let o = d.data();
+                    if (o.sumber_dana === "MASTER") {
+                        let wkt = o.waktu_request;
+                        let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                        allLedger.push({ waktu: ms, jenis: "JUAL", nominal: o.nominal_rupiah || 0 });
+                    }
+                });
+
+                // C. Setoran
+                const snapSetoran = await getDocs(query(collection(db, "Laporan_Setoran"), where("email", "==", timEmail)));
+                snapSetoran.forEach(d => {
+                    let o = d.data();
+                    if (o.status === "DISETUJUI" || o.status === "PENDING") {
+                        let wkt = o.waktu_lapor;
+                        let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                        allLedger.push({ waktu: ms, jenis: "SETOR", nominal: o.nominal || 0 });
+                    }
+                });
+
+                // 4. SUSUN FILTER BULAN (SEPERTI DI WEB PUBLIK)
+                allLedger.sort((a,b) => a.waktu - b.waktu);
+                let monthSet = new Set();
+                let nowD = new Date();
+                let currentMonthKey = nowD.getFullYear() + "-" + String(nowD.getMonth()+1).padStart(2, '0');
+                monthSet.add(currentMonthKey);
+                
+                allLedger.forEach(item => {
+                    if(item.waktu > 0) {
+                        let d = new Date(item.waktu);
+                        let mStr = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2, '0');
+                        item.monthKey = mStr;
+                        monthSet.add(mStr);
+                    }
+                });
+
+                let sortedMonths = Array.from(monthSet).sort((a,b) => b.localeCompare(a));
+                
+                let selFilter = document.getElementById('masterFilterBulanTim');
+                let selectedMonth = selFilter.value || currentMonthKey;
+                let optHtml = "";
+                sortedMonths.forEach(m => {
+                    let [yyyy, mm] = m.split("-");
+                    let mName = new Date(yyyy, parseInt(mm)-1, 1).toLocaleString('id-ID', {month:'long', year:'numeric'});
+                    let isSel = m === selectedMonth ? "selected" : "";
+                    optHtml += `<option value="${m}" ${isSel}>${mName}</option>`;
+                });
+                selFilter.innerHTML = optHtml;
+                selectedMonth = selFilter.value;
+
+                // 5. EKSEKUSI KALKULASI SISA HUTANG (CARRY FORWARD)
+                let hutangLalu = 0; let jualBulanIni = 0; let setorBulanIni = 0;
+                allLedger.forEach(item => {
+                    if (item.monthKey < selectedMonth) {
+                        if (item.jenis === "JUAL") hutangLalu += (item.nominal * (persenPusat / 100));
+                        else if (item.jenis === "SETOR") hutangLalu -= item.nominal;
+                    } else if (item.monthKey === selectedMonth) {
+                        if (item.jenis === "JUAL") jualBulanIni += item.nominal;
+                        else if (item.jenis === "SETOR") setorBulanIni += item.nominal;
+                    }
+                });
+
+                let hakTimBulanIni = jualBulanIni * (persenTim / 100);
+                let wajibSetorBulanIni = jualBulanIni * (persenPusat / 100);
+                let totalTagihan = hutangLalu + wajibSetorBulanIni;
+                let sisaTagihan = totalTagihan - setorBulanIni;
+
+                // TEMBAKKAN HASIL KE LAYAR MASTER PUSAT
+                document.getElementById('mtHutangLalu').innerText = (hutangLalu < 0 ? "- Rp " : "Rp ") + Math.abs(Math.round(hutangLalu)).toLocaleString('id-ID');
+                document.getElementById('mtJualBulanIni').innerText = "Rp " + Math.round(jualBulanIni).toLocaleString('id-ID');
+                document.getElementById('mtHakTim').innerText = "Rp " + Math.round(hakTimBulanIni).toLocaleString('id-ID');
+                document.getElementById('mtWajibSetorPusat').innerText = "Rp " + Math.round(wajibSetorBulanIni).toLocaleString('id-ID');
+                document.getElementById('mtTotalTagihan').innerText = "Rp " + Math.round(totalTagihan).toLocaleString('id-ID');
+                document.getElementById('mtSudahSetor').innerText = "- Rp " + Math.round(setorBulanIni).toLocaleString('id-ID');
+                
+                let lblSisa = document.getElementById('mtSisaTagihan');
+                if(sisaTagihan <= 0) {
+                    lblSisa.innerText = (sisaTagihan < 0 ? "+ Rp " : "Rp ") + Math.abs(Math.round(sisaTagihan)).toLocaleString('id-ID') + (sisaTagihan < 0 ? " (Deposit)" : " (Lunas)");
+                    lblSisa.style.color = "#2ecc71";
+                } else {
+                    lblSisa.innerText = "Rp " + Math.round(sisaTagihan).toLocaleString('id-ID');
+                    lblSisa.style.color = "#ef4444";
+                }
+
+                // 6. TAMPILKAN RINCIAN GUDANG TOKEN MILIK TIM INI
+                const snapToken = await getDocs(query(collection(db, "Database_Token"), where("pengirim", "==", timUsername)));
+                let stokAktif = 0; let valAktif = 0; let stokTerpakai = 0; let valTerpakai = 0; let htmlToken = ""; let no = 1;
+                snapToken.forEach(d => {
+                    let t = d.data(); 
+                    if(t.status === "AKTIF" || t.status === "TERKUNCI_P2P") { stokAktif++; valAktif += t.nominal_rupiah; } 
+                    else if(t.status === "TERPAKAI") { stokTerpakai++; valTerpakai += t.nominal_rupiah; }
+                    
+                    let sttBadge = t.status.includes("AKTIF") || t.status.includes("TERKUNCI") ? "<span class='badge bg-green'>"+t.status+"</span>" : "<span class='badge bg-red'>"+t.status+"</span>"; 
+                    let userDipakai = t.dipakai_oleh || '-'; let waktuBuat = formatTanggalJam(t.dibuat_pada);
+                    htmlToken += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style='text-align:center;'>${no++}</td><td style='font-size:0.75rem; color:#94a3b8;'>${waktuBuat}</td><td><span style='font-family:Orbitron; font-size:0.7rem; color:#38bdf8;'>${t.kode_token}</span><br/><b>Rp ${t.nominal_rupiah.toLocaleString('id-ID')}</b></td><td>${sttBadge}<br/><span style='font-size:0.7rem;'>Pemakai: <b style="color:#f59e0b;">${userDipakai}</b></span></td></tr>`;
+                });
+                document.getElementById('timStokAktif').innerText = stokAktif + " Lbr (Rp " + valAktif.toLocaleString('id-ID') + ")"; 
+                document.getElementById('timStokTerpakai').innerText = stokTerpakai + " Lbr (Rp " + valTerpakai.toLocaleString('id-ID') + ")"; 
+                tbody.innerHTML = htmlToken || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Belum ada stok token yang dicetak oleh tim ini.</td></tr>";
+
+            } catch(e) { 
+                console.error(e);
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal menarik data. Server sedang sibuk.</td></tr>"; 
+            }
+        };
     window.resetDataTim = async () => {
         const tim = document.getElementById('selectTimManager').value; if(!confirm(`PERINGATAN: Hapus SEMUA STOK TOKEN milik ${tim}?`)) return;
         let btn = document.querySelector(`button[onclick='resetDataTim()']`); let oldText = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MERESET..."; btn.disabled = true;
