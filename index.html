@@ -2436,10 +2436,51 @@
             }
         };
     window.resetDataTim = async () => {
-        const tim = document.getElementById('selectTimManager').value; if(!confirm(`PERINGATAN: Hapus SEMUA STOK TOKEN milik ${tim}?`)) return;
-        let btn = document.querySelector(`button[onclick='resetDataTim()']`); let oldText = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MERESET..."; btn.disabled = true;
-        try { const snap = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim))); for (const d of snap.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } showToast(`Data ${tim} berhasil di-reset!`); window.loadDataTim(); } catch (e) { alert(`Gagal mereset.`); } btn.innerHTML = oldText; btn.disabled = false;
-    };
+            const tim = document.getElementById('selectTimManager').value.toUpperCase();
+            
+            if(!confirm(`PERINGATAN SANGAT KERAS!\n\nAnda akan melakukan PEMUTIHAN TOTAL untuk ${tim}.\nSeluruh Stok Token, Riwayat Penjualan P2P, dan Riwayat Setoran akan DIHAPUS PERMANEN.\n\nAkuntansi ${tim} akan kembali menjadi Rp 0. Lanjutkan?`)) return;
+            
+            // Konfirmasi Lapis Kedua (Mencegah salah pencet)
+            if(prompt(`Ketik "RESET" untuk mengeksekusi pemutihan data ${tim}:`) !== "RESET") {
+                return window.showToast("Pemutihan dibatalkan.");
+            }
+
+            let btn = document.querySelector(`button[onclick='resetDataTim()']`); 
+            let oldText = btn.innerHTML; 
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> PEMUTIHAN..."; 
+            btn.disabled = true;
+            
+            try { 
+                // 1. Cari Email Ketua Tim untuk melacak seluruh mutasi
+                const timSnap = await getDocs(query(collection(db, "Akun_Publik"), where("role", "==", tim)));
+                if(timSnap.empty) throw "User Ketua Tim tidak ditemukan!";
+                let timEmail = timSnap.docs[0].data().email;
+
+                // 2. Hapus Stok Token di Gudang Tim
+                const snapToken = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim))); 
+                for (const d of snapToken.docs) { await deleteDoc(doc(db, "Database_Token", d.id)); } 
+                
+                // 3. Hapus Riwayat Penjualan P2P
+                const snapP2P = await getDocs(query(collection(db, "P2P_Order"), where("penjual", "==", timEmail)));
+                for (const d of snapP2P.docs) { await deleteDoc(doc(db, "P2P_Order", d.id)); }
+
+                // 4. Hapus Riwayat Swap (Cetak Token via WD)
+                const snapSwap = await getDocs(query(collection(db, "Request_Withdraw"), where("email_pemohon", "==", timEmail)));
+                for (const d of snapSwap.docs) { await deleteDoc(doc(db, "Request_Withdraw", d.id)); }
+
+                // 5. Hapus Riwayat Laporan Setoran ke Pusat
+                const snapSetor = await getDocs(query(collection(db, "Laporan_Setoran"), where("email", "==", timEmail)));
+                for (const d of snapSetor.docs) { await deleteDoc(doc(db, "Laporan_Setoran", d.id)); }
+
+                window.showToast(`🔥 PEMUTIHAN TOTAL ${tim} BERHASIL!`); 
+                window.loadDataTim(); // Refresh layar otomatis
+            } catch (e) { 
+                alert(`Gagal melakukan pemutihan: ` + (typeof e === 'string' ? e : e.message)); 
+            } 
+            
+            btn.innerHTML = oldText; 
+            btn.disabled = false;
+        };
 
 		window.loadConfigBonusTim = async () => {
         try {
