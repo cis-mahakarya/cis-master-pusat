@@ -325,9 +325,9 @@
         </div>
 
         <!-- LAPORAN LABA RUGI (UANG REAL) -->
-        <div class='live-dashboard' style='border-color:#10b981; background: radial-gradient(circle at top right, #064e3b, #0b0f19);'>
+        <div class='live-dashboard' style='border-color:#10b981; background: radial-gradient(circle at top right, #064e3b, #0b0f19); margin-bottom:20px;'>
             <h3 style='margin-top:0; color:#4ade80;'><i class='fa-solid fa-vault'></i> LABA RUGI UANG REAL (BULAN INI)</h3>
-            <p style='font-size:0.7rem; color:#a7f3d0; margin-top:-5px;'>Arus kas bersih dari Setoran Tim vs Pencairan WD & PPOB.</p>
+            <p style='font-size:0.7rem; color:#a7f3d0; margin-top:-5px;'>Arus kas bersih dari Setoran Tim vs Pencairan WD, PPOB, & Biaya Operasional.</p>
             
             <div style='display:flex; justify-content:space-between; margin-top:15px; border-bottom:1px dashed rgba(74, 222, 128, 0.3); padding-bottom:10px;'>
                 <div>
@@ -335,14 +335,37 @@
                     <div id='kasTotalIn' style='font-size:1.3rem; color:#4ade80; font-family:Orbitron; font-weight:bold;'>Rp 0</div>
                 </div>
                 <div style='text-align:right;'>
-                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-up' style='color:#ef4444;'></i> PENGELUARAN (OUT)</div>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-up' style='color:#ef4444;'></i> BEBAN SISTEM (WD+PPOB)</div>
                     <div id='kasTotalOut' style='font-size:1.3rem; color:#f87171; font-family:Orbitron; font-weight:bold;'>Rp 0</div>
                 </div>
             </div>
+            
+            <div style='display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-bottom:1px dashed rgba(74, 222, 128, 0.3); padding-bottom:10px;'>
+                <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-file-invoice-dollar' style='color:#f59e0b;'></i> PENGELUARAN / BIAYA OP</div>
+                <div id='kasTotalOp' style='font-size:1.1rem; color:#f59e0b; font-family:Orbitron; font-weight:bold;'>- Rp 0</div>
+            </div>
+
             <div style='margin-top:15px; text-align:center; background:rgba(0,0,0,0.4); padding:10px; border-radius:10px; border:1px solid #10b981;'>
                 <div style='font-size:0.75rem; color:#fcd34d; font-weight:bold; letter-spacing:1px;'>KEUNTUNGAN BERSIH (PROFIT)</div>
                 <div id='kasProfit' style='font-size:2rem; color:#facc15; font-family:Orbitron; font-weight:900;'>Rp 0</div>
             </div>
+        </div>
+
+        <!-- FORM INPUT BIAYA OPERASIONAL -->
+        <div class='card-panel' style='border-top: 2px solid #f59e0b; margin-bottom:20px;'>
+            <h4 style='margin-top:0; color:#f59e0b;'><i class='fa-solid fa-money-bill-transfer'></i> Catat Biaya Operasional / Pengeluaran Lainnya</h4>
+            <p style='font-size:0.7rem; color:#94a3b8; margin-top:-5px;'>Masukkan rincian pengeluaran (misal: Sewa Server, Gaji, Promo). Ini akan langsung memotong Keuntungan Bersih di atas.</p>
+            
+            <div style='display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;'>
+                <div class='form-group' style='flex:2; margin-bottom:0;'>
+                    <input id='inpOpDeskripsi' class='input-dark no-icon' type='text' placeholder='Deskripsi (Cth: Bayar Server AWS)' style='border-color:#f59e0b;'>
+                </div>
+                <div class='form-group' style='flex:1; margin-bottom:0;'>
+                    <input id='inpOpNominal' class='input-dark no-icon' type='number' placeholder='Nominal (Rp)' style='border-color:#f59e0b; font-weight:bold;'>
+                </div>
+            </div>
+            
+            <button class='btn-main' onclick='window.simpanBiayaOperasional()' style='background:#f59e0b; color:#000; width:100%;'><i class='fa-solid fa-plus'></i> TAMBAHKAN PENGELUARAN KE BUKU KAS</button>
         </div>
 
         <!-- ANALISIS TOKEN & PERPUTARAN P2P -->
@@ -2065,22 +2088,26 @@
                 // --- 2. Kalkulasi Laba Rugi Uang Real (Sesuai Bulan Terpilih) ---
                 let totalIn = 0;
                 let totalOut = 0;
+                let totalOutOp = 0; // Wadah untuk Biaya Operasional Tambahan
                 let htmlTable = "";
 
                 // Filter Mutasi by selected month, lalu urutkan dari yang terbaru (descending)
                 let filteredMutasi = allMutasi.filter(x => x.monthKey === selectedMonth).sort((a,b) => b.ms - a.ms);
 
                 filteredMutasi.forEach(x => {
-                    // PENDAPATAN = Hanya Setoran Fiat. PENGELUARAN = Pencairan WD dan Refund PPOB (Keluar dari rekening Pusat)
+                    // KATEGORISASI ARUS KAS
                     let isIncome = (x.jenis === "IN_FIAT");
                     let isExpense = (x.jenis === "OUT" || x.jenis === "PPOB_OUT");
+                    let isOpExpense = (x.jenis === "OUT_OP"); // Kode khusus Biaya Operasional
                     
                     if (isIncome) totalIn += x.nominal;
                     if (isExpense) totalOut += x.nominal;
+                    if (isOpExpense) totalOutOp += x.nominal;
 
                     let wktFormat = new Date(x.ms).toLocaleString('id-ID', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
-                    let color = isIncome ? "#4ade80" : (isExpense ? "#f87171" : "#94a3b8");
-                    let sign = isIncome ? "+" : (isExpense ? "-" : "");
+                    
+                    let color = isIncome ? "#4ade80" : ((isExpense || isOpExpense) ? "#f87171" : "#94a3b8");
+                    let sign = isIncome ? "+" : ((isExpense || isOpExpense) ? "-" : "");
                     
                     htmlTable += `<tr style='border-bottom:1px solid #334155;'>
                         <td style='font-size:0.7rem; color:#94a3b8;'>${wktFormat}</td>
@@ -2090,9 +2117,14 @@
                     </tr>`;
                 });
 
-                let profit = totalIn - totalOut;
+                // PEMOTONGAN PROFIT
+                let profit = totalIn - totalOut - totalOutOp;
+                
                 document.getElementById('kasTotalIn').innerText = "Rp " + totalIn.toLocaleString('id-ID');
                 document.getElementById('kasTotalOut').innerText = "Rp " + totalOut.toLocaleString('id-ID');
+                
+                let elKasOp = document.getElementById('kasTotalOp');
+                if (elKasOp) elKasOp.innerText = "- Rp " + totalOutOp.toLocaleString('id-ID');
                 
                 let elProfit = document.getElementById('kasProfit');
                 if (profit > 0) {
@@ -2113,7 +2145,6 @@
                 let p2pTim = 0;
                 let p2pMember = 0;
 
-                // Hitung Token yang diciptakan Pusat di bulan ini
                 const snapTkn = await getDocs(query(collection(db, "Database_Token")));
                 snapTkn.forEach(d => {
                     let x = d.data();
@@ -2128,7 +2159,6 @@
                     }
                 });
 
-                // Hitung Peta Distribusi Transaksi P2P (Uang yang berputar)
                 const snapP2P = await getDocs(query(collection(db, "P2P_Order"), where("status", "==", "SELESAI")));
                 snapP2P.forEach(d => {
                     let x = d.data();
@@ -2139,7 +2169,6 @@
                         let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
                         if (mStr === selectedMonth) {
                             let nominal = x.total_harga || x.total_bayar_rp || 0;
-                            // Memisahkan jalur uang masuk: Uang Pusat vs Uang Komunitas (Member)
                             if (x.sumber_dana === "MASTER") {
                                 p2pTim += nominal; 
                             } else {
@@ -2160,6 +2189,38 @@
                 console.error("Akuntansi Pusat Error: ", e);
                 tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat buku kas. Cek koneksi Anda.</td></tr>"; 
             }
+        };
+
+        // --- FUNGSI BARU: PENYIMPANAN BIAYA OPERASIONAL ---
+        window.simpanBiayaOperasional = async () => {
+            let desc = document.getElementById('inpOpDeskripsi').value.trim();
+            let nom = parseInt(document.getElementById('inpOpNominal').value);
+            
+            if(!desc || !nom || nom <= 0) return alert("Lengkapi Deskripsi dan Nominal yang valid!");
+            if(!confirm(`Catat pengeluaran Rp ${nom.toLocaleString('id-ID')} untuk ${desc}?`)) return;
+
+            const btn = document.querySelector(`button[onclick='window.simpanBiayaOperasional()']`);
+            let oldHtml = btn.innerHTML;
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENCATAT..."; btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "Mutasi_Pusat"), {
+                    jenis: "OUT_OP", // Kode rahasia khusus biaya operasional
+                    nominal: nom,
+                    deskripsi: `BIAYA OP: ${desc}`,
+                    waktu: serverTimestamp()
+                });
+                
+                window.showToast("Biaya Operasional Berhasil Dicatat ke Buku Kas!");
+                document.getElementById('inpOpDeskripsi').value = "";
+                document.getElementById('inpOpNominal').value = "";
+                
+                // Refresh data seketika
+                window.loadAkuntansiPusat(); 
+            } catch(e) {
+                alert("Gagal mencatat data ke Firebase.");
+            }
+            btn.innerHTML = oldHtml; btn.disabled = false;
         };
 
     window.loadDataTim = async () => {
