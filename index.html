@@ -669,7 +669,60 @@
       </div>
       <div class='card-panel'>
         <div style='margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;'><div class='form-group' style='margin:0; flex:1;'><label>Pilih Tim untuk Dianalisis:</label><select id='selectTimManager' onchange='loadDataTim()'><option value='Tim 1'>Tim 1</option><option value='Tim 2'>Tim 2</option><option value='Tim 3'>Tim 3</option><option value='Tim 4'>Tim 4</option><option value='Tim 5'>Tim 5</option><option value='Tim 6'>Tim 6</option></select></div><button class='btn-main' onclick='resetDataTim()' style='width:auto; background:#ef4444; font-size:0.75rem;'><i class='fa-solid fa-rotate-left'></i> RESET TIM</button></div>
+        <!-- RADAR AKUNTANSI TIM (SINKRON 100% DENGAN WEB TIM) -->
         <div style='background:#0b0f19; border:1px solid #334155; border-radius:10px; padding:15px; margin-bottom:15px;'>
+          
+          <!-- FILTER BULAN BUKU -->
+          <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #1e293b; padding-bottom:10px;'>
+              <h4 style='margin:0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ledger Akuntansi Tim</h4>
+              <select id='masterFilterBulanTim' class='input-dark no-icon' style='width:auto; border-color:#00f2fe; color:#00f2fe; padding:6px 10px; font-weight:bold; font-size:0.75rem;' onchange='window.loadDataTim()'>
+                  <option value=''>Memuat Bulan...</option>
+              </select>
+          </div>
+
+          <!-- PAPAN SUMMARY AKUNTANSI -->
+          <div style='background:rgba(0,0,0,0.3); border:1px solid #1e293b; padding:12px; border-radius:8px; margin-bottom:15px;'>
+              <div style='display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px dashed #1e293b; padding-bottom:6px;'>
+                  <span style='color:#cbd5e1; font-size:0.75rem;'><i class="fa-solid fa-clock-rotate-left"></i> Hutang Bulan Sebelumnya:</span>
+                  <b id='mtHutangLalu' style='color:#f59e0b; font-size:0.8rem;'>Rp 0</b>
+              </div>
+              <div style='display:flex; justify-content:space-between; margin-bottom:6px;'>
+                  <span style='color:#cbd5e1; font-size:0.75rem;'>Penjualan (Kas Masuk) Bulan Ini:</span>
+                  <b id='mtJualBulanIni' style='color:#00f2fe; font-size:0.8rem;'>Rp 0</b>
+              </div>
+              <div style='display:flex; justify-content:space-between; margin-bottom:6px;'>
+                  <span style='color:#cbd5e1; font-size:0.75rem;'>Hak Tim Bulan Ini (<span id='mtPersenTim'>30</span>%):</span>
+                  <b id='mtHakTim' style='color:#2ecc71; font-size:0.8rem;'>Rp 0</b>
+              </div>
+              <div style='display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px dashed #1e293b; padding-bottom:6px;'>
+                  <span style='color:#cbd5e1; font-size:0.75rem;'>Kewajiban Setor Pusat (<span id='mtPersenPusat'>70</span>%):</span>
+                  <b id='mtWajibSetorPusat' style='color:#ef4444; font-size:0.8rem;'>Rp 0</b>
+              </div>
+              <div style='display:flex; justify-content:space-between; margin-bottom:6px;'>
+                  <span style='color:#cbd5e1; font-size:0.75rem; font-weight:bold;'>Total Tagihan (Lalu + Bulan Ini):</span>
+                  <b id='mtTotalTagihan' style='color:#ef4444; font-size:0.85rem;'>Rp 0</b>
+              </div>
+              <div style='display:flex; justify-content:space-between; margin-bottom:6px; border-bottom:1px dashed #1e293b; padding-bottom:6px;'>
+                  <span style='color:#cbd5e1; font-size:0.75rem;'>Telah Disetor (Valid/Pending):</span>
+                  <b id='mtSudahSetor' style='color:#2ecc71; font-size:0.8rem;'>- Rp 0</b>
+              </div>
+              
+              <div style='display:flex; justify-content:space-between; align-items:center; background:rgba(239, 68, 68, 0.1); padding:8px; border-radius:6px; border:1px dashed #ef4444; margin-top:8px;'>
+                  <span style='color:#f87171; font-size:0.7rem; font-weight:bold;'>SISA TAGIHAN SAAT INI:</span>
+                  <b id='mtSisaTagihan' style='color:#ef4444; font-size:1.1rem; font-family:Orbitron;'>Rp 0</b>
+              </div>
+          </div>
+
+          <!-- INFO STOK GUDANG TOKEN -->
+          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:8px; margin-bottom:8px;'>
+              <span style='color:#94a3b8; font-size:0.75rem;'>Stok Token (Aktif) di Tangan Tim:</span>
+              <span id='timStokAktif' style='color:#10b981; font-weight:900; font-size:0.75rem;'>0 Lbr (Rp 0)</span>
+          </div>
+          <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:8px; margin-bottom:8px;'>
+              <span style='color:#94a3b8; font-size:0.75rem;'>Token Terjual (Total Keseluruhan Waktu):</span>
+              <span id='timStokTerpakai' style='color:#ef4444; font-weight:900; font-size:0.75rem;'>0 Lbr (Rp 0)</span>
+          </div>
+        </div>
           <h4 style='margin:0 0 15px 0; color:#e2e8f0;'><i class='fa-solid fa-chart-pie'></i> Ringkasan Tim</h4>
           <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Stok Token (Aktif):</span><span id='timStokAktif' style='color:#10b981; font-weight:900;'>0 Lbr (Rp 0)</span></div>
           <div style='display:flex; justify-content:space-between; border-bottom:1px dashed #334155; padding-bottom:10px; margin-bottom:10px;'><span style='color:#94a3b8; font-size:0.85rem;'>Token Terjual:</span><span id='timStokTerpakai' style='color:#ef4444; font-weight:900;'>0 Lbr (Rp 0)</span></div>
@@ -1934,18 +1987,6 @@
     };
 
     window.loadDataTim = async () => {
-        const tim = document.getElementById('selectTimManager').value; const tbody = document.getElementById('tblTimDetail'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data tim...</td></tr>";
-        try {
-            const snap = await getDocs(query(collection(db, "Database_Token"), where("distribusi_ke", "==", tim)));
-            let stokAktif = 0; let valAktif = 0; let stokTerpakai = 0; let valTerpakai = 0; let html = ""; let no = 1;
-            snap.forEach(d => {
-                let t = d.data(); if(t.status === "AKTIF") { stokAktif++; valAktif += t.nominal_rupiah; } else if(t.status === "TERPAKAI") { stokTerpakai++; valTerpakai += t.nominal_rupiah; }
-                let sttBadge = t.status === "AKTIF" ? "<span class='badge bg-green'>AKTIF</span>" : "<span class='badge bg-red'>TERPAKAI</span>"; let userDipakai = t.dipakai_oleh || '-'; let waktuBuat = formatTanggalJam(t.dibuat_pada);
-                html += `<tr><td style='text-align:center;'>${no++}</td><td style='font-size:0.75rem; color:#94a3b8;'>${waktuBuat}</td><td><span style='font-family:Orbitron; font-size:0.7rem; color:#38bdf8;'>${t.kode_token}</span><br/><b>Rp ${t.nominal_rupiah.toLocaleString('id-ID')}</b></td><td>${sttBadge}<br/><span style='font-size:0.7rem;'>Pemakai: ${userDipakai}</span></td></tr>`;
-            });
-            document.getElementById('timStokAktif').innerText = stokAktif + " Lbr (Rp " + valAktif.toLocaleString('id-ID') + ")"; document.getElementById('timStokTerpakai').innerText = stokTerpakai + " Lbr (Rp " + valTerpakai.toLocaleString('id-ID') + ")"; document.getElementById('timPendapatan').innerText = "Rp " + valTerpakai.toLocaleString('id-ID'); tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center;'>Belum ada stok token.</td></tr>";
-        } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat data.</td></tr>"; }
-    };
     window.resetDataTim = async () => {
         const tim = document.getElementById('selectTimManager').value; if(!confirm(`PERINGATAN: Hapus SEMUA STOK TOKEN milik ${tim}?`)) return;
         let btn = document.querySelector(`button[onclick='resetDataTim()']`); let oldText = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MERESET..."; btn.disabled = true;
