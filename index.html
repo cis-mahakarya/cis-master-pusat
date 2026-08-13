@@ -2047,36 +2047,6 @@
                         allLedger.push({ waktu: ms, jenis: "SETOR", nominal: o.nominal || 0 });
                     }
                 });
-                snapP2P.forEach(d => {
-                    let o = d.data();
-                    if (o.sumber_dana === "MASTER") {
-                        let wkt = o.waktu_update || o.waktu_order;
-                        let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
-                        allLedger.push({ waktu: ms, jenis: "JUAL", nominal: o.total_harga || o.total_bayar_rp || 0 });
-                    }
-                });
-
-                // B. Swap Jual (Cetak Token)
-                const snapSwap = await getDocs(query(collection(db, "Request_Withdraw"), where("email_pemohon", "==", timEmail), where("status", "==", "DISETUJUI")));
-                snapSwap.forEach(d => {
-                    let o = d.data();
-                    if (o.sumber_dana === "MASTER") {
-                        let wkt = o.waktu_request;
-                        let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
-                        allLedger.push({ waktu: ms, jenis: "JUAL", nominal: o.nominal_rupiah || 0 });
-                    }
-                });
-
-                // C. Setoran
-                const snapSetoran = await getDocs(query(collection(db, "Laporan_Setoran"), where("email", "==", timEmail)));
-                snapSetoran.forEach(d => {
-                    let o = d.data();
-                    if (o.status === "DISETUJUI" || o.status === "PENDING") {
-                        let wkt = o.waktu_lapor;
-                        let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
-                        allLedger.push({ waktu: ms, jenis: "SETOR", nominal: o.nominal || 0 });
-                    }
-                });
 
                 // 4. SUSUN FILTER BULAN (SEPERTI DI WEB PUBLIK)
                 allLedger.sort((a,b) => a.waktu - b.waktu);
