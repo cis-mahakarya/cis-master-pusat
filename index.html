@@ -1124,20 +1124,24 @@
         </div>
 
         <!-- KARTU 2: NERACA FIAT NYATA (UANG REAL) -->
-        <div class='live-dashboard' style='border-color:#facc15; background: radial-gradient(circle at top right, #332900, #0b0f19);'>
+        <div class='live-dashboard' style='border-color:#facc15; background: radial-gradient(circle at top right, #332900, #0b0f19); margin-bottom: 20px;'>
             <h3 style='margin-top:0; color:#facc15;'><i class='fa-solid fa-scale-balanced'></i> 2. NERACA ARUS KAS (REAL MONEY)</h3>
             <p style='font-size:0.75rem; color:#cbd5e1; margin-bottom:15px;'>Perbandingan antara Uang Nyata yang diterima Pusat vs Beban Nyata yang telah dibayar Pusat (PPOB & WD).</p>
             
             <div style='display:flex; justify-content:space-between; border-bottom:1px dashed rgba(250, 204, 21, 0.3); padding-bottom:10px; margin-bottom:10px;'>
                 <div>
-                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-down'></i> INFLOW (UANG MASUK)</div>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-down'></i> INFLOW (UANG MASUK) <button onclick='let el=document.getElementById("rincianInflow"); el.style.display = el.style.display==="none" ? "block" : "none";' style='background:transparent; border:1px solid #4ade80; color:#4ade80; padding:2px 6px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-left:5px;'><i class='fa-solid fa-eye'></i> Cek</button></div>
                     <div id='liqInflow' style='font-family:Orbitron; font-size:1.4rem; color:#4ade80; font-weight:900;'>Rp 0</div>
                 </div>
                 <div style='text-align:right;'>
-                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-up'></i> OUTFLOW (WD + PPOB)</div>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><button onclick='let el=document.getElementById("rincianOutflow"); el.style.display = el.style.display==="none" ? "block" : "none";' style='background:transparent; border:1px solid #ef4444; color:#ef4444; padding:2px 6px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-right:5px;'><i class='fa-solid fa-eye'></i> Cek</button> <i class='fa-solid fa-arrow-up'></i> OUTFLOW (WD + PPOB)</div>
                     <div id='liqOutflow' style='font-family:Orbitron; font-size:1.4rem; color:#ef4444; font-weight:900;'>Rp 0</div>
                 </div>
             </div>
+            
+            <!-- Rincian Inflow & Outflow (Hidden) -->
+            <div id='rincianInflow' style='display:none; background:rgba(0,0,0,0.5); border:1px dashed #4ade80; padding:10px; border-radius:8px; margin-bottom:10px; font-size:0.7rem; max-height:200px; overflow-y:auto;'></div>
+            <div id='rincianOutflow' style='display:none; background:rgba(0,0,0,0.5); border:1px dashed #ef4444; padding:10px; border-radius:8px; margin-bottom:10px; font-size:0.7rem; max-height:200px; overflow-y:auto;'></div>
             
             <div style='text-align:center; padding:15px; background:rgba(0,0,0,0.4); border-radius:10px; border:1px solid #facc15;'>
                 <div style='font-size:0.8rem; font-weight:bold; color:#facc15; margin-bottom:5px;'>STATUS KESEHATAN SISTEM:</div>
@@ -1151,16 +1155,20 @@
             <h4 style='margin-top:0; color:#a855f7;'><i class='fa-solid fa-coins'></i> 3. Beban Hutang Virtual (Beredar)</h4>
             <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Total saldo digital yang dipegang member (potensi bom waktu yang bisa disedot ke PPOB).</p>
             
-            <div class='calc-grid' style='grid-template-columns: 1fr 1fr;'>
+            <div class='calc-grid' style='grid-template-columns: 1fr 1fr; margin-bottom:10px;'>
                 <div class='calc-item'>
-                    <div class='calc-title'>SALDO IDR BEREDAR</div>
+                    <div class='calc-title'>SALDO IDR BEREDAR <button onclick='let el=document.getElementById("rincianVirtualIdr"); el.style.display = el.style.display==="none" ? "block" : "none";' style='background:transparent; border:1px solid #38bdf8; color:#38bdf8; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-left:5px;'><i class='fa-solid fa-eye'></i> Lacak</button></div>
                     <div class='calc-val' id='liqBeredarIdr' style='color:#38bdf8;'>Rp 0</div>
                 </div>
                 <div class='calc-item'>
-                    <div class='calc-title'>SALDO VRSC BEREDAR</div>
+                    <div class='calc-title'>SALDO VRSC BEREDAR <button onclick='let el=document.getElementById("rincianVirtualVrsc"); el.style.display = el.style.display==="none" ? "block" : "none";' style='background:transparent; border:1px solid #fbbf24; color:#fbbf24; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-left:5px;'><i class='fa-solid fa-eye'></i> Lacak</button></div>
                     <div class='calc-val' id='liqBeredarVrsc' style='color:#fbbf24;'>0.0000</div>
                 </div>
             </div>
+            
+            <!-- Rincian Pemegang Saldo Terbesar (Hidden) -->
+            <div id='rincianVirtualIdr' style='display:none; background:rgba(0,0,0,0.5); border:1px dashed #38bdf8; padding:10px; border-radius:8px; margin-bottom:10px; font-size:0.7rem; max-height:200px; overflow-y:auto;'></div>
+            <div id='rincianVirtualVrsc' style='display:none; background:rgba(0,0,0,0.5); border:1px dashed #fbbf24; padding:10px; border-radius:8px; margin-bottom:10px; font-size:0.7rem; max-height:200px; overflow-y:auto;'></div>
         </div>
 
         <!-- KARTU 4: SIRKULASI P2P (PAPAN SKOR) -->
@@ -3436,47 +3444,98 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             if(btn) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENGHITUNG..."; btn.disabled = true; }
 
             try {
-                let inflowPusat = 0;
-                let outflowWd = 0;
-                let outflowPpob = 0;
-                let saldoIdrBeredar = 0;
-                let saldoVrscBeredar = 0;
-                let totalP2p = 0;
+                let inflowPusat = 0; let outflowWd = 0; let outflowPpob = 0;
+                let saldoIdrBeredar = 0; let saldoVrscBeredar = 0; let totalP2p = 0;
+                
+                // Variabel Pembangun HTML Rincian
+                let htmlInflow = ""; let htmlOutflow = "";
+                let htmlIdr = ""; let htmlVrsc = "";
 
                 // 1. Hitung Inflow Nyata & Outflow WD
                 const snapMutasi = await getDocs(collection(db, "Mutasi_Pusat"));
                 snapMutasi.forEach(d => {
                     let x = d.data();
-                    if(x.jenis === "IN_FIAT") inflowPusat += x.nominal; // Hanya hitung uang tunai yg dikonfirmasi
-                    if(x.jenis === "OUT") outflowWd += x.nominal;
+                    let tglStr = x.waktu ? new Date(x.waktu.seconds * 1000).toLocaleDateString('id-ID') : '-';
+                    
+                    if(x.jenis === "IN_FIAT") {
+                        inflowPusat += x.nominal;
+                        htmlInflow += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(255,255,255,0.1); padding:6px 0;">
+                            <div style="flex:1;"><b style="color:#e2e8f0;">${x.deskripsi}</b><br><span style="font-size:0.6rem; color:#64748b;">${tglStr}</span></div>
+                            <div style="text-align:right;"><b style="color:#4ade80;">Rp ${x.nominal.toLocaleString('id-ID')}</b><br>
+                            <button onclick='window.hapusMutasiLikuiditas("${d.id}", "Mutasi_Pusat")' style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-top:3px;"><i class="fa-solid fa-trash"></i> Hapus</button></div>
+                        </div>`;
+                    }
+                    if(x.jenis === "OUT") {
+                        outflowWd += x.nominal;
+                        htmlOutflow += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(255,255,255,0.1); padding:6px 0;">
+                            <div style="flex:1;"><b style="color:#e2e8f0;">${x.deskripsi}</b><br><span style="font-size:0.6rem; color:#64748b;">${tglStr}</span></div>
+                            <div style="text-align:right;"><b style="color:#ef4444;">Rp ${x.nominal.toLocaleString('id-ID')}</b><br>
+                            <button onclick='window.hapusMutasiLikuiditas("${d.id}", "Mutasi_Pusat")' style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-top:3px;"><i class="fa-solid fa-trash"></i> Hapus</button></div>
+                        </div>`;
+                    }
                 });
 
                 // 2. Hitung Outflow PPOB (Uang yg disedot ke Digiflazz)
-                const snapPpob = await getDocs(query(collection(db, "Riwayat_PPOB"), where("status", "==", "Sukses")));
+                // Diambil dari Transaksi_PPOB dengan status Sukses
+                const snapPpob = await getDocs(query(collection(db, "Transaksi_PPOB"), where("status", "==", "SUKSES")));
                 snapPpob.forEach(d => {
-                    outflowPpob += (d.data().harga_asli || d.data().harga_jual || 0);
+                    let x = d.data();
+                    let tglStr = x.waktu ? new Date(x.waktu.seconds * 1000).toLocaleDateString('id-ID') : '-';
+                    let nom = x.harga_bayar || x.harga_jual || x.harga_asli || 0;
+                    outflowPpob += nom;
+                    htmlOutflow += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(255,255,255,0.1); padding:6px 0;">
+                        <div style="flex:1;"><b style="color:#e2e8f0;">PPOB: ${x.username} (${x.jenis})</b><br><span style="font-size:0.6rem; color:#64748b;">${tglStr}</span></div>
+                        <div style="text-align:right;"><b style="color:#ef4444;">Rp ${nom.toLocaleString('id-ID')}</b><br>
+                        <button onclick='window.hapusMutasiLikuiditas("${d.id}", "Transaksi_PPOB")' style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-top:3px;"><i class="fa-solid fa-trash"></i> Hapus</button></div>
+                    </div>`;
                 });
 
-                // 3. Hitung Beban Hutang Beredar Menyeluruh (Member & Brankas Ganda Tim)
+                // 3. Hitung Beban Hutang Beredar (Cari Member Pemegang Saldo Terbesar)
                 const snapUsers = await getDocs(collection(db, "Akun_Publik"));
+                let arrIdr = []; let arrVrsc = [];
+
                 snapUsers.forEach(d => {
                     let u = d.data();
-                    // Abaikan akun Master Pusat sendiri agar tidak terjadi false alarm
                     if (u.role !== "MASTER" && u.username !== "CIS01" && u.username !== "Pusat") {
-                        let sIdrPribadi = u.saldo_rupiah || 0;
-                        let sIdrMaster = u.saldo_rupiah_master || 0;
-                        let sVrscPribadi = u.saldo_vrsc || 0;
-                        let sVrscMaster = u.saldo_vrsc_master || 0;
+                        let tIdr = (u.saldo_rupiah || 0) + (u.saldo_rupiah_master || 0);
+                        let tVrsc = (u.saldo_vrsc || 0) + (u.saldo_vrsc_master || 0);
                         
-                        saldoIdrBeredar += (sIdrPribadi + sIdrMaster);
-                        saldoVrscBeredar += (sVrscPribadi + sVrscMaster);
+                        saldoIdrBeredar += tIdr;
+                        saldoVrscBeredar += tVrsc;
+
+                        // Simpan ke array untuk di-ranking jika lebih dari 0
+                        if (tIdr > 0) arrIdr.push({id: d.id, user: u.username || u.email, val: tIdr});
+                        if (tVrsc > 0) arrVrsc.push({id: d.id, user: u.username || u.email, val: tVrsc});
                     }
+                });
+
+                // Rendering Papan Peringkat "Hutang Virtual"
+                arrIdr.sort((a,b) => b.val - a.val); // Urut dari terbesar
+                arrIdr.forEach(u => {
+                    htmlIdr += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(255,255,255,0.1); padding:6px 0;">
+                        <span style="color:#e2e8f0; font-size:0.75rem;">${u.user}</span>
+                        <div style="text-align:right;">
+                            <b style="color:#38bdf8;">Rp ${u.val.toLocaleString('id-ID')}</b><br>
+                            <button onclick='window.resetSaldoVirtual("${u.id}", "IDR")' style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-top:3px;"><i class="fa-solid fa-eraser"></i> Nol-kan</button>
+                        </div>
+                    </div>`;
+                });
+
+                arrVrsc.sort((a,b) => b.val - a.val);
+                arrVrsc.forEach(u => {
+                    htmlVrsc += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(255,255,255,0.1); padding:6px 0;">
+                        <span style="color:#e2e8f0; font-size:0.75rem;">${u.user}</span>
+                        <div style="text-align:right;">
+                            <b style="color:#fbbf24;">${u.val.toFixed(4)} VRSC</b><br>
+                            <button onclick='window.resetSaldoVirtual("${u.id}", "VRSC")' style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:2px 5px; border-radius:4px; font-size:0.6rem; cursor:pointer; margin-top:3px;"><i class="fa-solid fa-eraser"></i> Nol-kan</button>
+                        </div>
+                    </div>`;
                 });
 
                 // 4. Hitung Sirkulasi P2P
                 const snapP2p = await getDocs(query(collection(db, "P2P_Order"), where("status", "==", "SELESAI")));
                 snapP2p.forEach(d => {
-                    totalP2p += (d.data().total_bayar_rp || 0);
+                    totalP2p += (d.data().total_bayar_rp || d.data().total_harga || 0);
                 });
 
                 // --- RENDER KE UI ---
@@ -3489,28 +3548,28 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                 document.getElementById('liqBeredarVrsc').innerText = saldoVrscBeredar.toFixed(4) + " VRSC";
                 document.getElementById('liqTotalP2p').innerText = "Rp " + totalP2p.toLocaleString('id-ID');
 
+                // Tembakkan rincian ke layar
+                document.getElementById('rincianInflow').innerHTML = htmlInflow || "<div style='text-align:center; color:#64748b;'>Belum ada riwayat Inflow.</div>";
+                document.getElementById('rincianOutflow').innerHTML = htmlOutflow || "<div style='text-align:center; color:#64748b;'>Belum ada riwayat Outflow.</div>";
+                document.getElementById('rincianVirtualIdr').innerHTML = htmlIdr || "<div style='text-align:center; color:#64748b;'>Saldo IDR member bersih (Rp 0).</div>";
+                document.getElementById('rincianVirtualVrsc').innerHTML = htmlVrsc || "<div style='text-align:center; color:#64748b;'>Saldo VRSC member bersih.</div>";
+
                 // Logika Status Anti-Tekor
                 let sttBox = document.getElementById('liqStatus');
                 let sttPesan = document.getElementById('liqPesan');
                 let cardLatar = sttBox.parentElement;
 
                 if (selisih > (saldoIdrBeredar * 0.3)) {
-                    // Sangat Sehat (Surplus mencukupi 30% dari potensi ancaman tarikan)
                     sttBox.innerText = "SISTEM SEHAT";
-                    sttBox.style.color = "#4ade80";
-                    cardLatar.style.borderColor = "#4ade80";
+                    sttBox.style.color = "#4ade80"; cardLatar.style.borderColor = "#4ade80";
                     sttPesan.innerText = `Surplus Cadangan: Rp ${selisih.toLocaleString('id-ID')} (Aman dari Tarikan)`;
                 } else if (selisih >= 0) {
-                    // Waspada
                     sttBox.innerText = "WASPADA (RESIKO TINGGI)";
-                    sttBox.style.color = "#fbbf24";
-                    cardLatar.style.borderColor = "#fbbf24";
+                    sttBox.style.color = "#fbbf24"; cardLatar.style.borderColor = "#fbbf24";
                     sttPesan.innerText = `Surplus Tipis: Rp ${selisih.toLocaleString('id-ID')}. Perbanyak penjualan Tim!`;
                 } else {
-                    // TEKOR (Bocor)
                     sttBox.innerText = "SISTEM TEKOR (DEFISIT)";
-                    sttBox.style.color = "#ef4444";
-                    cardLatar.style.borderColor = "#ef4444";
+                    sttBox.style.color = "#ef4444"; cardLatar.style.borderColor = "#ef4444";
                     sttPesan.innerText = `MINUS: Rp ${Math.abs(selisih).toLocaleString('id-ID')}. Stop pencairan PPOB & segera suntik modal!`;
                 }
 
@@ -3521,10 +3580,36 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
 
             if(btn) { btn.innerHTML = "<i class='fa-solid fa-rotate'></i> REFRESH AUDIT DATA"; btn.disabled = false; }
             
-            // Panggil trigger tambahan saat merefresh layar
             if(typeof window.loadRekeningMaster === 'function') window.loadRekeningMaster();
             if(typeof window.loadLaporanSetoran === 'function') window.loadLaporanSetoran();
             if(typeof window.loadRiwayatSetoranMaster === 'function') window.loadRiwayatSetoranMaster();
+        };
+
+        // --- FUNGSI BARU: PENGHAPUSAN SAMPAH LIKUIDITAS ---
+        window.hapusMutasiLikuiditas = async (docId, koleksi) => {
+            if(!confirm("Hapus catatan ini secara permanen dari perhitungan Arus Kas (Likuiditas)?")) return;
+            try {
+                await deleteDoc(doc(db, koleksi, docId));
+                window.showToast("Catatan dihapus! Neraca diperbarui.");
+                window.loadLikuiditas(); // Auto-Refresh
+            } catch (e) { alert("Gagal menghapus."); }
+        };
+
+        window.resetSaldoVirtual = async (userId, jenis) => {
+            if(!confirm(`PERINGATAN: Anda akan me-nol-kan Saldo ${jenis} user ini secara paksa.\n\nAksi ini hanya digunakan untuk menghapus data testing yang mengganggu Neraca Virtual. Lanjutkan?`)) return;
+            try {
+                let updates = {};
+                if (jenis === "IDR") {
+                    updates.saldo_rupiah = 0;
+                    updates.saldo_rupiah_master = 0;
+                } else {
+                    updates.saldo_vrsc = 0;
+                    updates.saldo_vrsc_master = 0;
+                }
+                await updateDoc(doc(db, "Akun_Publik", userId), updates);
+                window.showToast(`Sukses! Saldo ${jenis} milik user tersebut telah hangus (Rp 0).`);
+                window.loadLikuiditas(); // Auto-Refresh
+            } catch(e) { alert("Gagal mereset saldo."); }
         };
 
         // --- MESIN PENGATURAN REKENING MASTER ---
