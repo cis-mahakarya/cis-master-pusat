@@ -311,24 +311,74 @@
     </div>
   </div>
 	
+  <!-- LAYAR BUKU KAS INDUK / LABA RUGI PUSAT -->
   <div class='admin-screen' id='scr-akuntansi'>
-    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Akuntansi &amp; Buku Kas Induk</div>
+    <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Laba Rugi &amp; Buku Kas Induk</div>
     <div class='screen-content'>
-        <div class='live-dashboard' style='border-color:#10b981;'>
-            <h3 style='margin-top:0; color:#4ade80;'><i class='fa-solid fa-vault'></i> BUKU KAS INDUK (PUSAT)</h3>
-            <div style='display:flex; justify-content:space-between; margin-top:20px;'>
-                <div><div style='font-size:0.7rem; color:#94a3b8;'>TOTAL TOKEN TERCETAK (IN)</div><div id='kasTotalIn' style='font-size:1.5rem; color:#4ade80; font-family:Orbitron; font-weight:bold;'>Rp 0</div></div>
-                <div style='text-align:right;'><div style='font-size:0.7rem; color:#94a3b8;'>TOTAL WD DICAIRKAN (OUT)</div><div id='kasTotalOut' style='font-size:1.5rem; color:#f87171; font-family:Orbitron; font-weight:bold;'>Rp 0</div></div>
+        
+        <!-- FILTER BULAN BUKU -->
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
+            <select id='masterFilterBulanAkuntansi' class='input-dark no-icon' style='width:auto; border-color:#4ade80; color:#4ade80; padding:8px 12px; font-weight:bold; font-size:0.85rem;' onchange='window.loadAkuntansiPusat()'>
+                <option value=''>Memuat Bulan...</option>
+            </select>
+            <button onclick='window.loadAkuntansiPusat()' class='btn-cyan' style='width:auto; background:#334155; padding:8px 15px; font-size:0.75rem; color:#fff;'><i class='fa-solid fa-rotate'></i> Refresh Data</button>
+        </div>
+
+        <!-- LAPORAN LABA RUGI (UANG REAL) -->
+        <div class='live-dashboard' style='border-color:#10b981; background: radial-gradient(circle at top right, #064e3b, #0b0f19);'>
+            <h3 style='margin-top:0; color:#4ade80;'><i class='fa-solid fa-vault'></i> LABA RUGI UANG REAL (BULAN INI)</h3>
+            <p style='font-size:0.7rem; color:#a7f3d0; margin-top:-5px;'>Arus kas bersih dari Setoran Tim vs Pencairan WD & PPOB.</p>
+            
+            <div style='display:flex; justify-content:space-between; margin-top:15px; border-bottom:1px dashed rgba(74, 222, 128, 0.3); padding-bottom:10px;'>
+                <div>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-down' style='color:#4ade80;'></i> PENDAPATAN (IN)</div>
+                    <div id='kasTotalIn' style='font-size:1.3rem; color:#4ade80; font-family:Orbitron; font-weight:bold;'>Rp 0</div>
+                </div>
+                <div style='text-align:right;'>
+                    <div style='font-size:0.7rem; color:#94a3b8;'><i class='fa-solid fa-arrow-up' style='color:#ef4444;'></i> PENGELUARAN (OUT)</div>
+                    <div id='kasTotalOut' style='font-size:1.3rem; color:#f87171; font-family:Orbitron; font-weight:bold;'>Rp 0</div>
+                </div>
+            </div>
+            <div style='margin-top:15px; text-align:center; background:rgba(0,0,0,0.4); padding:10px; border-radius:10px; border:1px solid #10b981;'>
+                <div style='font-size:0.75rem; color:#fcd34d; font-weight:bold; letter-spacing:1px;'>KEUNTUNGAN BERSIH (PROFIT)</div>
+                <div id='kasProfit' style='font-size:2rem; color:#facc15; font-family:Orbitron; font-weight:900;'>Rp 0</div>
             </div>
         </div>
+
+        <!-- ANALISIS TOKEN & PERPUTARAN P2P -->
+        <div class='card-panel' style='border-top: 2px solid #38bdf8;'>
+            <h4 style='margin-top:0; color:#38bdf8;'><i class='fa-solid fa-chart-pie'></i> Analisis Tokenomics &amp; Sirkulasi P2P</h4>
+            <p style='font-size:0.7rem; color:#94a3b8; margin-top:-5px;'>Memantau rasio pencetakan token vs uang yang berputar di komunitas bulan ini.</p>
+            
+            <div style='background:rgba(0,0,0,0.3); border:1px solid #1e293b; padding:15px; border-radius:8px; margin-bottom:10px;'>
+                <div style='display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed #1e293b; padding-bottom:10px;'>
+                    <span style='color:#cbd5e1; font-size:0.8rem;'>Total Token Dicetak (Modal Pusat):</span>
+                    <b id='statTokenCetak' style='color:#38bdf8; font-size:0.85rem;'>Rp 0</b>
+                </div>
+                <div style='display:flex; justify-content:space-between; margin-bottom:10px;'>
+                    <span style='color:#cbd5e1; font-size:0.8rem;'>Terjual oleh Tim (Uang Masuk ke Pusat):</span>
+                    <b id='statP2pTim' style='color:#2ecc71; font-size:0.85rem;'>Rp 0</b>
+                </div>
+                <div style='display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed #1e293b; padding-bottom:10px;'>
+                    <span style='color:#cbd5e1; font-size:0.8rem;'>Rasio Penjualan Tim vs Cetak:</span>
+                    <b id='statRasioJual' style='color:#facc15; font-size:0.85rem;'>0%</b>
+                </div>
+                <div style='display:flex; justify-content:space-between; align-items:center; background:rgba(168, 85, 247, 0.1); padding:10px; border-radius:8px; border:1px dashed #a855f7;'>
+                    <span style='color:#c084fc; font-size:0.8rem; font-weight:bold;'><i class='fa-solid fa-users'></i> P2P Antar Member (Beredar di Luar):</span>
+                    <b id='statP2pMember' style='color:#a855f7; font-size:1rem; font-family:Orbitron;'>Rp 0</b>
+                </div>
+                <p style='font-size:0.65rem; color:#64748b; margin:10px 0 0 0; line-height:1.4;'>*<b>Uang Masuk ke Pusat</b>: Transaksi P2P dari Brankas Tim yang wajib disetor ke rekening Pusat.<br/>*<b>Beredar di Luar</b>: Jual-beli token dari member ke member (Pribadi) yang uang real-nya tidak masuk ke Pusat.</p>
+            </div>
+        </div>
+
+        <!-- RINCIAN MUTASI PUSAT -->
         <div class='card-panel'>
             <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;'>
-                <h4 style='margin:0;'><i class='fa-solid fa-clock-rotate-left'></i> History Transaksi Pusat</h4>
-                <button class='action-btn bg-dark' onclick='loadAkuntansiPusat()'><i class='fa-solid fa-rotate'></i> Refresh</button>
+                <h4 style='margin:0;'><i class='fa-solid fa-list-check'></i> Rincian Buku Kas Bulan Ini</h4>
             </div>
             <div class='table-wrap'>
                 <table>
-                    <thead><tr><th>Waktu</th><th>Jenis</th><th>Deskripsi</th><th>Nominal</th></tr></thead>
+                    <thead><tr><th>Waktu</th><th>Jenis</th><th>Deskripsi</th><th style='text-align:right;'>Nominal</th></tr></thead>
                     <tbody id='tblAkuntansiPusat'><tr><td colspan='4' style='text-align:center;'>Memuat buku kas...</td></tr></tbody>
                 </table>
             </div>
@@ -1972,16 +2022,145 @@
     window.simpanSpeedMultiplier = async () => { let multiplierVal = parseFloat(document.getElementById('inpSpeedMultiplier').value) || 1.0; if(multiplierVal <= 0) return alert("Pengali tidak boleh 0 atau minus!"); const btn = document.querySelector(`button[onclick='simpanSpeedMultiplier()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); let payload = { tipe: "SPEED_MULTIPLIER", multiplier: multiplierVal }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); globalSpeedMultiplier = multiplierVal; showToast("Kecepatan Global Diupdate!"); } catch(e) { alert("Gagal menyimpan."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Update Kecepatan Global"; btn.disabled = false; };
 
     window.loadAkuntansiPusat = async () => {
-        const tbody = document.getElementById('tblAkuntansiPusat'); tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Mensinkronkan Buku Kas...</td></tr>";
-        try {
-            const snap = await getDocs(query(collection(db, "Mutasi_Pusat"), orderBy("waktu", "desc"))); let html = ""; let totalIn = 0; let totalOut = 0;
-            snap.forEach(d => { let x = d.data(); if(x.jenis === "IN") totalIn += x.nominal; if(x.jenis === "OUT") totalOut += x.nominal; });
-            document.getElementById('kasTotalIn').innerText = "Rp " + totalIn.toLocaleString('id-ID'); document.getElementById('kasTotalOut').innerText = "Rp " + totalOut.toLocaleString('id-ID');
-            let dataArr = []; snap.forEach(d => dataArr.push(d.data()));
-            dataArr.slice(0, 100).forEach(x => { let wkt = formatTanggalJam(x.waktu); let color = x.jenis === "IN" ? "#4ade80" : "#f87171"; let sign = x.jenis === "IN" ? "+" : "-"; html += `<tr><td style='font-size:0.75rem; color:#94a3b8;'>${wkt}</td><td><span class='badge' style='background:rgba(255,255,255,0.1); color:${color};'>${x.jenis}</span></td><td><b>${x.deskripsi}</b></td><td style='color:${color}; font-weight:bold;'>${sign} Rp ${(x.nominal||0).toLocaleString('id-ID')}</td></tr>`; });
-            tbody.innerHTML = html || "<tr><td colspan='4' style='text-align:center; color:#94a3b8;'>Buku Kas masih kosong.</td></tr>";
-        } catch(e) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; }
-    };
+            const tbody = document.getElementById('tblAkuntansiPusat');
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Menarik Laporan Induk & Tokenomics...</td></tr>";
+
+            try {
+                let nowD = new Date();
+                let currentMonthKey = nowD.getFullYear() + "-" + String(nowD.getMonth()+1).padStart(2, '0');
+
+                // --- 1. Tarik Data Mutasi Pusat (Arus Kas Uang Real) ---
+                const snapMutasi = await getDocs(query(collection(db, "Mutasi_Pusat")));
+                let allMutasi = [];
+                let monthSet = new Set();
+                monthSet.add(currentMonthKey); // Pastikan bulan ini selalu ada di dropdown
+
+                snapMutasi.forEach(d => {
+                    let x = d.data();
+                    let wkt = x.waktu;
+                    let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                    if(ms > 0) {
+                        let dt = new Date(ms);
+                        let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
+                        monthSet.add(mStr);
+                        allMutasi.push({ id: d.id, monthKey: mStr, ms: ms, ...x });
+                    }
+                });
+
+                // Render Dropdown Bulan
+                let sortedMonths = Array.from(monthSet).sort((a,b) => b.localeCompare(a));
+                let selFilter = document.getElementById('masterFilterBulanAkuntansi');
+                let selectedMonth = selFilter.value || currentMonthKey;
+                
+                let optHtml = "";
+                sortedMonths.forEach(m => {
+                    let [yyyy, mm] = m.split("-");
+                    let mName = new Date(yyyy, parseInt(mm)-1, 1).toLocaleString('id-ID', {month:'long', year:'numeric'});
+                    let isSel = m === selectedMonth ? "selected" : "";
+                    optHtml += `<option value="${m}" ${isSel}>${mName}</option>`;
+                });
+                selFilter.innerHTML = optHtml;
+                selectedMonth = selFilter.value;
+
+                // --- 2. Kalkulasi Laba Rugi Uang Real (Sesuai Bulan Terpilih) ---
+                let totalIn = 0;
+                let totalOut = 0;
+                let htmlTable = "";
+
+                // Filter Mutasi by selected month, lalu urutkan dari yang terbaru (descending)
+                let filteredMutasi = allMutasi.filter(x => x.monthKey === selectedMonth).sort((a,b) => b.ms - a.ms);
+
+                filteredMutasi.forEach(x => {
+                    // PENDAPATAN = Hanya Setoran Fiat. PENGELUARAN = Pencairan WD dan Refund PPOB (Keluar dari rekening Pusat)
+                    let isIncome = (x.jenis === "IN_FIAT");
+                    let isExpense = (x.jenis === "OUT" || x.jenis === "PPOB_OUT");
+                    
+                    if (isIncome) totalIn += x.nominal;
+                    if (isExpense) totalOut += x.nominal;
+
+                    let wktFormat = new Date(x.ms).toLocaleString('id-ID', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+                    let color = isIncome ? "#4ade80" : (isExpense ? "#f87171" : "#94a3b8");
+                    let sign = isIncome ? "+" : (isExpense ? "-" : "");
+                    
+                    htmlTable += `<tr style='border-bottom:1px solid #334155;'>
+                        <td style='font-size:0.7rem; color:#94a3b8;'>${wktFormat}</td>
+                        <td><span class='badge' style='background:rgba(255,255,255,0.1); color:${color}; font-size:0.6rem;'>${x.jenis}</span></td>
+                        <td style='font-size:0.75rem; color:#e2e8f0;'><b>${x.deskripsi}</b></td>
+                        <td style='color:${color}; font-weight:bold; text-align:right;'>${sign} Rp ${(x.nominal||0).toLocaleString('id-ID')}</td>
+                    </tr>`;
+                });
+
+                let profit = totalIn - totalOut;
+                document.getElementById('kasTotalIn').innerText = "Rp " + totalIn.toLocaleString('id-ID');
+                document.getElementById('kasTotalOut').innerText = "Rp " + totalOut.toLocaleString('id-ID');
+                
+                let elProfit = document.getElementById('kasProfit');
+                if (profit > 0) {
+                    elProfit.innerHTML = `<i class='fa-solid fa-arrow-trend-up'></i> + Rp ${profit.toLocaleString('id-ID')}`;
+                    elProfit.style.color = "#4ade80";
+                } else if (profit < 0) {
+                    elProfit.innerHTML = `<i class='fa-solid fa-arrow-trend-down'></i> - Rp ${Math.abs(profit).toLocaleString('id-ID')}`;
+                    elProfit.style.color = "#ef4444";
+                } else {
+                    elProfit.innerHTML = "Rp 0";
+                    elProfit.style.color = "#facc15";
+                }
+
+                tbody.innerHTML = htmlTable || "<tr><td colspan='4' style='text-align:center; color:#94a3b8; padding:15px;'>Tidak ada transaksi keuangan di bulan ini.</td></tr>";
+
+                // --- 3. Analisis Tokenomics & P2P (Sesuai Bulan Terpilih) ---
+                let tknDicetak = 0;
+                let p2pTim = 0;
+                let p2pMember = 0;
+
+                // Hitung Token yang diciptakan Pusat di bulan ini
+                const snapTkn = await getDocs(query(collection(db, "Database_Token")));
+                snapTkn.forEach(d => {
+                    let x = d.data();
+                    let wkt = x.dibuat_pada;
+                    let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                    if(ms > 0) {
+                        let dt = new Date(ms);
+                        let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
+                        if (mStr === selectedMonth && x.nominal_rupiah) {
+                            tknDicetak += x.nominal_rupiah;
+                        }
+                    }
+                });
+
+                // Hitung Peta Distribusi Transaksi P2P (Uang yang berputar)
+                const snapP2P = await getDocs(query(collection(db, "P2P_Order"), where("status", "==", "SELESAI")));
+                snapP2P.forEach(d => {
+                    let x = d.data();
+                    let wkt = x.waktu_update || x.waktu_order;
+                    let ms = wkt ? (wkt.seconds ? wkt.seconds * 1000 : wkt) : 0;
+                    if(ms > 0) {
+                        let dt = new Date(ms);
+                        let mStr = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2, '0');
+                        if (mStr === selectedMonth) {
+                            let nominal = x.total_harga || x.total_bayar_rp || 0;
+                            // Memisahkan jalur uang masuk: Uang Pusat vs Uang Komunitas (Member)
+                            if (x.sumber_dana === "MASTER") {
+                                p2pTim += nominal; 
+                            } else {
+                                p2pMember += nominal; 
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById('statTokenCetak').innerText = "Rp " + tknDicetak.toLocaleString('id-ID');
+                document.getElementById('statP2pTim').innerText = "Rp " + p2pTim.toLocaleString('id-ID');
+                document.getElementById('statP2pMember').innerText = "Rp " + p2pMember.toLocaleString('id-ID');
+                
+                let rasio = tknDicetak > 0 ? ((p2pTim / tknDicetak) * 100).toFixed(1) : 0;
+                document.getElementById('statRasioJual').innerText = rasio + "%";
+
+            } catch(e) { 
+                console.error("Akuntansi Pusat Error: ", e);
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#ef4444;'>Gagal memuat buku kas. Cek koneksi Anda.</td></tr>"; 
+            }
+        };
 
     window.loadDataTim = async () => {
             const tim = document.getElementById('selectTimManager').value.toUpperCase(); // Contoh: "TIM 1"
