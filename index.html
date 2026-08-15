@@ -1280,7 +1280,7 @@
 </div>
 <div style='display:flex; gap:10px;'>
     <div class='form-group' style='flex:1;'><label style='color:#2ecc71;'><i class="fa-regular fa-calendar-check"></i> Exp Akun (Tanggal)</label><input class='input-dark no-icon' id='editInpExp' style='border-color:#2ecc71;' type='datetime-local'></div>
-    <div class='form-group' style='flex:1;'><label style='color:#f59e0b;'><i class="fa-regular fa-calendar-xmark"></i> Exp Mesin (Tanggal)</label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f59e0b;' type='datetime-local'></div>
+    <div class='form-group' style='flex:1;'><label style='color:#f59e0b; display:flex; justify-content:space-between; align-items:center;'><sapn><i class="fa-regular fa-calendar-xmark"></i> Exp Mesin Terakhir</span> <button onclick="window.suntikMatiMesinTerakhir()" style="background:#ef4444; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:0.6rem; cursor:pointer;">☠️ EXP 0 HARI</button></label><input class='input-dark no-icon' id='editInpExpMesin' style='border-color:#f59e0b;' type='datetime-local' readonly title="Gunakan tombol tengkorak untuk test expired!"></div>
 </div>
 <button class='btn-main' id='btnSimpanEditData' onclick='window.simpanEditData()' style='background:#10b981; margin-top:10px;'><i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN</button></div>
   </div>
@@ -1874,6 +1874,43 @@
         } catch(e) { alert("Gagal menyimpan data."); } 
         btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PERUBAHAN"; btn.disabled = false; 
     };
+
+    // --- FUNGSI SUNTIK MATI MESIN (UNTUK TESTING) ---
+    window.suntikMatiMesinTerakhir = async () => {
+        let id = document.getElementById('editDocId').value;
+        if(!id) return alert("Error: ID User tidak ditemukan!");
+        if(!confirm("PERINGATAN!\n\nAksi ini akan mencari mesin pembelian TERAKHIR di garasi user ini, lalu memundurkan waktu expired-nya menjadi KEMARIN (0 Hari).\n\nBerguna untuk testing pemotongan Speed otomatis oleh sistem Web Publik.\n\nLanjutkan Suntik Mati?")) return;
+        
+        try {
+            const uDoc = await getDocs(query(collection(db, "Akun_Publik"), where("__name__", "==", id)));
+            if(uDoc.empty) return alert("Gagal menemukan data user di database.");
+            
+            let data = uDoc.docs[0].data();
+            let garasi = data.daftar_mesin || [];
+            
+            if(garasi.length === 0) return alert("User ini tidak memiliki mesin aktif (Garasi Kosong).");
+            
+            // Urutkan garasi berdasarkan masa aktif (yang paling jauh/paling baru dibeli ada di urutan terakhir)
+            garasi.sort((a,b) => a.expired_kontrak - b.expired_kontrak);
+            
+            // Ambil mesin yang paling ujung (pembelian terakhir)
+            let mesinTerakhir = garasi[garasi.length - 1];
+            
+            // Mundurkan waktunya menjadi kemarin (minus 1 hari dari sekarang)
+            mesinTerakhir.expired_kontrak = Date.now() - 86400000; 
+            
+            await updateDoc(doc(db, "Akun_Publik", id), {
+                daftar_mesin: garasi
+            });
+            
+            window.showToast("Suntik Mati Berhasil! 1 Mesin telah dihanguskan.");
+            document.getElementById('modalEditData').style.display = 'none'; 
+            window.loadUser();
+        } catch(e) {
+            alert("Terjadi kesalahan: " + e.message);
+        }
+    };
+    // ------------------------------------------------
 
     window.lihatMutasiUser = async (email, username) => { document.getElementById('mutasiUserTitle').innerText = "Ledger: " + (username || email); document.getElementById('modalMutasiUser').style.display = 'flex'; const tbody = document.getElementById('tblMutasiUser'); tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data...</td></tr>"; try { const snap = await getDocs(query(collection(db, "Mutasi_Mining"), where("email", "==", email))); let dataArr = []; snap.forEach(d => dataArr.push(d.data())); dataArr.sort((a, b) => (b.timestamp_local || 0) - (a.timestamp_local || 0)); if(dataArr.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Tidak ada riwayat mutasi.</td></tr>"; return; } let html = ""; dataArr.slice(0, 100).forEach(x => { let tgl = new Date(x.timestamp_local).toLocaleString('id-ID'); let cl = x.jenis === "IN" ? "#4ade80" : "#f87171"; let sign = x.jenis === "IN" ? "+" : "-"; let formatUang = x.deskripsi.toLowerCase().includes("reward") || x.deskripsi.toLowerCase().includes("sponsor") || x.deskripsi.toLowerCase().includes("upgrade") || x.deskripsi.toLowerCase().includes("yield") ? `${formatKripto(x.nominal || 0)} VRSC` : `Rp ${(x.nominal||0).toLocaleString('id-ID')}`; html += `<tr><td style='font-size:0.75rem; color:#94a3b8;'>${tgl}</td><td style='font-size:0.8rem; font-weight:bold;'>${x.deskripsi}</td><td style='color:${cl}; font-weight:900;'>${sign}${formatUang}</td></tr>`; }); tbody.innerHTML = html; } catch(e) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; } };
     window.lihatJaringan = (username) => { if(!username || username === "undefined") return alert("User tidak valid."); document.getElementById('sponsorUtama').innerText = username; document.getElementById('modalJaringan').style.display = 'flex'; let html = buildTreeHTML(username, 1); if(html === "") html = "<div style='text-align:center; color:#94a3b8; padding:20px;'><i class='fa-solid fa-folder-open'></i> Belum ada downline.</div>"; document.getElementById('jaringanList').innerHTML = html; };
