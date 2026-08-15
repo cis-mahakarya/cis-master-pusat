@@ -1880,8 +1880,62 @@
     function buildTreeHTML(sponsorName, level) { let html = ""; let downlines = allUsersData.filter(u => u.referred_by === sponsorName); if(downlines.length > 0) { downlines.forEach(d => { let padding = (level - 1) * 20; let speed = (d.kecepatan_hash || 0).toFixed(6); html += `<div style='margin-left:${padding}px; border-left:2px solid #38bdf8; padding-left:15px; margin-bottom:10px; position:relative;'><div style='position:absolute; left:-2px; top:15px; width:15px; height:2px; background:#38bdf8;'></div><div style='background:#1e293b; padding:10px; border-radius:8px; border:1px solid #334155;'><b style='color:#e2e8f0; font-size:0.9rem;'>${d.username || 'No-Name'}</b> <span class='badge bg-yellow'>Level ${level}</span><br/><small style='color:#4ade80; font-weight:bold;'><i class='fa-solid fa-bolt'></i> ${speed} V/s</small></div></div>`; html += buildTreeHTML(d.username, level + 1); }); } return html; }
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
-    window.delUser = async (id) => { if(confirm("Hapus user ini secara permanen?")) { await deleteDoc(doc(db, "Akun_Publik", id)); loadUser(); } };
-    window.resetUser = async (id, email) => { if(!confirm(`PERINGATAN KERAS: Proses ini akan mengembalikan Akun ke kondisi awal seperti baru mendaftar!\nSeluruh riwayat Hashrate, Saldo, Token, dan Mutasi milik [${email}] akan dihapus permanen. Lanjutkan?`)) return; try { await updateDoc(doc(db, "Akun_Publik", id), { saldo_vrsc: 0, kecepatan_hash: 0, expired_at: 0, saldo_rupiah: 0, total_bonus_sponsor_vrsc: 0, daftar_mesin: [] }); const listKol = ["Database_Token", "Mutasi_Mining", "Notifikasi_Personal", "Request_Withdraw"]; for(const kol of listKol) { const q = query(collection(db, kol), where(kol==="Request_Withdraw"?"email_pemohon":(kol==="Database_Token"?"pemilik":"email"), "==", email)); const snap = await getDocs(q); for (const d of snap.docs) { await deleteDoc(doc(db, kol, d.id)); } } showToast(`Data akun ${email} di-reset total!`); loadUser(); } catch(e) { alert("Terjadi kesalahan sistem saat reset."); } };
+    
+    window.delUser = async (id) => { 
+        if(confirm("Hapus user ini secara permanen?")) { 
+            await deleteDoc(doc(db, "Akun_Publik", id)); 
+            loadUser(); 
+        } 
+    };
+    
+    window.resetUser = async (id, email) => { 
+        if(!confirm(`PERINGATAN SANGAT KERAS!\nProses ini akan MENGHANGUSKAN seluruh aset milik [${email}].\nRiwayat Mesin, Saldo Koin, Rupiah, Dolar, Token, dan Mutasi akan dilenyapkan. Kembali seperti akun baru mendaftar. Lanjutkan?`)) return; 
+        
+        try { 
+            // 1. Kuras Saldo dan Kunci Mesin di Akun Utama
+            await updateDoc(doc(db, "Akun_Publik", id), { 
+                saldo_vrsc: 0, 
+                kecepatan_hash: 0, 
+                expired_at: 0, 
+                saldo_rupiah: 0, 
+                saldo_usdt: 0, 
+                saldo_ppob: 0,
+                saldo_vrsc_master: 0,
+                saldo_rupiah_master: 0,
+                total_bonus_sponsor_vrsc: 0, 
+                daftar_mesin: [],
+                status_akun: "INACTIVE",
+                biaya_aktivasi_current: 10000 
+            }); 
+            
+            // 2. Pemburu Bayaran: Lenyapkan semua data relasional user di cabang lain
+            const listKol = [
+                { nama: "Database_Token", field: "pemilik" },
+                { nama: "Mutasi_Mining", field: "email" },
+                { nama: "Notifikasi_Personal", field: "email" },
+                { nama: "Request_Withdraw", field: "email_pemohon" },
+                { nama: "P2P_Order", field: "pembeli" },
+                { nama: "P2P_Order", field: "penjual" }, // Harus eksekusi 2x untuk P2P (Sebagai pembeli & penjual)
+                { nama: "Data_Staking", field: "email" },
+                { nama: "Laporan_Setoran", field: "email" },
+                { nama: "Transaksi_PPOB", field: "email" },
+                { nama: "Pesan_Bantuan", field: "email" }
+            ]; 
+            
+            for(const kol of listKol) { 
+                const q = query(collection(db, kol.nama), where(kol.field, "==", email)); 
+                const snap = await getDocs(q); 
+                for (const d of snap.docs) { 
+                    await deleteDoc(doc(db, kol.nama, d.id)); 
+                } 
+            } 
+            
+            showToast(`PEMUTIHAN SUKSES! Akun ${email} telah di-reset seperti baru.`); 
+            loadUser(); 
+        } catch(e) { 
+            alert("Terjadi kesalahan sistem saat pemutihan: " + e.message); 
+        } 
+    };
 
     window.toggleMasterReset = () => { let isUnlocked = document.getElementById('unlockReset').checked; let btn = document.getElementById('btnMasterReset'); if(isUnlocked) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; } else { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; } };
     window.masterReset = async () => { 
