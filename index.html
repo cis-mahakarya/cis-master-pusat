@@ -667,6 +667,11 @@
       <div class='card-panel' style='border-top: 2px solid #ef4444; margin-bottom:20px;'>
         <h4 style='margin-top:0; color:#ef4444;'><i class='fa-solid fa-power-off'></i> Kontrol Status Web (Maintenance & Launch)</h4>
         
+        <div class='switch-wrap' style='border-color:#38bdf8; background:rgba(56, 189, 248, 0.05);'>
+          <div><b style='color:#38bdf8;'><i class='fa-solid fa-satellite-dish'></i> Akses Portal Master untuk Tim</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Tampilkan tombol Master Pusat di sidebar akun Tim.</span></div>
+          <label class='switch'><input id='togglePortalTim' type='checkbox'><span class='slider-tg'></span></label>
+        </div>
+
         <div class='switch-wrap'>
           <div><b style='color:#ef4444;'><i class='fa-solid fa-gear'></i> Mode Maintenance (Perbaikan)</b></div>
           <label class='switch'><input id='toggleMaintenance' type='checkbox'><span class='slider-tg'></span></label>
@@ -2905,6 +2910,7 @@
         onSnapshot(query(collection(db, "System_Config"), where("tipe", "==", "APP_STATUS")), (snap) => {
             if(!snap.empty) {
                 const data = snap.docs[0].data();
+                if(document.getElementById('togglePortalTim')) document.getElementById('togglePortalTim').checked = data.is_portal_team_active === true;
                 document.getElementById('toggleMaintenance').checked = data.is_maintenance === true;
                 document.getElementById('toggleCountdown').checked = data.is_countdown === true;
                 if(data.target_launch) document.getElementById('inpTargetLaunch').value = data.target_launch;
@@ -3072,6 +3078,7 @@
 
         let payload = {
             tipe: "APP_STATUS",
+            is_portal_team_active: document.getElementById('togglePortalTim') ? document.getElementById('togglePortalTim').checked : false,
             is_maintenance: document.getElementById('toggleMaintenance').checked,
             is_countdown: document.getElementById('toggleCountdown').checked,
             target_launch: document.getElementById('inpTargetLaunch').value,
