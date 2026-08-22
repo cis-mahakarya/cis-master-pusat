@@ -691,7 +691,33 @@
         
         <button class='btn-main' onclick='simpanStatusWeb()' style='background:#ef4444;'><i class='fa-solid fa-save'></i> Simpan Status Web</button>
 
-      <div class='card-panel' style='border-top: 2px solid #10b981; margin-bottom:20px;'><h4 style='margin-top:0; color:#10b981;'><i class='fa-brands fa-android'></i> Kendali Versi &amp; Aplikasi (APK)</h4><div class='form-group'><label>Target Versi Aplikasi (Contoh: 1.0.0)</label><input id='inpAppVersion' type='text' value='1.0.0'></div><div class='form-group'><label>Link Download Aplikasi</label><input id='inpAppUrl' type='url'></div><div class='switch-wrap'><div><b style='color:#10b981;'><i class='fa-solid fa-shield-cat'></i> Wajib Update Aplikasi / Lock Browser</b></div><label class='switch'><input id='toggleForceUpdate' type='checkbox'><span class='slider-tg'></span></label></div><button class='btn-main' onclick='simpanConfigApk()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Konfigurasi APK</button></div>
+      <button class='btn-main' onclick='simpanConfigApk()' style='background:#10b981;'><i class='fa-solid fa-save'></i> Simpan Konfigurasi APK</button></div>
+
+      <!-- KOTAK KENDALI GRUP WHATSAPP -->
+      <div class='card-panel' style='border-top: 2px solid #25d366; margin-bottom:20px;'>
+        <h4 style='margin-top:0; color:#25d366;'><i class='fa-brands fa-whatsapp'></i> Pengaturan Link Grup WhatsApp</h4>
+        <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Atur tautan grup WA dan gunakan saklar untuk menampilkannya di web member.</p>
+        
+        <div style='background:rgba(37, 211, 102, 0.05); border:1px dashed #25d366; padding:15px; border-radius:8px; margin-bottom:15px;'>
+          <div class='switch-wrap' style='margin-bottom:10px; border-color:#25d366; background:transparent;'>
+            <div><b style='color:#25d366;'>Grup WA Utama (1)</b></div>
+            <label class='switch'><input id='tgWa1' type='checkbox'><span class='slider-tg'></span></label>
+          </div>
+          <input id='inpLinkWa1' type='url' class='input-dark' placeholder='Masukkan Link Grup WA 1...' style='border-color:#25d366; width:100%; padding:10px;'>
+        </div>
+
+        <div style='background:rgba(56, 189, 248, 0.05); border:1px dashed #38bdf8; padding:15px; border-radius:8px; margin-bottom:15px;'>
+          <div class='switch-wrap' style='margin-bottom:10px; border-color:#38bdf8; background:transparent;'>
+            <div><b style='color:#38bdf8;'>Grup WA Cadangan (2)</b></div>
+            <label class='switch'><input id='tgWa2' type='checkbox'><span class='slider-tg'></span></label>
+          </div>
+          <input id='inpLinkWa2' type='url' class='input-dark' placeholder='Masukkan Link Grup WA 2...' style='border-color:#38bdf8; width:100%; padding:10px;'>
+        </div>
+
+        <button class='btn-main' onclick='window.simpanWaGroups()' style='background:#25d366; color:#fff;'><i class='fa-solid fa-save'></i> Simpan Pengaturan WA</button>
+      </div>
+      <!-- END KOTAK KENDALI GRUP WHATSAPP -->
+
       <div class='card-panel'>
         <div class='switch-wrap'><div><b style='color:#38bdf8;'><i class='fa-solid fa-key'></i> Wajib Aktivasi Pendaftaran</b></div><label class='switch'><input id='toggleAktivasiReg' type='checkbox'><span class='slider-tg'></span></label></div>
         <div class='switch-wrap'><div><b style='color:#a855f7;'><i class='fa-solid fa-gift'></i> Mode Freemium (Mining Gratis)</b></div><label class='switch'><input id='toggleFreemium' type='checkbox'><span class='slider-tg'></span></label></div>
@@ -1436,7 +1462,7 @@
         });
         
         fetchVrscPrice(); loadConfigPendaftaran(); loadConfigGame(); loadGlobalStats(); loadSpeedMultiplier(); window.initLiveMonitor();
-        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.initAutoPromoEngine(); showToast("Access Granted: Welcome Commander.");
+        window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.initAutoPromoEngine(); window.loadWaGroups(); showToast("Access Granted: Welcome Commander.");
 
 		// --- Kalkulator Realtime Est Rupiah ---
     window.hitungEstRegBonus = function() {
@@ -3068,6 +3094,43 @@
         
         if(!isAuto) { btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Status Web"; btn.disabled = false; }
     };
+
+    // --- MESIN PENGATURAN GRUP WHATSAPP ---
+    window.loadWaGroups = async () => {
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "WA_GROUPS")));
+            if(!snap.empty) {
+                let d = snap.docs[0].data();
+                document.getElementById('tgWa1').checked = d.wa1_aktif || false;
+                document.getElementById('inpLinkWa1').value = d.wa1_link || "";
+                document.getElementById('tgWa2').checked = d.wa2_aktif || false;
+                document.getElementById('inpLinkWa2').value = d.wa2_link || "";
+            }
+        } catch(e) { console.log("Gagal memuat pengaturan WA"); }
+    };
+
+    window.simpanWaGroups = async () => {
+        const btn = document.querySelector(`button[onclick='window.simpanWaGroups()']`);
+        btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
+        
+        let payload = {
+            tipe: "WA_GROUPS",
+            wa1_aktif: document.getElementById('tgWa1').checked,
+            wa1_link: document.getElementById('inpLinkWa1').value.trim(),
+            wa2_aktif: document.getElementById('tgWa2').checked,
+            wa2_link: document.getElementById('inpLinkWa2').value.trim()
+        };
+
+        try {
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "WA_GROUPS")));
+            if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
+            else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+            window.showToast("Pengaturan Grup WA Berhasil Disimpan!");
+        } catch(e) { alert("Gagal menyimpan pengaturan WA."); }
+        
+        btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Pengaturan WA"; btn.disabled = false;
+    };
+    // ----------------------------------------
 
     async function loadGlobalStats() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "GLOBAL_STATS"))); if(!snap.empty) { const data = snap.docs[0].data(); document.getElementById('statInpOnline').value = data.online || 1204; document.getElementById('statInpReg').value = data.registered || 8450; document.getElementById('statInpWd').value = data.withdrawn || 452890;
 if(document.getElementById('statInpMinSultan')) document.getElementById('statInpMinSultan').value = data.min_sultan || 0; 
