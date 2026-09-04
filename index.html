@@ -3423,6 +3423,11 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                     let actionBtns = "";
                     if (sT === "PENDING" || sT === "MENUNGGU_ACC") {
                         let btnTeruskanAPI = sT === "MENUNGGU_ACC" ? `<button onclick='window.teruskanPpobApi("${d.id}")' style='background:#38bdf8; color:#0b0f19; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer; margin-top:5px; width:100%;'><i class='fa-solid fa-satellite-dish'></i> TERUSKAN KE API</button>` : "";
+						// Sisipkan Tombol Bukti QRIS jika tersedia di Database
+                    let linkBuktiQris = "";
+                    if (x.jenis === "QRIS" && x.bukti_qris) {
+                        linkBuktiQris = `<br/><a href="${x.bukti_qris}" target="_blank" style="background:#a855f7; color:#fff; display:inline-block; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:0.65rem; font-weight:bold; margin-bottom:5px;"><i class="fa-solid fa-qrcode"></i> Lihat Barcode QRIS</a>`;
+                    }
                         actionBtns = `
                             <div style='display:flex; gap:5px; margin-top:8px;'>
                                 <button onclick='window.accPpobManual("${d.id}", "${x.email}")' style='background:#2ecc71; color:#fff; border:none; padding:5px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer; flex:1;'><i class='fa-solid fa-check'></i> ACC MANUAL</button>
@@ -3434,7 +3439,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
 
                     html += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                         <td style='font-size:0.8rem; padding:8px;'><b style='color:#fff;'>${x.username}</b><br/><span style='color:#94a3b8; font-size:0.7rem;'>${tgl}</span></td>
-                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#38bdf8;'>${x.target || x.tujuan || '-'}</b><br/><span style='color:#cbd5e1;'>${x.jenis} ${x.nominal}</span></td>
+                        <td style='font-size:0.8rem; padding:8px;'><b style='color:#38bdf8;'>${x.target || x.tujuan || '-'}</b> ${linkBuktiQris}<br/><span style='color:#cbd5e1;'>${x.jenis} ${x.nominal}</span></td>
                         <td style='font-size:0.8rem; padding:8px;'><b style='color:#fbbf24;'>Rp ${(x.harga_bayar || x.harga_jual || 0).toLocaleString('id-ID')}</b><br/><span style='background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px; border:1px solid ${sttColor}; color:${sttColor}; font-weight:bold; font-size:0.65rem;'>${sT}</span></td>
                         <td style='font-size:0.75rem; color:#cbd5e1; padding:8px;'>SN: ${x.sn || '-'}<br/><span style='color:#64748b;'>Ref: ${x.ref_id || '-'}</span>${actionBtns}</td>
                     </tr>`;
