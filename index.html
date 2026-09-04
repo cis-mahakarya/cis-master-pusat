@@ -973,6 +973,10 @@
           <label>Keuntungan / Markup Harga (Rp)</label>
           <input id='inpMarkupPpob' type='number' placeholder='Contoh: 500' style='border-color:#0ea5e9; font-weight:bold; font-size:1.1rem; color:#38bdf8;'>
         </div>
+        <div class='form-group' style='background:rgba(168, 85, 247, 0.1); border:1px dashed #a855f7; padding:10px; border-radius:8px; margin-bottom:15px;'>
+          <label style='color:#c084fc;'><i class='fa-solid fa-users-viewfinder'></i> Syarat Min. Beli Speed untuk Akses PPOB & Staking (Rp)</label>
+          <input id='inpSyaratSpeedPpob' type='number' placeholder='Contoh: 100000' style='border-color:#a855f7; font-weight:bold; color:#c084fc; background:#0b0f19;'>
+        </div>
         
         <button class='btn-main' onclick='window.simpanConfigPpob()' style='background:#0ea5e9;'><i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB</button>
       </div>>
@@ -3377,6 +3381,7 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
                 if(!snap.empty) {
                     let d = snap.docs[0].data();
                     document.getElementById('inpMarkupPpob').value = d.markup || 0;
+                    document.getElementById('inpSyaratSpeedPpob').value = d.min_beli_speed || 0;
                     document.getElementById('togglePpobActive').checked = d.is_active || false;
                     document.getElementById('togglePpobAutoApi').checked = d.is_auto_api || false;
                 }
@@ -3385,12 +3390,13 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
 
         window.simpanConfigPpob = async () => {
             let markup = parseInt(document.getElementById('inpMarkupPpob').value) || 0;
+            let minSpeed = parseInt(document.getElementById('inpSyaratSpeedPpob').value) || 0;
             let isActive = document.getElementById('togglePpobActive').checked;
             let isAutoApi = document.getElementById('togglePpobAutoApi').checked;
             const btn = document.querySelector(`button[onclick='window.simpanConfigPpob()']`);
             btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
             
-            let payload = { tipe: "PPOB_CONFIG", markup: markup, is_active: isActive, is_auto_api: isAutoApi };
+            let payload = { tipe: "PPOB_CONFIG", markup: markup, min_beli_speed: minSpeed, is_active: isActive, is_auto_api: isAutoApi };
             try {
                 const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
                 if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
