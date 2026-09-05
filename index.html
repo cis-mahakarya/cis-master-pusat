@@ -496,8 +496,12 @@
         
         <div id='areaWdRiwayat' style='display:none;'><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Waktu Pengajuan</th><th>Pemohon &amp; Tujuan Token</th><th>Nominal &amp; Status</th></tr></thead><tbody id='tblApprovalRiwayat'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat...</td></tr></tbody></table></div></div>
       <div id='areaWdP2P' style='display:none;'>
-            <h4 style='color:#38bdf8; margin-top:0;'><i class='fa-solid fa-people-arrows'></i> Kendali P2P Bypass (Master)</h4>
-            <p style='font-size:0.75rem; color:#94a3b8;'>Admin dapat memantau dan mengambil alih (Paksa ACC/Batal) transaksi P2P yang menggantung antar member.</p>
+            <!-- SAKLAR AUTO P2P -->
+            <div class='switch-wrap' style='margin-bottom:15px; border-color:#38bdf8; background:rgba(56, 189, 248, 0.1);'>
+                <div><b style='color:#38bdf8;'><i class='fa-solid fa-robot'></i> Mode P2P Otomatis</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Jika ON, transaksi P2P disetujui otomatis tanpa lewat Admin Pusat.</span></div>
+                <label class='switch'><input id='toggleAutoP2p' type='checkbox' onchange='window.simpanAutoP2p()'><span class='slider-tg'></span></label>
+            </div>
+
             <div class='table-wrap'>
                 <table>
                     <thead><tr><th class='col-no'>No</th><th>Tanggal & Status</th><th>Pembeli <i class='fa-solid fa-arrow-right'></i> Penjual</th><th>Nominal & Token</th><th>Aksi Bypass</th></tr></thead>
@@ -1690,6 +1694,11 @@
     window.loadAntreanP2PAdmin = async () => {
         const tbody = document.getElementById('tblApprovalP2P'); 
         tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat P2P...</td></tr>";
+
+		// Load status saklar Auto P2P
+        const autoSnap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_P2P")));
+        if(!autoSnap.empty) document.getElementById('toggleAutoP2p').checked = autoSnap.docs[0].data().is_active;
+		
         try {
             const snap = await getDocs(query(collection(db, "P2P_Order"))); 
             let dataArr = []; snap.forEach(d => {
@@ -1780,14 +1789,14 @@
         } catch(e) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal memuat antrean.</td></tr>"; }
     };
 
-    window.simpanAutoWd = async () => {
-        let isAuto = document.getElementById('toggleAutoWd').checked;
+    window.simpanAutoP2p = async () => {
+        let isAuto = document.getElementById('toggleAutoP2p').checked;
         try { 
-            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_WD"))); 
-            if(snap.empty) await addDoc(collection(db, "System_Config"), {tipe: "AUTO_WD", is_active: isAuto}); 
+            const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "AUTO_P2P"))); 
+            if(snap.empty) await addDoc(collection(db, "System_Config"), {tipe: "AUTO_P2P", is_active: isAuto}); 
             else await updateDoc(doc(db, "System_Config", snap.docs[0].id), {is_active: isAuto}); 
-            showToast("Mode Auto WD Diperbarui!"); 
-        } catch(e) { alert("Gagal update setting."); }
+            showToast("Mode Auto P2P Diperbarui!"); 
+        } catch(e) { alert("Gagal update setting P2P."); }
     };
 
     window.loadRiwayatWD = async () => {
