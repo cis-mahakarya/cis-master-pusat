@@ -472,7 +472,11 @@
     <div class='screen-header'><div class='btn-back' onclick='closeScreen()'><i class='fa-solid fa-arrow-left'></i></div> Antrean Persetujuan WD</div>
     <div class='screen-content'>
       <div class='card-panel' style='border-top: 2px solid #e67e22;'>
-        <div style='display:flex; border-bottom:1px solid #334155; margin-bottom:15px;'><div id='tabWdPending' onclick='window.switchTabWd("pending")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#f59e0b; border-bottom:2px solid #f59e0b;'>Antrean (Pending)</div><div id='tabWdRiwayat' onclick='window.switchTabWd("riwayat")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'>Riwayat Selesai</div></div>
+        <div style='display:flex; border-bottom:1px solid #334155; margin-bottom:15px;'>
+            <div id='tabWdPending' onclick='window.switchTabWd("pending")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#f59e0b; border-bottom:2px solid #f59e0b;'>Antrean Swap (WD)</div>
+            <div id='tabWdP2P' onclick='window.switchTabWd("p2p")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'>Antrean P2P Global</div>
+            <div id='tabWdRiwayat' onclick='window.switchTabWd("riwayat")' style='flex:1; text-align:center; padding:10px; cursor:pointer; font-weight:bold; color:#94a3b8;'>Riwayat Selesai</div>
+        </div>
         
         <div id='areaWdPending'>
             <!-- SAKLAR AUTO WD -->
@@ -491,7 +495,17 @@
         </div>
         
         <div id='areaWdRiwayat' style='display:none;'><div class='table-wrap'><table><thead><tr><th class='col-no'>No</th><th>Waktu Pengajuan</th><th>Pemohon &amp; Tujuan Token</th><th>Nominal &amp; Status</th></tr></thead><tbody id='tblApprovalRiwayat'><tr><td colspan='4' style='text-align:center;'>Memuat riwayat...</td></tr></tbody></table></div></div>
-      </div>
+      <div id='areaWdP2P' style='display:none;'>
+            <h4 style='color:#38bdf8; margin-top:0;'><i class='fa-solid fa-people-arrows'></i> Kendali P2P Bypass (Master)</h4>
+            <p style='font-size:0.75rem; color:#94a3b8;'>Admin dapat memantau dan mengambil alih (Paksa ACC/Batal) transaksi P2P yang menggantung antar member.</p>
+            <div class='table-wrap'>
+                <table>
+                    <thead><tr><th class='col-no'>No</th><th>Tanggal & Status</th><th>Pembeli <i class='fa-solid fa-arrow-right'></i> Penjual</th><th>Nominal & Token</th><th>Aksi Bypass</th></tr></thead>
+                    <tbody id='tblApprovalP2P'><tr><td colspan='5' style='text-align:center;'>Memuat antrean P2P...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+	  </div>
     </div>
   </div>
 
@@ -1650,17 +1664,93 @@
     });
 
     window.switchTabWd = (tab) => {
+        document.getElementById('areaWdPending').style.display = 'none'; 
+        document.getElementById('areaWdRiwayat').style.display = 'none';
+        document.getElementById('areaWdP2P').style.display = 'none';
+        
+        document.getElementById('tabWdPending').style.color = '#94a3b8'; document.getElementById('tabWdPending').style.borderBottom = 'none';
+        document.getElementById('tabWdRiwayat').style.color = '#94a3b8'; document.getElementById('tabWdRiwayat').style.borderBottom = 'none';
+        document.getElementById('tabWdP2P').style.color = '#94a3b8'; document.getElementById('tabWdP2P').style.borderBottom = 'none';
+
         if(tab === 'pending') {
-            document.getElementById('areaWdPending').style.display = 'block'; document.getElementById('areaWdRiwayat').style.display = 'none';
+            document.getElementById('areaWdPending').style.display = 'block'; 
             document.getElementById('tabWdPending').style.color = '#f59e0b'; document.getElementById('tabWdPending').style.borderBottom = '2px solid #f59e0b';
-            document.getElementById('tabWdRiwayat').style.color = '#94a3b8'; document.getElementById('tabWdRiwayat').style.borderBottom = 'none';
             window.loadAntreanWD();
-        } else {
-            document.getElementById('areaWdPending').style.display = 'none'; document.getElementById('areaWdRiwayat').style.display = 'block';
+        } else if (tab === 'riwayat') {
+            document.getElementById('areaWdRiwayat').style.display = 'block'; 
             document.getElementById('tabWdRiwayat').style.color = '#f59e0b'; document.getElementById('tabWdRiwayat').style.borderBottom = '2px solid #f59e0b';
-            document.getElementById('tabWdPending').style.color = '#94a3b8'; document.getElementById('tabWdPending').style.borderBottom = 'none';
             window.loadRiwayatWD();
+        } else if (tab === 'p2p') {
+            document.getElementById('areaWdP2P').style.display = 'block'; 
+            document.getElementById('tabWdP2P').style.color = '#38bdf8'; document.getElementById('tabWdP2P').style.borderBottom = '2px solid #38bdf8';
+            window.loadAntreanP2PAdmin();
         }
+    };
+
+    window.loadAntreanP2PAdmin = async () => {
+        const tbody = document.getElementById('tblApprovalP2P'); 
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat P2P...</td></tr>";
+        try {
+            const snap = await getDocs(query(collection(db, "P2P_Order"))); 
+            let dataArr = []; snap.forEach(d => {
+                let stt = d.data().status;
+                if(stt === "PENDING" || stt === "MENUNGGU_TF" || stt === "DIBAYAR") {
+                    dataArr.push({ id: d.id, ...d.data() });
+                }
+            });
+            dataArr.sort((a,b) => (b.waktu_order?.seconds || 0) - (a.waktu_order?.seconds || 0));
+
+            let html = ""; let no = 1;
+            dataArr.forEach(x => {
+                let waktu = formatTanggalJam(x.waktu_order);
+                let btnTf = x.bukti_tf ? `<br><a href='${x.bukti_tf}' target='_blank' style='color:#38bdf8; font-size:0.7rem;'><i class='fa-solid fa-image'></i> Cek Struk Pembeli</a>` : "";
+                let colorStt = x.status === "DIBAYAR" ? "#2ecc71" : "#f59e0b";
+                
+                html += `<tr style='border-bottom:1px solid rgba(255,255,255,0.05);'>
+                    <td style='text-align:center;'>${no++}</td>
+                    <td><span style='font-size:0.75rem; color:#94a3b8;'>${waktu}</span><br/><span style='color:${colorStt}; font-weight:bold; font-size:0.7rem;'>${x.status}</span>${btnTf}</td>
+                    <td><b style='color:#4ade80;'>P: ${x.pembeli || x.pembeli_user || '-'}</b><br/><b style='color:#f87171;'>J: ${x.penjual || x.penjual_user || '-'}</b></td>
+                    <td><b style='color:#fbbf24;'>Rp ${(x.total_harga || x.total_bayar_rp || 0).toLocaleString('id-ID')}</b><br/><span style='font-size:0.7rem; color:#cbd5e1;'>${x.kode_token || '-'}</span></td>
+                    <td>
+                        <button class='action-btn bg-green' onclick='window.accP2PAdmin("${x.id}", "${x.kode_token}", "${x.pembeli || x.pembeli_user}")' style='margin-bottom:5px; width:100%;'><i class='fa-solid fa-check-double'></i> PAKSA ACC</button><br>
+                        <button class='action-btn btn-del' onclick='window.tolakP2PAdmin("${x.id}", "${x.kode_token}")' style='width:100%;'><i class='fa-solid fa-xmark'></i> BATALKAN</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html === "" ? "<tr><td colspan='5' style='text-align:center; color:#94a3b8;'>Semua P2P beres! Tidak ada antrean menggantung.</td></tr>" : html;
+        } catch(e) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Gagal memuat P2P.</td></tr>"; }
+    };
+
+    window.accP2PAdmin = async (orderId, kodeToken, pembeli) => {
+        if(!confirm(`Yakin ingin MEMAKSA ACC transaksi P2P ini?\nSistem akan mengambil alih token dan memindahkannya ke akun Pembeli [${pembeli}].`)) return;
+        try {
+            await updateDoc(doc(db, "P2P_Order", orderId), { status: "SELESAI", waktu_update: serverTimestamp() });
+            const snapTkn = await getDocs(query(collection(db, "Database_Token"), where("kode_token", "==", kodeToken)));
+            if(!snapTkn.empty) {
+                await updateDoc(doc(db, "Database_Token", snapTkn.docs[0].id), {
+                    dipakai_oleh: null, 
+                    pemilik: pembeli, 
+                    pemilik_username: pembeli, 
+                    status: "AKTIF",
+                    distribusi_ke: "USER" 
+                });
+            }
+            showToast("P2P Berhasil Diambil Alih & Di-ACC!");
+            window.loadAntreanP2PAdmin();
+        } catch(e) { alert("Terjadi kesalahan sistem."); }
+    };
+
+    window.tolakP2PAdmin = async (orderId, kodeToken) => {
+        let alasan = prompt("Masukkan alasan pembatalan P2P:", "Order kadaluarsa / Bukti TF palsu"); if(alasan === null) return;
+        try {
+            await updateDoc(doc(db, "P2P_Order", orderId), { status: "BATAL", alasan_batal: alasan, waktu_update: serverTimestamp() });
+            const snapTkn = await getDocs(query(collection(db, "Database_Token"), where("kode_token", "==", kodeToken)));
+            if(!snapTkn.empty) {
+                await updateDoc(doc(db, "Database_Token", snapTkn.docs[0].id), { status: "AKTIF" }); 
+            }
+            showToast("P2P Dibatalkan secara Paksa!");
+            window.loadAntreanP2PAdmin();
+        } catch(e) { alert("Terjadi kesalahan sistem."); }
     };
 
     window.loadAntreanWD = async () => {
