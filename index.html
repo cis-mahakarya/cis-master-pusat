@@ -1731,20 +1731,33 @@
     };
 
     window.accP2PAdmin = async (orderId, kodeToken, pembeli) => {
-        if(!confirm(`Yakin ingin MEMAKSA ACC transaksi P2P ini?\nSistem akan mengambil alih token dan memindahkannya ke akun Pembeli [${pembeli}].`)) return;
         try {
-            await updateDoc(doc(db, "P2P_Order", orderId), { status: "SELESAI", waktu_update: serverTimestamp() });
-            const snapTkn = await getDocs(query(collection(db, "Database_Token"), where("kode_token", "==", kodeToken)));
-            if(!snapTkn.empty) {
-                await updateDoc(doc(db, "Database_Token", snapTkn.docs[0].id), {
-                    dipakai_oleh: null, 
-                    pemilik: pembeli, 
-                    pemilik_username: pembeli, 
-                    status: "AKTIF",
-                    distribusi_ke: "USER" 
-                });
+            // 1. Cek status order saat ini
+            const oSnap = await getDocs(query(collection(db, "P2P_Order"), where("__name__", "==", orderId)));
+            if(oSnap.empty) return;
+            
+            let sttSaatIni = oSnap.docs[0].data().status;
+
+            // 2. JIKA STATUS PENDING (ACC Orderan Baru)
+            if (sttSaatIni === "PENDING") {
+                if(!confirm("Setujui orderan baru ini agar diteruskan ke Penjual?")) return;
+                
+                await updateDoc(doc(db, "P2P_Order", orderId), { status: "REQUEST", waktu_update: serverTimestamp() });
+                showToast("Order Disetujui & Diteruskan ke Penjual!");
+            } 
+            // 3. JIKA STATUS LAIN (Bypass Darurat / Sengketa)
+            else {
+                if(!confirm(`Yakin ingin MEMAKSA ACC transaksi P2P ini?\nSistem akan mengambil alih token dan memindahkannya secara paksa ke akun Pembeli [${pembeli}].`)) return;
+                
+                await updateDoc(doc(db, "P2P_Order", orderId), { status: "SELESAI", waktu_update: serverTimestamp() });
+                const snapTkn = await getDocs(query(collection(db, "Database_Token"), where("kode_token", "==", kodeToken)));
+                if(!snapTkn.empty) {
+                    await updateDoc(doc(db, "Database_Token", snapTkn.docs[0].id), {
+                        dipakai_oleh: null, pemilik: pembeli, pemilik_username: pembeli, status: "AKTIF", distribusi_ke: "USER" 
+                    });
+                }
+                showToast("P2P Berhasil Diambil Alih secara Paksa!");
             }
-            showToast("P2P Berhasil Diambil Alih & Di-ACC!");
             window.loadAntreanP2PAdmin();
         } catch(e) { alert("Terjadi kesalahan sistem."); }
     };
