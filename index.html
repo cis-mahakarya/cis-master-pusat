@@ -997,7 +997,24 @@
         </div>
         
         <button class='btn-main' onclick='window.simpanConfigPpob()' style='background:#0ea5e9;'><i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB</button>
-      </div>>
+      </div>
+
+      <!-- KOTAK BARU: PENGATURAN KENDALI TAMPIL MENU INDIVIDUAL -->
+      <div class='card-panel' style='border-top: 2px solid #a855f7; margin-bottom:20px;'>
+          <h4 style='color:#c084fc; margin-top:0;'><i class='fa-solid fa-list-check'></i> Kendali Tampil Menu PPOB</h4>
+          <p style='font-size:0.75rem; color:#94a3b8; margin-bottom:15px;'>Matikan (OFF) layanan yang sedang gangguan agar hilang dari aplikasi member.</p>
+          
+          <div style='display:grid; grid-template-columns:1fr 1fr; gap:10px;'>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>Pulsa</b></div><label class='switch'><input id='tgMenuPulsa' type='checkbox' checked><span class='slider-tg'></span></label></div>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>Kuota</b></div><label class='switch'><input id='tgMenuKuota' type='checkbox' checked><span class='slider-tg'></span></label></div>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>Token PLN</b></div><label class='switch'><input id='tgMenuPln' type='checkbox' checked><span class='slider-tg'></span></label></div>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>E-Wallet</b></div><label class='switch'><input id='tgMenuEwallet' type='checkbox' checked><span class='slider-tg'></span></label></div>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>Vcr Game</b></div><label class='switch'><input id='tgMenuGame' type='checkbox' checked><span class='slider-tg'></span></label></div>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>Koin TikTok</b></div><label class='switch'><input id='tgMenuTiktok' type='checkbox' checked><span class='slider-tg'></span></label></div>
+              <div class='switch-wrap' style='background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;'><div><b style='color:#fff;'>QRIS</b></div><label class='switch'><input id='tgMenuQris' type='checkbox' checked><span class='slider-tg'></span></label></div>
+          </div>
+          <button class='btn-main' onclick='window.simpanMenuPpob()' style='width:100%; margin-top:15px; background:#a855f7; color:#fff;'><i class='fa-solid fa-save'></i> SIMPAN PENGATURAN MENU</button>
+      </div>
 
 		<!-- KOTAK TOP UP SALDO SERVER (DIGIFLAZZ) -->
       <div class='card-panel' style='border-top: 2px solid #2ecc71; margin-bottom:20px;'>
@@ -3513,6 +3530,30 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             } catch(e) { console.log("Gagal memuat config PPOB"); }
         };
 
+        window.loadConfigPpob = async () => {
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
+                if(!snap.empty) {
+                    let d = snap.docs[0].data();
+                    document.getElementById('inpMarkupPpob').value = d.markup || 0;
+                    document.getElementById('inpSyaratSpeedPpob').value = d.min_beli_speed || 0;
+                    document.getElementById('togglePpobActive').checked = d.is_active || false;
+                    document.getElementById('togglePpobAutoApi').checked = d.is_auto_api || false;
+                    
+                    // Baca status menu
+                    if(document.getElementById('tgMenuPulsa')) {
+                        document.getElementById('tgMenuPulsa').checked = d.menu_pulsa !== false;
+                        document.getElementById('tgMenuKuota').checked = d.menu_kuota !== false;
+                        document.getElementById('tgMenuPln').checked = d.menu_pln !== false;
+                        document.getElementById('tgMenuEwallet').checked = d.menu_ewallet !== false;
+                        document.getElementById('tgMenuGame').checked = d.menu_game !== false;
+                        document.getElementById('tgMenuTiktok').checked = d.menu_tiktok !== false;
+                        document.getElementById('tgMenuQris').checked = d.menu_qris !== false;
+                    }
+                }
+            } catch(e) { console.log("Gagal memuat config PPOB"); }
+        };
+
         window.simpanConfigPpob = async () => {
             let markup = parseInt(document.getElementById('inpMarkupPpob').value) || 0;
             let minSpeed = parseInt(document.getElementById('inpSyaratSpeedPpob').value) || 0;
@@ -3521,7 +3562,13 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             const btn = document.querySelector(`button[onclick='window.simpanConfigPpob()']`);
             btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true;
             
-            let payload = { tipe: "PPOB_CONFIG", markup: markup, min_beli_speed: minSpeed, is_active: isActive, is_auto_api: isAutoApi };
+            let payload = { 
+                tipe: "PPOB_CONFIG", 
+                markup: markup, 
+                min_beli_speed: minSpeed, 
+                is_active: isActive, 
+                is_auto_api: isAutoApi
+            };
             try {
                 const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
                 if(snap.empty) await addDoc(collection(db, "System_Config"), payload);
@@ -3531,6 +3578,28 @@ let payload = { tipe: "GLOBAL_STATS", online: onl, registered: reg, withdrawn: w
             btn.innerHTML = "<i class='fa-solid fa-save'></i> Simpan Pengaturan PPOB"; btn.disabled = false;
         };
 
+        window.simpanMenuPpob = async () => {
+            const btn = document.querySelector(`button[onclick='window.simpanMenuPpob()']`);
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> MENYIMPAN..."; btn.disabled = true;
+            let payload = {
+                menu_pulsa: document.getElementById('tgMenuPulsa').checked,
+                menu_kuota: document.getElementById('tgMenuKuota').checked,
+                menu_pln: document.getElementById('tgMenuPln').checked,
+                menu_ewallet: document.getElementById('tgMenuEwallet').checked,
+                menu_game: document.getElementById('tgMenuGame').checked,
+                menu_tiktok: document.getElementById('tgMenuTiktok').checked,
+                menu_qris: document.getElementById('tgMenuQris').checked
+            };
+            try {
+                const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "PPOB_CONFIG")));
+                if(!snap.empty) {
+                    await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload);
+                    showToast("Pengaturan Tampil Menu PPOB Tersimpan!");
+                }
+            } catch(e) { alert("Gagal menyimpan pengaturan."); }
+            btn.innerHTML = "<i class='fa-solid fa-save'></i> SIMPAN PENGATURAN MENU"; btn.disabled = false;
+        };
+           
         // --- MESIN RIWAYAT & EKSEKUSI PPOB MANUAL ---
         window.loadRiwayatPpob = async () => {
             const tbody = document.getElementById('tblRiwayatPpob');
