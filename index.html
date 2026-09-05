@@ -1703,7 +1703,8 @@
             const snap = await getDocs(query(collection(db, "P2P_Order"))); 
             let dataArr = []; snap.forEach(d => {
                 let stt = d.data().status;
-                if(stt === "PENDING" || stt === "MENUNGGU_TF" || stt === "DIBAYAR") {
+                // Tampilkan SEMUA status yang masih menggantung!
+                if(stt !== "SELESAI" && stt !== "BATAL" && stt !== "SENGKETA") {
                     dataArr.push({ id: d.id, ...d.data() });
                 }
             });
@@ -1743,8 +1744,13 @@
                 if(!confirm("Setujui orderan baru ini agar diteruskan ke Penjual?")) return;
                 
                 await updateDoc(doc(db, "P2P_Order", orderId), { status: "REQUEST", waktu_update: serverTimestamp() });
+                
+                // BARU: Bangunkan penjual SEKARANG karena Pusat sudah meng-ACC!
+                let oData = oSnap.docs[0].data();
+                await addDoc(collection(db, "Notifikasi_Personal"), { email: oData.penjual, pesan: `🎁 P2P DARI PUSAT: ${oData.pembeli_user} me-request pembelian ${oData.qty} Token ${oData.jenis_token}. Segera respon di menu P2P!`, order_id: orderId, timestamp_local: Date.now() });
+
                 showToast("Order Disetujui & Diteruskan ke Penjual!");
-            } 
+            }
             // 3. JIKA STATUS LAIN (Bypass Darurat / Sengketa)
             else {
                 if(!confirm(`Yakin ingin MEMAKSA ACC transaksi P2P ini?\nSistem akan mengambil alih token dan memindahkannya secara paksa ke akun Pembeli [${pembeli}].`)) return;
