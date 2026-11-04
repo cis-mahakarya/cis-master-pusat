@@ -2342,9 +2342,30 @@
         btn.disabled = false;
     });
 
-    window.delPaket = async (id) => { 
-        prompt("?? KEAMANAN KETAT AKTIF!\n\nPenghapusan dari web diblokir oleh Firebase.\nSilakan salin (Copy) ID Dokumen di bawah ini, lalu hapus secara manual di Firebase Console pada koleksi 'Config_Mining':", id);
+    // --- START: HAPUS PAKET DENGAN OTORISASI PIN ---
+    window.delPaket = async (id) => {
+        const PIN_MASTER = "2026"; // Silakan ganti 4 digit angka ini sesuai PIN rahasia Anda
+        let pinInput = prompt("🔒 OTORISASI MASTER:\nMasukkan 4-Digit PIN Master untuk menghapus paket ini:");
+        
+        if (pinInput === null) return; // Batal jika klik Cancel
+        if (pinInput.trim() !== PIN_MASTER) {
+            alert("❌ AKSES DITOLAK: PIN Otorisasi Salah!");
+            return;
+        }
+        
+        if (!confirm("Yakin ingin menghapus Paket Hashrate ini secara permanen dari sistem?")) return;
+        
+        try {
+            await deleteDoc(doc(db, "Config_Mining", id));
+            console.log("✅ Validasi: Paket berhasil dihapus, ID:", id);
+            window.showToast("✅ Paket berhasil dihapus dari Database!");
+            window.loadPaket(); // Refresh tabel otomatis
+        } catch(e) {
+            console.error("❌ Gagal hapus paket:", e);
+            prompt("⚠️ Penghapusan langsung ditolak oleh Rules Firebase Console.\nSalin ID ini jika ingin menghapus manual:", id);
+        }
     };
+    // --- END ---
 
     async function loadSpeedMultiplier() { const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); if(!snap.empty) { const data = snap.docs[0].data(); globalSpeedMultiplier = data.multiplier || 1.0; let inpMultiplier = document.getElementById('inpSpeedMultiplier'); if(inpMultiplier) inpMultiplier.value = globalSpeedMultiplier; } }
     window.simpanSpeedMultiplier = async () => { let multiplierVal = parseFloat(document.getElementById('inpSpeedMultiplier').value) || 1.0; if(multiplierVal <= 0) return alert("Pengali tidak boleh 0 atau minus!"); const btn = document.querySelector(`button[onclick='simpanSpeedMultiplier()']`); btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Menyimpan..."; btn.disabled = true; const snap = await getDocs(query(collection(db, "System_Config"), where("tipe", "==", "SPEED_MULTIPLIER"))); let payload = { tipe: "SPEED_MULTIPLIER", multiplier: multiplierVal }; try { if(snap.empty) await addDoc(collection(db, "System_Config"), payload); else await updateDoc(doc(db, "System_Config", snap.docs[0].id), payload); globalSpeedMultiplier = multiplierVal; showToast("Kecepatan Global Diupdate!"); } catch(e) { alert("Gagal menyimpan."); } btn.innerHTML = "<i class='fa-solid fa-save'></i> Update Kecepatan Global"; btn.disabled = false; };
