@@ -1524,7 +1524,7 @@
             }
         } catch (e) {
             console.error("Login Auth Error:", e);
-            alert("Login Gagal: Periksa kembali Email dan Password Anda.");
+            alert("Login Gagal (" + (e.code || e.name) + "): " + e.message);
         } finally {
             btn.innerText = "AUTHORIZE ACCESS";
             btn.disabled = false;
