@@ -193,7 +193,7 @@
       <div class='login-card'>
           <h2><i class='fa-solid fa-shield-halved'></i> COMMAND V2</h2>
           <p style='color:#94a3b8; font-size:0.8rem; margin-bottom:20px;'>Encrypted Master Access</p>
-          <input class='login-input' id='logUser' placeholder='Administrator ID' type='text'>
+          <input class='login-input' id='logUser' placeholder='Email Admin (contoh: admincismining@gmail.com)' type='email'>
           <div style='position: relative; width: 100%;'>
               <input class='login-input' id='logPass' placeholder='Security Protocol Key' type='password' style='padding-right: 40px;'>
               <i class='fa-solid fa-eye' onclick='togglePassMaster("logPass", this)' style='position: absolute; right: 15px; top: 16px; color: #64748b; cursor: pointer; font-size: 1.2rem;'></i>
@@ -1387,6 +1387,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 	import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
+	import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 	
     // KAPTEN, KUNCI API EMAS ADA DI SINI
     const firebaseConfig = {
@@ -1401,7 +1402,8 @@
 
     const app = initializeApp(firebaseConfig);
 	const db = getFirestore(app);
-
+	const auth = getAuth(app);
+	
 	const functions = getFunctions(app, "us-central1"); 
 	window.httpsCallable = httpsCallable; 
 	window.functions = functions;
@@ -1479,32 +1481,54 @@
     };
 	
     window.eksekusiLoginAdmin = async () => {
-        let u = document.getElementById('logUser').value.trim(); 
-        let p = document.getElementById('logPass').value.trim(); 
+        let emailInput = document.getElementById('logUser').value.trim().toLowerCase();
+        let passInput = document.getElementById('logPass').value.trim();
         let btn = document.getElementById('btnLogin');
-        
-        if(!u || !p) return alert("ID dan Key wajib diisi!");
-        btn.innerText = "VERIFYING ENCRYPTION..."; btn.disabled = true;
 
-        if(u === "master" && p === "cis2026") {
-            localStorage.setItem("cisAdminLog_v2", JSON.stringify({role: "MASTER", aksesArr: ["all"], nama: "Master Dewa"}));
-            window.prosesSuksesLogin("MASTER", ["all"], "Master Dewa");
-            return;
-        }
+        if (!emailInput || !passInput) return alert("Email dan Password wajib diisi!");
+        btn.innerText = "VERIFYING AUTH...";
+        btn.disabled = true;
 
         try {
-            const q = query(collection(db, "Akun_Admin"), where("username", "==", u), where("password", "==", p)); 
-            const snap = await getDocs(q);
-            
-            if(!snap.empty) { 
-                let dataAdmin = snap.docs[0].data(); 
-                localStorage.setItem("cisAdminLog_v2", JSON.stringify({role: dataAdmin.role, aksesArr: dataAdmin.akses_menu || [], nama: dataAdmin.username})); 
-                window.prosesSuksesLogin(dataAdmin.role, dataAdmin.akses_menu || [], dataAdmin.username); 
-            } else { 
-                alert("Akses Ditolak: Kredensial tidak valid di Database!"); 
+            const cred = await signInWithEmailAndPassword(auth, emailInput, passInput);
+            const signedEmail = (cred.user.email || "").toLowerCase();
+
+            // Cek apakah akun Master Pusat utama
+            if (signedEmail === "admincismining@gmail.com") {
+                const sessionData = { role: "MASTER", aksesArr: ["all"], nama: "Master Pusat", email: signedEmail };
+                localStorage.setItem("cisAdminLog_v2", JSON.stringify(sessionData));
+                document.documentElement.classList.add("sesi-aktif");
+                window.prosesSuksesLogin(sessionData.role, sessionData.aksesArr, sessionData.nama);
+                return;
             }
-        } catch(e) { alert("Error Firebase / Kunci API."); }
-        btn.innerText = "AUTHORIZE ACCESS"; btn.disabled = false;
+
+            // Cek apakah terdaftar sebagai Asisten di koleksi Akun_Admin berdasarkan email
+            const q = query(collection(db, "Akun_Admin"), where("email", "==", signedEmail));
+            const snap = await getDocs(q);
+
+            if (!snap.empty) {
+                const dataAdmin = snap.docs[0].data();
+                const sessionData = {
+                    role: dataAdmin.role || "CPANEL",
+                    aksesArr: dataAdmin.akses_menu || [],
+                    nama: dataAdmin.username || signedEmail,
+                    email: signedEmail
+                };
+                localStorage.setItem("cisAdminLog_v2", JSON.stringify(sessionData));
+                document.documentElement.classList.add("sesi-aktif");
+                window.prosesSuksesLogin(sessionData.role, sessionData.aksesArr, sessionData.nama);
+            } else {
+                await signOut(auth);
+                localStorage.removeItem("cisAdminLog_v2");
+                alert("Akses Ditolak: Akun belum terdaftar sebagai Admin/C-Panel!");
+            }
+        } catch (e) {
+            console.error("Login Auth Error:", e);
+            alert("Login Gagal: Periksa kembali Email dan Password Anda.");
+        } finally {
+            btn.innerText = "AUTHORIZE ACCESS";
+            btn.disabled = false;
+        }
     };
 
     window.prosesSuksesLogin = function(role, aksesArr, nama) {
@@ -1551,11 +1575,41 @@
         };
     }
 
-    window.logoutAdmin = () => { localStorage.removeItem("cisAdminLog_v2"); window.location.reload(); };
+    window.logoutAdmin = async () => {
+        try { await signOut(auth); } catch (e) {}
+        localStorage.removeItem("cisAdminLog_v2");
+        document.documentElement.classList.remove("sesi-aktif");
+        window.location.reload();
+    };
 
-    window.addEventListener('load', () => {
-        let savedSession = localStorage.getItem("cisAdminLog_v2");
-        if (savedSession) { let data = JSON.parse(savedSession); document.documentElement.classList.add("sesi-aktif"); window.prosesSuksesLogin(data.role, data.aksesArr, data.nama); }
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            localStorage.removeItem("cisAdminLog_v2");
+            document.documentElement.classList.remove("sesi-aktif");
+            return;
+        }
+        const signedEmail = (user.email || "").toLowerCase();
+        if (signedEmail === "admincismining@gmail.com") {
+            const sessionData = { role: "MASTER", aksesArr: ["all"], nama: "Master Pusat", email: signedEmail };
+            localStorage.setItem("cisAdminLog_v2", JSON.stringify(sessionData));
+            document.documentElement.classList.add("sesi-aktif");
+            window.prosesSuksesLogin(sessionData.role, sessionData.aksesArr, sessionData.nama);
+            return;
+        }
+        const q = query(collection(db, "Akun_Admin"), where("email", "==", signedEmail));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+            const dataAdmin = snap.docs[0].data();
+            const sessionData = {
+                role: dataAdmin.role || "CPANEL",
+                aksesArr: dataAdmin.akses_menu || [],
+                nama: dataAdmin.username || signedEmail,
+                email: signedEmail
+            };
+            localStorage.setItem("cisAdminLog_v2", JSON.stringify(sessionData));
+            document.documentElement.classList.add("sesi-aktif");
+            window.prosesSuksesLogin(sessionData.role, sessionData.aksesArr, sessionData.nama);
+        }
     });
 
 		window.globalVrscPriceIdr = 0;
