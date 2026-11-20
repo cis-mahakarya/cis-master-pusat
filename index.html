@@ -614,7 +614,7 @@
             <div class='accordion-inner'>
                 <div style='display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:15px; margin-bottom:20px;'>
                     <div class='form-group' style='margin:0;'><label>Modal Nominal (Rp)</label><input id='setNominal' oninput='onNominalInput()' type='text' style='border-color:#a855f7; font-size:1.1rem; font-weight:bold; color:#c084fc;'></div>
-                    <div class='form-group' style='margin:0;'><label>Speed (V/s)</label><input id='setSpeed' oninput='onSpeedInput()' type='text' style='border-color:#38bdf8; font-size:1.1rem; font-weight:bold; color:#7dd3fc;'></div>
+                    <div class='form-group' style='margin:0;'><label>Speed (V/s)</label><input id='setSpeed' oninput='onSpeedInput()' type='text' style='border-color:#38bdf8; font-size:1.1rem; font-weight:bold; color:#7dd3fc;'><div id='previewSpeedHash' style='font-size:0.72rem; color:#4ade80; margin-top:5px; font-weight:bold;'>0 H/s (~0 VRSC/hr)</div></div>
                     <div class='form-group' style='margin:0;'><label>Durasi (Hari)</label><input id='setHari' oninput='hitungKalkulator()' type='number' value='30'></div>
                     <div class='form-group' style='margin:0;'><label>Harga Live VRSC (Rp)</label><input id='setHarga' oninput='hitungKalkulator()' type='number' value='1600'></div>
                 </div>
@@ -1410,7 +1410,24 @@
     let currentAdminRole = ""; let currentAdminAkses = []; let allUsersData = [];
 
     function formatKripto(angka) { return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 10 }).format(angka); }
-    function getFloatVal(id) { let el = document.getElementById(id); if (!el) return 0; let val = el.value.toString().trim().replace(/%/g, '').replace(/,/g, '.'); let parts = val.split('.'); if (parts.length > 2) { val = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1]; } return parseFloat(val) || 0; }
+    function formatHashrateCIS(speedVs) {
+        let hps = Number(speedVs || 0) * 1e12;
+        if (hps >= 1e15) return (hps / 1e15).toFixed(2) + " PH/s";
+        if (hps >= 1e12) return (hps / 1e12).toFixed(2) + " TH/s";
+        if (hps >= 1e9)  return (hps / 1e9).toFixed(2)  + " GH/s";
+        if (hps >= 1e6)  return (hps / 1e6).toFixed(2)  + " MH/s";
+        if (hps >= 1e3)  return (hps / 1e3).toFixed(2)  + " kH/s";
+        return Math.round(hps) + " H/s";
+    }
+    function formatVrscPintar(nilai) {
+        let n = Number(nilai || 0);
+        if (n <= 0) return "0";
+        if (n >= 1000) return Math.round(n).toLocaleString('id-ID');
+        if (n >= 1) return n.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        if (n >= 0.01) return n.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 4 });
+        return n.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 6 });
+    }
+	function getFloatVal(id) { let el = document.getElementById(id); if (!el) return 0; let val = el.value.toString().trim().replace(/%/g, '').replace(/,/g, '.'); let parts = val.split('.'); if (parts.length > 2) { val = parts.slice(0, -1).join('') + '.' + parts[parts.length - 1]; } return parseFloat(val) || 0; }
     function formatTanggalJam(ts) { if(!ts) return "<span style='color:#64748b'>-</span>"; let d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'}) + " WIB"; }
 
     window.togglePassMaster = (id, icon) => { const inp = document.getElementById(id); if (inp.type === 'password') { inp.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { inp.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } };
@@ -1511,14 +1528,27 @@
 		// --- Kalkulator Realtime Est Rupiah ---
     window.hitungEstRegBonus = function() {
         let speed = getFloatVal('regBonusSpeed');
-        let vrscPerHari = speed * 86400; // Konversi V/s ke VRSC per hari
+        let vrscPerHari = speed * 86400;
         let estRp = Math.floor(vrscPerHari * globalVrscPriceIdr);
-        document.getElementById('estRegBonusRp').innerHTML = "<i class='fa-solid fa-coins'></i> Est. Panen: <b style='color:#38bdf8;'>" + vrscPerHari.toFixed(6) + " VRSC</b> (Rp " + estRp.toLocaleString('id-ID') + ") / Hari";
+        document.getElementById('estRegBonusRp').innerHTML = "<i class='fa-solid fa-coins'></i> Daya: <b style='color:#fbbf24;'>" + formatHashrateCIS(speed) + "</b> • Est. Panen: <b style='color:#38bdf8;'>" + formatVrscPintar(vrscPerHari) + " VRSC</b> (Rp " + estRp.toLocaleString('id-ID') + ") / Hari";
     };
 
     window.hitungEstRewardGame = function() {
-    // Ambil nilai input sebagai reward 1 Jam
-    let vrscJam = getFloatVal('inpRewardGame');
+        let vrscJam = getFloatVal('inpRewardGame');
+        let vrscHari = vrscJam * 24;
+        let vrscMinggu = vrscHari * 7;
+        let vrscBulan = vrscHari * 30;
+
+        document.getElementById('estGameJamVrsc').innerText = formatVrscPintar(vrscJam) + " VRSC";
+        document.getElementById('estGameHariVrsc').innerText = formatVrscPintar(vrscHari) + " VRSC";
+        document.getElementById('estGameMingguVrsc').innerText = formatVrscPintar(vrscMinggu) + " VRSC";
+        document.getElementById('estGameBulanVrsc').innerText = formatVrscPintar(vrscBulan) + " VRSC";
+
+        document.getElementById('estGameJamRp').innerText = "Rp " + Math.floor(vrscJam * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('estGameHariRp').innerText = "Rp " + Math.floor(vrscHari * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('estGameMingguRp').innerText = "Rp " + Math.floor(vrscMinggu * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('estGameBulanRp').innerText = "Rp " + Math.floor(vrscBulan * globalVrscPriceIdr).toLocaleString('id-ID');
+    };
     
     // Kalkulasi proyeksi waktu
     let vrscHari = vrscJam * 24;
@@ -2091,7 +2121,7 @@
 
     window.lihatMutasiUser = async (email, username) => { document.getElementById('mutasiUserTitle').innerText = "Ledger: " + (username || email); document.getElementById('modalMutasiUser').style.display = 'flex'; const tbody = document.getElementById('tblMutasiUser'); tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i class='fa-solid fa-spinner fa-spin'></i> Memuat data...</td></tr>"; try { const snap = await getDocs(query(collection(db, "Mutasi_Mining"), where("email", "==", email))); let dataArr = []; snap.forEach(d => dataArr.push(d.data())); dataArr.sort((a, b) => (b.timestamp_local || 0) - (a.timestamp_local || 0)); if(dataArr.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Tidak ada riwayat mutasi.</td></tr>"; return; } let html = ""; dataArr.slice(0, 100).forEach(x => { let tgl = new Date(x.timestamp_local).toLocaleString('id-ID'); let cl = x.jenis === "IN" ? "#4ade80" : "#f87171"; let sign = x.jenis === "IN" ? "+" : "-"; let formatUang = x.deskripsi.toLowerCase().includes("reward") || x.deskripsi.toLowerCase().includes("sponsor") || x.deskripsi.toLowerCase().includes("upgrade") || x.deskripsi.toLowerCase().includes("yield") ? `${formatKripto(x.nominal || 0)} VRSC` : `Rp ${(x.nominal||0).toLocaleString('id-ID')}`; html += `<tr><td style='font-size:0.75rem; color:#94a3b8;'>${tgl}</td><td style='font-size:0.8rem; font-weight:bold;'>${x.deskripsi}</td><td style='color:${cl}; font-weight:900;'>${sign}${formatUang}</td></tr>`; }); tbody.innerHTML = html; } catch(e) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:red;'>Gagal memuat.</td></tr>"; } };
     window.lihatJaringan = (username) => { if(!username || username === "undefined") return alert("User tidak valid."); document.getElementById('sponsorUtama').innerText = username; document.getElementById('modalJaringan').style.display = 'flex'; let html = buildTreeHTML(username, 1); if(html === "") html = "<div style='text-align:center; color:#94a3b8; padding:20px;'><i class='fa-solid fa-folder-open'></i> Belum ada downline.</div>"; document.getElementById('jaringanList').innerHTML = html; };
-    function buildTreeHTML(sponsorName, level) { let html = ""; let downlines = allUsersData.filter(u => u.referred_by === sponsorName); if(downlines.length > 0) { downlines.forEach(d => { let padding = (level - 1) * 20; let speed = (d.kecepatan_hash || 0).toFixed(6); html += `<div style='margin-left:${padding}px; border-left:2px solid #38bdf8; padding-left:15px; margin-bottom:10px; position:relative;'><div style='position:absolute; left:-2px; top:15px; width:15px; height:2px; background:#38bdf8;'></div><div style='background:#1e293b; padding:10px; border-radius:8px; border:1px solid #334155;'><b style='color:#e2e8f0; font-size:0.9rem;'>${d.username || 'No-Name'}</b> <span class='badge bg-yellow'>Level ${level}</span><br/><small style='color:#4ade80; font-weight:bold;'><i class='fa-solid fa-bolt'></i> ${speed} V/s</small></div></div>`; html += buildTreeHTML(d.username, level + 1); }); } return html; }
+    function buildTreeHTML(sponsorName, level) { let html = ""; let downlines = allUsersData.filter(u => u.referred_by === sponsorName); if(downlines.length > 0) { downlines.forEach(d => { let padding = (level - 1) * 20; let hashTxt = formatHashrateCIS(d.kecepatan_hash || 0); html += `<div style='margin-left:${padding}px; border-left:2px solid #38bdf8; padding-left:15px; margin-bottom:10px; position:relative;'><div style='position:absolute; left:-2px; top:15px; width:15px; height:2px; background:#38bdf8;'></div><div style='background:#1e293b; padding:10px; border-radius:8px; border:1px solid #334155;'><b style='color:#e2e8f0; font-size:0.9rem;'>${d.username || 'No-Name'}</b> <span class='badge bg-yellow'>Level ${level}</span><br/><small style='color:#4ade80; font-weight:bold;'><i class='fa-solid fa-bolt'></i> ${hashTxt}</small></div></div>`; html += buildTreeHTML(d.username, level + 1); }); } return html; }
 
     window.togBlokir = async (id, stat) => { await updateDoc(doc(db, "Akun_Publik", id), { status_akun: stat }); loadUser(); };
     
@@ -2200,12 +2230,22 @@
         let vrscPerHari = mhs * baseVrscRewardPerMhs; 
         let rpPerHari = Math.floor(vrscPerHari * globalVrscPriceIdr); 
         let speedCIS = vrscPerHari / 86400; 
-        document.getElementById('valHashVrsc').innerText = vrscPerHari.toFixed(4) + " VRSC"; 
+        document.getElementById('valHashVrsc').innerText = formatVrscPintar(vrscPerHari) + " VRSC"; 
         document.getElementById('valHashRp').innerText = "Rp " + rpPerHari.toLocaleString('id-ID'); 
-        document.getElementById('valSpeedCIS').innerText = speedCIS.toFixed(10) + " V/s"; 
+        let elSpeedCis = document.getElementById('valSpeedCIS');
+        elSpeedCis.setAttribute('data-raw', speedCIS.toFixed(10));
+        elSpeedCis.innerText = formatHashrateCIS(speedCIS) + " (~" + formatVrscPintar(vrscPerHari) + " VRSC/hr)"; 
     };
     
-    window.salinSpeedKeForm = function() { let textSpeed = document.getElementById('valSpeedCIS').innerText.replace(" V/s", ""); document.getElementById('setSpeed').value = parseFloat(textSpeed); window.hitungKalkulator(); };
+    window.salinSpeedKeForm = function() { 
+        let el = document.getElementById('valSpeedCIS');
+        let raw = el.getAttribute('data-raw') || el.innerText.replace(" V/s", ""); 
+        let val = parseFloat(raw) || 0;
+        if (val > 0) {
+            document.getElementById('setSpeed').value = val; 
+            window.hitungKalkulator(); 
+        }
+    };
     
     let prevNominal = 0; 
     
@@ -2235,18 +2275,23 @@
       let totalRp = Math.floor(totalVrsc * harga); 
       let profitRp = totalRp - nominal; 
       let roiPersen = nominal > 0 ? ((profitRp / nominal) * 100).toFixed(2) : 0;
+
+      let elPrev = document.getElementById('previewSpeedHash');
+      if (elPrev) {
+          elPrev.innerText = speed > 0 ? (formatHashrateCIS(speed) + " (~" + formatVrscPintar(perHari) + " VRSC/hr)") : "0 H/s (~0 VRSC/hr)";
+      }
       
-      document.getElementById('resJam').innerText = (speed * 3600).toFixed(6) + " VRSC"; 
-      document.getElementById('resHari').innerText = perHari.toFixed(6) + " VRSC"; 
-      document.getElementById('resMinggu').innerText = (perHari * 7).toFixed(6) + " VRSC"; 
-      document.getElementById('resBulan').innerText = (perHari * 30).toFixed(6) + " VRSC"; 
+      document.getElementById('resJam').innerText = formatVrscPintar(speed * 3600) + " VRSC"; 
+      document.getElementById('resHari').innerText = formatVrscPintar(perHari) + " VRSC"; 
+      document.getElementById('resMinggu').innerText = formatVrscPintar(perHari * 7) + " VRSC"; 
+      document.getElementById('resBulan').innerText = formatVrscPintar(perHari * 30) + " VRSC"; 
       document.getElementById('resJamIdr').innerText = "Rp " + Math.floor((speed * 3600) * harga).toLocaleString('id-ID'); 
       document.getElementById('resHariIdr').innerText = "Rp " + Math.floor(perHari * harga).toLocaleString('id-ID'); 
       document.getElementById('resMingguIdr').innerText = "Rp " + Math.floor((perHari * 7) * harga).toLocaleString('id-ID'); 
       document.getElementById('resBulanIdr').innerText = "Rp " + Math.floor((perHari * 30) * harga).toLocaleString('id-ID');
       
       document.getElementById('lblDurasi').innerText = durasiHari; 
-      document.getElementById('resTotalVrsc').innerText = totalVrsc.toFixed(6); 
+      document.getElementById('resTotalVrsc').innerText = formatVrscPintar(totalVrsc); 
       document.getElementById('resTotalRp').innerText = "Rp " + totalRp.toLocaleString('id-ID');
       
       let roiEl = document.getElementById('resRoi'); 
@@ -2285,7 +2330,8 @@
             let vrscPerHari = totalMhs * baseVrscRewardPerMhs;
             let speedCIS = vrscPerHari / 86400;
 
-            speedCisEl.innerText = speedCIS.toFixed(10) + " V/s";
+            speedCisEl.setAttribute('data-raw', speedCIS.toFixed(10));
+            speedCisEl.innerText = formatHashrateCIS(speedCIS) + " (~" + formatVrscPintar(vrscPerHari) + " VRSC/hr)";
 
             btn.disabled = false;
             btn.innerHTML = "<i class='fa-solid fa-radar'></i> Deteksi Ulang";
@@ -2295,8 +2341,9 @@
     };
 
     window.salinSpeedRealKeForm = function() {
-        let textSpeed = document.getElementById('realSpeedCis').innerText.replace(" V/s", "");
-        let val = parseFloat(textSpeed);
+        let el = document.getElementById('realSpeedCis');
+        let raw = el.getAttribute('data-raw') || el.innerText.replace(" V/s", "");
+        let val = parseFloat(raw);
         
         if(val > 0) {
             document.getElementById('setSpeed').value = val;
@@ -2312,8 +2359,32 @@
         }
     };
 
-
-    window.loadPaket = async () => { const tbody = document.getElementById('tblPaket'); tbody.innerHTML = ''; const snap = await getDocs(query(collection(db, "Config_Mining"), orderBy("nominal", "asc"))); if(snap.empty) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada paket.</td></tr>"; return; } let no = 1; snap.forEach(d => { const p = d.data(); let waktu = formatTanggalJam(p.dibuat_pada); let speedTampil = new Intl.NumberFormat('en-US', { maximumFractionDigits: 10 }).format(p.speed); tbody.innerHTML += `<tr><td style='text-align:center; font-weight:bold;'>${no++}</td><td style='font-size:0.75rem; color:#94a3b8;'>${waktu}</td><td><b>Rp ${p.nominal.toLocaleString('id-ID')}</b></td><td><span style='color:#38bdf8; font-weight:900;'>${speedTampil} V/s</span><br/><span style='font-size:0.75rem;'>${p.durasi_hari} Hari</span></td><td><button class='action-btn btn-del' onclick='window.delPaket("${d.id}")'><i class='fa-solid fa-trash'></i></button></td></tr>`; }); }
+    window.loadPaket = async () => {
+        const tbody = document.getElementById('tblPaket');
+        tbody.innerHTML = '';
+        const snap = await getDocs(query(collection(db, "Config_Mining"), orderBy("nominal", "asc")));
+        if(snap.empty) {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada paket.</td></tr>";
+            return;
+        }
+        let no = 1;
+        snap.forEach(d => {
+            const p = d.data();
+            let waktu = formatTanggalJam(p.dibuat_pada);
+            let hashTampil = formatHashrateCIS(p.speed);
+            let yieldHarian = formatVrscPintar((p.speed || 0) * 86400);
+            tbody.innerHTML += `<tr>
+                <td style='text-align:center; font-weight:bold;'>${no++}</td>
+                <td style='font-size:0.75rem; color:#94a3b8;'>${waktu}</td>
+                <td><b>Rp ${p.nominal.toLocaleString('id-ID')}</b></td>
+                <td>
+                    <span style='color:#38bdf8; font-family:Orbitron; font-weight:900;'>${hashTampil}</span><br/>
+                    <span style='font-size:0.75rem; color:#4ade80;'>~ ${yieldHarian} VRSC/hari</span> <span style='font-size:0.7rem; color:#94a3b8;'>(${p.durasi_hari} Hari)</span>
+                </td>
+                <td><button class='action-btn btn-del' onclick='window.delPaket("${d.id}")'><i class='fa-solid fa-trash'></i></button></td>
+            </tr>`;
+        });
+    };
     document.getElementById('btnSimpanPaket').addEventListener('click', async () => { 
         const n = getFloatVal('setNominal'); 
         const s = getFloatVal('setSpeed'); 
@@ -3030,16 +3101,24 @@
             let isOnline = false; let statusBadge = ""; let timeDiff = now - (u.last_seen_local || 0);
             if (timeDiff < 30000 && u.kecepatan_hash > 0 && u.status_akun === "AKTIF") { isOnline = true; onlineCount++; statusBadge = `<span class='status-dot dot-online'></span> <b style='color:#4ade80;'>Mining / Online</b>`; totalSpeedSistem += u.kecepatan_hash; } else { offlineCount++; statusBadge = `<span class='status-dot dot-offline'></span> <span style='color:#94a3b8;'>Idle / Offline</span>`; }
             if (cariUserLiveInput === "" || (u.username && u.username.toLowerCase().includes(cariUserLiveInput))) {
-                let estHariVRSC = (u.kecepatan_hash || 0) * globalSpeedMultiplier * 86400; let speedText = new Intl.NumberFormat('en-US', { maximumFractionDigits: 6 }).format((u.kecepatan_hash || 0) * globalSpeedMultiplier);
-                tbodyHtml += `<tr><td style='text-align:center;'>${no++}</td><td><b style='color:#38bdf8;'>${u.username || 'No-Name'}</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Exp: ${u.expired_at ? new Date(u.expired_at).toLocaleDateString() : '-'}</span></td><td><b style='color:#fbbf24;'>${speedText} V/s</b><br/><span style='font-size:0.75rem; color:#4ade80;'>Est: ${estHariVRSC.toFixed(4)} VRSC/hari</span></td><td style='text-align:center;'>${statusBadge}</td></tr>`;
+                let speedEfektif = (u.kecepatan_hash || 0) * globalSpeedMultiplier;
+                let estHariVRSC = speedEfektif * 86400;
+                tbodyHtml += `<tr><td style='text-align:center;'>${no++}</td><td><b style='color:#38bdf8;'>${u.username || 'No-Name'}</b><br/><span style='font-size:0.7rem; color:#94a3b8;'>Exp: ${u.expired_at ? new Date(u.expired_at).toLocaleDateString() : '-'}</span></td><td><b style='color:#fbbf24; font-family:Orbitron;'>${formatHashrateCIS(speedEfektif)}</b><br/><span style='font-size:0.75rem; color:#4ade80;'>Est: ~ ${formatVrscPintar(estHariVRSC)} VRSC/hari</span></td><td style='text-align:center;'>${statusBadge}</td></tr>`;
             }
         });
 
         let totalHashFinal = totalSpeedSistem * globalSpeedMultiplier;
-        document.getElementById('liveTotalSpeed').innerText = new Intl.NumberFormat('en-US', { maximumFractionDigits: 6 }).format(totalHashFinal) + " V/s"; document.getElementById('liveOnlineCount').innerText = onlineCount; document.getElementById('liveOfflineCount').innerText = offlineCount;
+        document.getElementById('liveTotalSpeed').innerText = formatHashrateCIS(totalHashFinal);
+        document.getElementById('liveOnlineCount').innerText = onlineCount;
+        document.getElementById('liveOfflineCount').innerText = offlineCount;
 
         let vrscPerSec = totalHashFinal; let vrscPerMin = vrscPerSec * 60; let vrscPerHr = vrscPerSec * 3600; let vrscPerDay = vrscPerSec * 86400; let vrscPerWeek = vrscPerDay * 7; let vrscPerMonth = vrscPerDay * 30;
-        document.getElementById('omsetSecVrsc').innerText = formatKripto(vrscPerSec); document.getElementById('omsetSecIdr').innerText = "Rp " + Math.floor(vrscPerSec * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetMinVrsc').innerText = formatKripto(vrscPerMin); document.getElementById('omsetMinIdr').innerText = "Rp " + Math.floor(vrscPerMin * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetHrVrsc').innerText = formatKripto(vrscPerHr); document.getElementById('omsetHrIdr').innerText = "Rp " + Math.floor(vrscPerHr * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetDayVrsc').innerText = formatKripto(vrscPerDay); document.getElementById('omsetDayIdr').innerText = "Rp " + Math.floor(vrscPerDay * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetWeekVrsc').innerText = formatKripto(vrscPerWeek); document.getElementById('omsetWeekIdr').innerText = "Rp " + Math.floor(vrscPerWeek * globalVrscPriceIdr).toLocaleString('id-ID'); document.getElementById('omsetMonthVrsc').innerText = formatKripto(vrscPerMonth); document.getElementById('omsetMonthIdr').innerText = "Rp " + Math.floor(vrscPerMonth * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetSecVrsc').innerText = formatVrscPintar(vrscPerSec) + " VRSC"; document.getElementById('omsetSecIdr').innerText = "Rp " + Math.floor(vrscPerSec * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetMinVrsc').innerText = formatVrscPintar(vrscPerMin) + " VRSC"; document.getElementById('omsetMinIdr').innerText = "Rp " + Math.floor(vrscPerMin * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetHrVrsc').innerText = formatVrscPintar(vrscPerHr) + " VRSC"; document.getElementById('omsetHrIdr').innerText = "Rp " + Math.floor(vrscPerHr * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetDayVrsc').innerText = formatVrscPintar(vrscPerDay) + " VRSC"; document.getElementById('omsetDayIdr').innerText = "Rp " + Math.floor(vrscPerDay * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetWeekVrsc').innerText = formatVrscPintar(vrscPerWeek) + " VRSC"; document.getElementById('omsetWeekIdr').innerText = "Rp " + Math.floor(vrscPerWeek * globalVrscPriceIdr).toLocaleString('id-ID');
+        document.getElementById('omsetMonthVrsc').innerText = formatVrscPintar(vrscPerMonth) + " VRSC"; document.getElementById('omsetMonthIdr').innerText = "Rp " + Math.floor(vrscPerMonth * globalVrscPriceIdr).toLocaleString('id-ID');
         document.getElementById('tblLiveUser').innerHTML = tbodyHtml === "" ? "<tr><td colspan='4' style='text-align:center;'>Tidak ada data radar.</td></tr>" : tbodyHtml;
     };
     async function fetchVrscPrice() { 
