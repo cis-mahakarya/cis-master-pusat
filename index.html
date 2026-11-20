@@ -1526,47 +1526,29 @@
         window.loadMarketPrice(); window.loadPaket(); window.initAppStatusMonitor(); window.loadEventBanner(); window.initAutoPromoEngine(); window.loadWaGroups(); showToast("Access Granted: Welcome Commander.");
 
 		// --- Kalkulator Realtime Est Rupiah ---
-    window.hitungEstRegBonus = function() {
-        let speed = getFloatVal('regBonusSpeed');
-        let vrscPerHari = speed * 86400;
-        let estRp = Math.floor(vrscPerHari * globalVrscPriceIdr);
-        document.getElementById('estRegBonusRp').innerHTML = "<i class='fa-solid fa-coins'></i> Daya: <b style='color:#fbbf24;'>" + formatHashrateCIS(speed) + "</b> • Est. Panen: <b style='color:#38bdf8;'>" + formatVrscPintar(vrscPerHari) + " VRSC</b> (Rp " + estRp.toLocaleString('id-ID') + ") / Hari";
-    };
+        window.hitungEstRegBonus = function() {
+            let speed = getFloatVal('regBonusSpeed');
+            let vrscPerHari = speed * 86400;
+            let estRp = Math.floor(vrscPerHari * globalVrscPriceIdr);
+            document.getElementById('estRegBonusRp').innerHTML = "<i class='fa-solid fa-coins'></i> Daya: <b style='color:#fbbf24;'>" + formatHashrateCIS(speed) + "</b> • Est. Panen: <b style='color:#38bdf8;'>" + formatVrscPintar(vrscPerHari) + " VRSC</b> (Rp " + estRp.toLocaleString('id-ID') + ") / Hari";
+        };
 
-    window.hitungEstRewardGame = function() {
-        let vrscJam = getFloatVal('inpRewardGame');
-        let vrscHari = vrscJam * 24;
-        let vrscMinggu = vrscHari * 7;
-        let vrscBulan = vrscHari * 30;
+        window.hitungEstRewardGame = function() {
+            let vrscJam = getFloatVal('inpRewardGame');
+            let vrscHari = vrscJam * 24;
+            let vrscMinggu = vrscHari * 7;
+            let vrscBulan = vrscHari * 30;
 
-        document.getElementById('estGameJamVrsc').innerText = formatVrscPintar(vrscJam) + " VRSC";
-        document.getElementById('estGameHariVrsc').innerText = formatVrscPintar(vrscHari) + " VRSC";
-        document.getElementById('estGameMingguVrsc').innerText = formatVrscPintar(vrscMinggu) + " VRSC";
-        document.getElementById('estGameBulanVrsc').innerText = formatVrscPintar(vrscBulan) + " VRSC";
+            document.getElementById('estGameJamVrsc').innerText = formatVrscPintar(vrscJam) + " VRSC";
+            document.getElementById('estGameHariVrsc').innerText = formatVrscPintar(vrscHari) + " VRSC";
+            document.getElementById('estGameMingguVrsc').innerText = formatVrscPintar(vrscMinggu) + " VRSC";
+            document.getElementById('estGameBulanVrsc').innerText = formatVrscPintar(vrscBulan) + " VRSC";
 
-        document.getElementById('estGameJamRp').innerText = "Rp " + Math.floor(vrscJam * globalVrscPriceIdr).toLocaleString('id-ID');
-        document.getElementById('estGameHariRp').innerText = "Rp " + Math.floor(vrscHari * globalVrscPriceIdr).toLocaleString('id-ID');
-        document.getElementById('estGameMingguRp').innerText = "Rp " + Math.floor(vrscMinggu * globalVrscPriceIdr).toLocaleString('id-ID');
-        document.getElementById('estGameBulanRp').innerText = "Rp " + Math.floor(vrscBulan * globalVrscPriceIdr).toLocaleString('id-ID');
-    };
-    
-    // Kalkulasi proyeksi waktu
-    let vrscHari = vrscJam * 24;
-    let vrscMinggu = vrscHari * 7;
-    let vrscBulan = vrscHari * 30;
-
-    // Tampilkan nilai VRSC ke HTML
-    document.getElementById('estGameJamVrsc').innerText = vrscJam.toFixed(6) + " VRSC";
-    document.getElementById('estGameHariVrsc').innerText = vrscHari.toFixed(6) + " VRSC";
-    document.getElementById('estGameMingguVrsc').innerText = vrscMinggu.toFixed(6) + " VRSC";
-    document.getElementById('estGameBulanVrsc').innerText = vrscBulan.toFixed(6) + " VRSC";
-
-    // Tampilkan nilai IDR secara Realtime ke HTML
-    document.getElementById('estGameJamRp').innerText = "Rp " + Math.floor(vrscJam * globalVrscPriceIdr).toLocaleString('id-ID');
-    document.getElementById('estGameHariRp').innerText = "Rp " + Math.floor(vrscHari * globalVrscPriceIdr).toLocaleString('id-ID');
-    document.getElementById('estGameMingguRp').innerText = "Rp " + Math.floor(vrscMinggu * globalVrscPriceIdr).toLocaleString('id-ID');
-    document.getElementById('estGameBulanRp').innerText = "Rp " + Math.floor(vrscBulan * globalVrscPriceIdr).toLocaleString('id-ID');
-};
+            document.getElementById('estGameJamRp').innerText = "Rp " + Math.floor(vrscJam * globalVrscPriceIdr).toLocaleString('id-ID');
+            document.getElementById('estGameHariRp').innerText = "Rp " + Math.floor(vrscHari * globalVrscPriceIdr).toLocaleString('id-ID');
+            document.getElementById('estGameMingguRp').innerText = "Rp " + Math.floor(vrscMinggu * globalVrscPriceIdr).toLocaleString('id-ID');
+            document.getElementById('estGameBulanRp').innerText = "Rp " + Math.floor(vrscBulan * globalVrscPriceIdr).toLocaleString('id-ID');
+        };
     }
 
     window.logoutAdmin = () => { localStorage.removeItem("cisAdminLog_v2"); window.location.reload(); };
