@@ -2169,10 +2169,16 @@
     };
     
     window.resetUser = async (id, email) => { 
-        if(!confirm(`PERINGATAN SANGAT KERAS!\nProses ini akan MENGHANGUSKAN seluruh aset milik [${email}].\nRiwayat Mesin, Saldo Koin, Rupiah, Dolar, Token, dan Mutasi akan dilenyapkan. Kembali seperti akun baru mendaftar. Lanjutkan?`)) return; 
+        const targetObj = allUsersData.find(u => u.id === id) || {};
+        const targetUsername = (targetObj.username || "").toUpperCase();
+        const cleanEmail = (email || "").trim();
+
+        if(!confirm(`PERINGATAN SANGAT KERAS!\nProses ini akan MENGHANGUSKAN seluruh aset milik [${targetUsername || cleanEmail}].\nRiwayat Mesin, Saldo Koin, Rupiah, Dolar, Token, dan Mutasi akan dilenyapkan. Kembali seperti akun baru mendaftar. Lanjutkan?`)) return; 
         
         try { 
-            // 1. Kuras Saldo dan Kunci Mesin di Akun Utama
+            const resetStamp = Date.now();
+
+            // 1. Kuras seluruh saldo, mesin, status, dan timer di Akun Utama
             await updateDoc(doc(db, "Akun_Publik", id), { 
                 saldo_vrsc: 0, 
                 kecepatan_hash: 0, 
@@ -2183,34 +2189,39 @@
                 saldo_vrsc_master: 0,
                 saldo_rupiah_master: 0,
                 total_bonus_sponsor_vrsc: 0, 
+                total_pembelian_mesin: 0,
+                histori_exp_mesin_terjauh: 0,
+                last_claim_reward: 0,
+                last_checkin: 0,
                 daftar_mesin: [],
                 status_akun: "INACTIVE",
-                biaya_aktivasi_current: 10000 
+                biaya_aktivasi_current: 10000,
+                reset_at: resetStamp
             }); 
             
-            // 2. Pemburu Bayaran: Lenyapkan semua data relasional user di cabang lain
-            const listKol = [
-                { nama: "Database_Token", field: "pemilik" },
-                { nama: "Mutasi_Mining", field: "email" },
-                { nama: "Notifikasi_Personal", field: "email" },
-                { nama: "Request_Withdraw", field: "email_pemohon" },
-                { nama: "P2P_Order", field: "pembeli" },
-                { nama: "P2P_Order", field: "penjual" }, // Harus eksekusi 2x untuk P2P (Sebagai pembeli & penjual)
-                { nama: "Data_Staking", field: "email" },
-                { nama: "Laporan_Setoran", field: "email" },
-                { nama: "Transaksi_PPOB", field: "email" },
-                { nama: "Pesan_Bantuan", field: "email" }
-            ]; 
+            // 2. Bersihkan seluruh data relasional di koleksi cabang (baik via email maupun username)
+            const hapusByQuery = async (namaKol, fieldName, val) => {
+                if (!val) return;
+                const snap = await getDocs(query(collection(db, namaKol), where(fieldName, "==", val)));
+                for (const d of snap.docs) {
+                    await deleteDoc(doc(db, namaKol, d.id));
+                }
+            };
+
+            await hapusByQuery("Database_Token", "pemilik", cleanEmail);
+            await hapusByQuery("Database_Token", "pemilik_username", targetUsername);
+            await hapusByQuery("Mutasi_Mining", "email", cleanEmail);
+            await hapusByQuery("Notifikasi_Personal", "email", cleanEmail);
+            await hapusByQuery("Request_Withdraw", "email_pemohon", cleanEmail);
+            await hapusByQuery("P2P_Order", "pembeli", cleanEmail);
+            await hapusByQuery("P2P_Order", "penjual", cleanEmail);
+            await hapusByQuery("Data_Staking", "email", cleanEmail);
+            await hapusByQuery("Laporan_Setoran", "email", cleanEmail);
+            await hapusByQuery("Transaksi_PPOB", "email", cleanEmail);
+            await hapusByQuery("Pesan_Bantuan", "email", cleanEmail);
+            await hapusByQuery("Donasi_USDT", "email", cleanEmail);
             
-            for(const kol of listKol) { 
-                const q = query(collection(db, kol.nama), where(kol.field, "==", email)); 
-                const snap = await getDocs(q); 
-                for (const d of snap.docs) { 
-                    await deleteDoc(doc(db, kol.nama, d.id)); 
-                } 
-            } 
-            
-            showToast(`PEMUTIHAN SUKSES! Akun ${email} telah di-reset seperti baru.`); 
+            showToast(`PEMUTIHAN SUKSES! Akun ${targetUsername || cleanEmail} telah di-reset bersih.`); 
             loadUser(); 
         } catch(e) { 
             alert("Terjadi kesalahan sistem saat pemutihan: " + e.message); 
